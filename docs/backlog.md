@@ -1,11 +1,11 @@
-# 📋 BACKLOG — LUMOSS v7.2.2
+# 📋 BACKLOG — LUMOSS v7.2.8
 
 **Update terakhir:** 2026-09-16
-**Total issues:** 38 PR (FASE 5)
+**Total issues:** 38 PR (FASE 5) + 1 side project
 **Status:** ⏸️ BACKLOG (belum disentuh)
 
-📎 **Checkpoint terkait:** `docs/checkpoint.txt`
-📎 **State terkait:** `docs/state.txt`
+📎 **Checkpoint terkait:** `docs/checkpoint.md`
+📎 **State terkait:** `docs/state.md`
 
 ---
 
@@ -14,12 +14,14 @@
 | Kategori | Jumlah |
 |----------|--------|
 | 🔴 KRITIS | 2 |
-| 🟡 MEDIUM | 5 |
+| 🟡 MEDIUM | 6 |
 | 🟢 MINOR | 24 |
 | ⚠️ SKIP | 1 |
 | 🔒 LOCKED | 1 |
 | 🟢 FINAL | 4 |
 | 🟡 KESENTUH | 4 |
+| **TOTAL PR LUMOSS** | **38** |
+| **SIDE PROJECT** | **1** |
 
 **PRIORITAS EKSEKUSI:**
 1. **PR-7** (YouTube Error 153) — 🔴 KRITIS
@@ -58,7 +60,7 @@
 
 ### PR-5: Hapus templates/about.html
 - **Prioritas:** 🟢 MINOR
-- **Deskripsi:** File about.html di templates/ udah gak dipake
+- **Deskripsi:** File about.html di templates/ udah gak dipake (About digabung ke gallery)
 - **File:** `templates/about.html`
 - **Status:** ⏸️ Belum dihapus
 
@@ -120,36 +122,43 @@
 
 ### PR-14: Auto-match favicon per platform
 - **Prioritas:** 🟢 MINOR
+- **Deskripsi:** Otomatis pilih favicon berdasarkan platform embed
 - **File:** `templates/gallery.html`, `embed_parser.py`
 - **Status:** ⏸️ Belum difix
 
 ### PR-15: Auto-hide header on scroll
 - **Prioritas:** 🟢 MINOR
+- **Deskripsi:** Header auto-hide saat scroll ke bawah
 - **File:** `templates/gallery.html`
 - **Status:** ⏸️ Belum difix
 
 ### PR-16: Menu Favicon (A+B Hybrid)
 - **Prioritas:** 🟢 FINAL
+- **Deskripsi:** Menu setting favicon — Hybrid opsi A+B
 - **File:** `menu.py`, `config_manager.py`
 - **Status:** ⏸️ Belum dikerjain
 
 ### PR-17: Bundle Pengaturan Galeri
 - **Prioritas:** 🟢 MINOR
+- **Deskripsi:** Gabungin pengaturan galeri jadi 1 bundle
 - **File:** `menu.py`
 - **Status:** ⏸️ Belum difix
 
 ### PR-18: Preview live terminal
 - **Prioritas:** 🟢 MINOR
+- **Deskripsi:** Preview theme di terminal sebelum apply
 - **File:** `menu.py`
 - **Status:** ⏸️ Belum difix
 
 ### PR-19: Export/Import config
 - **Prioritas:** 🟢 MINOR
+- **Deskripsi:** Export & import config akun
 - **File:** `config_manager.py`
 - **Status:** 🟡 KESENTUH rebranding
 
 ### PR-20: Per-account setting
 - **Prioritas:** 🟢 MINOR
+- **Deskripsi:** Setting per-akun (bukan global)
 - **File:** `config_manager.py`
 - **Status:** ⏸️ Belum difix
 
@@ -159,31 +168,37 @@
 
 ### PR-21: Animasi judul Glow Pulse
 - **Prioritas:** 🟢 FINAL
+- **Deskripsi:** Animasi Glow Pulse di judul galeri (Opsi A)
 - **File:** `templates/gallery.html`
 - **Status:** ⏸️ Belum dikerjain
 
 ### PR-22: Stagger fade-in card
 - **Prioritas:** 🟢 MINOR
+- **Deskripsi:** Card muncul stagger (satu-satu) dengan fade-in
 - **File:** `templates/gallery.html`
 - **Status:** ⏸️ Belum difix
 
 ### PR-23: Hover effect card
 - **Prioritas:** 🟢 MINOR
+- **Deskripsi:** Hover effect di card media
 - **File:** `templates/gallery.html`
 - **Status:** ⏸️ Belum difix
 
 ### PR-24: Lightbox transition
 - **Prioritas:** 🟢 MINOR
+- **Deskripsi:** Transisi smooth saat buka lightbox
 - **File:** `templates/gallery.html`
 - **Status:** ⏸️ Belum difix
 
 ### PR-25: Loading skeleton
 - **Prioritas:** 🟢 MINOR
+- **Deskripsi:** Loading skeleton saat gambar loading
 - **File:** `templates/gallery.html`
 - **Status:** ⏸️ Belum difix
 
 ### PR-26: Scroll reveal
 - **Prioritas:** 🟢 MINOR
+- **Deskripsi:** Elemen muncul saat di-scroll (scroll reveal)
 - **File:** `templates/gallery.html`
 - **Status:** ⏸️ Belum difix
 
@@ -194,24 +209,178 @@
 ### PR-27: Moss particle bg
 - **Prioritas:** ⚠️ SKIP
 - **Deskripsi:** Background partikel moss (dibatalin — terlalu berat)
+- **File:** -
 - **Status:** ⚠️ SKIP (keputusan final)
 
 ### PR-28: Smooth navigation paket
 - **Prioritas:** 🟢 FINAL
+- **Deskripsi:** Paket "Smooth UX" (navigasi halus)
 - **File:** `templates/gallery.html`
 - **Status:** ⏸️ Belum dikerjain
 
 ### PR-29: Support 120Hz optional
-- **Prioritas:**
+- **Prioritas:** 🟢 FINAL
+- **Deskripsi:** Support 120Hz (optional, default OFF)
+- **File:** `templates/gallery.html`
+- **Status:** ⏸️ Belum dikerjain
 
-### PR-30: Setup Cinematic Resume Portfolio (GitHub Pages)
+---
+
+## 🧠 GRUP F — ADVANCED (8 PR)
+
+### PR-30: Auto grouping wajah
+- **Prioritas:** 🔒 LOCKED
+- **Deskripsi:** Auto grouping wajah (optional, fitur advanced)
+- **File:** `media_processor.py`
+- **Status:** 🔒 LOCKED OPTIONAL
+
+### PR-31: Auto-tag EXIF
+- **Prioritas:** 🟢 PILIH
+- **Deskripsi:** Auto-tag dari EXIF metadata
+- **File:** `media_processor.py`
+- **Status:** ⏸️ Belum difix
+
+### PR-32: Duplicate detection
+- **Prioritas:** 🟢 PILIH
+- **Deskripsi:** Deteksi file duplikat
+- **File:** `media_processor.py`
+- **Status:** ⏸️ Belum difix
+
+### PR-35: Timeline view
+- **Prioritas:** 🟢 PILIH
+- **Deskripsi:** Tampilan timeline (per tanggal)
+- **File:** `templates/gallery.html`
+- **Status:** ⏸️ Belum difix
+
+### PR-38: Dark/Light mode toggle
+- **Prioritas:** 🟢 PILIH
+- **Deskripsi:** Toggle dark/light mode
+- **File:** `templates/gallery.html`
+- **Status:** ⏸️ Belum difix
+
+### PR-40: Thumbnail generation
+- **Prioritas:** 🟡 PILIH ⭐🥇
+- **Deskripsi:** Generate thumbnail (prioritas tertinggi)
+- **File:** `media_processor.py`
+- **Status:** 🟡 KESENTUH rebranding (belum full fix)
+
+### PR-43: Pagination / infinite scroll
+- **Prioritas:** 🟡 PILIH ⭐🥈
+- **Deskripsi:** Pagination atau infinite scroll
+- **File:** `templates/gallery.html`
+- **Status:** ⏸️ Belum difix
+
+### PR-47: PWA install as app
+- **Prioritas:** 🟢 PILIH
+- **Deskripsi:** PWA install as app (bisa di-install ke homescreen)
+- **File:** `templates/gallery.html`, `manifest.json`
+- **Status:** ⏸️ Belum difix
+
+---
+
+## 🌐 GRUP G — INFRA (1 PR)
+
+### PR-51: Custom domain support
+- **Prioritas:** 🟢 BARU
+- **Deskripsi:** Support custom domain (bukan cuma GitHub Pages)
+- **File:** `html_builder.py`, `config_manager.py`
+- **Status:** 🟡 KESENTUH rebranding (belum full fix)
+
+---
+
+## 🎬 SIDE PROJECT (1 — bukan bagian LUMOSS)
+
+### PR-PORTFOLIO: Cinematic Resume Portfolio
 - **Prioritas:** 🟡 MEDIUM
-- **Deskripsi:** Deploy Cinematic Resume sebagai portfolio pribadi di nexterade.github.io. Base udah di-clone & jalan lokal, tinggal:
-  - Isi `data/resumeContent.js` dengan data pribadi (nexterade, LUMOSS, dll)
-  - Ganti styling (moss green theme + font)
-  - Fix hydration error di `app/layout.tsx`
-  - Fix GSAP target error (`.project-stage-shell`, `.timeline-mobile-card`)
-  - Deploy ke GitHub Pages
-- **File:** `~/nexterade.github.io/` (repo terpisah)
-- **Status:** ⏸️ PENDING
-- **Catatan:** Base di `data/resumeContent.js` & `tailwind.config.js`. Rencana: Opsi B (Data + Styling).
+- **Deskripsi:** Deploy Cinematic Resume sebagai portfolio pribadi di `nexterade.github.io`
+- **Repo:** `https://github.com/nexterade/nexterade.github.io`
+- **Lokal:** `~/nexterade.github.io/`
+- **Base:** Cinematic Resume (Next.js 16.3.5, Webpack)
+- **Status:** ⏸️ PENDING (base jalan, rombak belum)
+
+**Setup yang udah kelar:**
+- ✅ Fork repo Cinematic Resume
+- ✅ Clone ke Termux
+- ✅ Pindah ke home (fix symlink error)
+- ✅ `npm install` sukses (96 packages, 0 vulnerabilities)
+- ✅ Preview lokal jalan: `npm run dev -- --webpack`
+
+**Task rombak (belum):**
+- ⏸️ Isi `data/resumeContent.js` dengan data pribadi
+- ⏸️ Ganti styling di `tailwind.config.js` (moss green theme)
+- ⏸️ Fix hydration error di `app/layout.tsx`
+- ⏸️ Fix GSAP target error (`.project-stage-shell`, `.timeline-mobile-card`)
+- ⏸️ Deploy ke GitHub Pages
+- ⏸️ Update README LUMOSS — isi field Website
+
+**Catatan teknis:**
+- Next.js 16.3.5 — Turbopack **GAK SUPPORT** Android/arm64
+- Dev server **WAJIB** pake Webpack: `npm run dev -- --webpack`
+- Hydration error karena font variable — bukan fatal
+- GSAP error karena section kosong — fix setelah isi data
+- Struktur: `app/`, `components/`, `data/`, `hooks/`, `lib/`, `scripts/`
+
+---
+
+## 📊 RINGKASAN LENGKAP
+
+| Kategori | Jumlah |
+|----------|--------|
+| **TOTAL PR (LUMOSS)** | **38 PR** |
+| ⏸️ Belum difix | 30 |
+| 🔴 KRITIS (confirmed) | 1 (PR-7) |
+| 🔴 KRITIS (verifikasi) | 1 (PR-8) |
+| ⚠️ SKIP | 1 (PR-27) |
+| 🔒 LOCKED | 1 (PR-30) |
+| 🟢 FINAL | 4 (PR-16, PR-21, PR-28, PR-29) |
+| 🟡 KESENTUH rebranding | 4 (PR-4, PR-19, PR-40, PR-51) |
+| **SIDE PROJECT** | **1 (PR-PORTFOLIO)** |
+
+---
+
+## 🎯 URUTAN PENGERJAAN (REKOMENDASI)
+
+### **FASE 5A — KRITIS (2 PR)**
+1. PR-7 (YouTube Error 153)
+2. PR-8 (Instagram embed header)
+
+### **FASE 5B — MEDIUM (5 PR)**
+3. PR-1 (Layout Main Menu)
+4. PR-2 (Tag lightbox)
+5. PR-4 (GITHUB_REPO)
+6. PR-9 (Deteksi embed vs video)
+7. PR-10 (Info panel "0 B (MP4)")
+
+### **FASE 5C — FINAL (4 PR)**
+8. PR-16 (Menu Favicon)
+9. PR-21 (Animasi Glow Pulse)
+10. PR-28 (Smooth navigation)
+11. PR-29 (Support 120Hz)
+
+### **FASE 5D — PILIH (2 PR prioritas)**
+12. PR-40 (Thumbnail generation) ⭐🥇
+13. PR-43 (Pagination) ⭐🥈
+
+### **FASE 5E — SISANYA (23 PR)**
+14. PR-3, 5, 6, 11, 13, 14, 15, 17, 18, 19, 20, 22, 23, 24, 25, 26, 31, 32, 35, 38, 47, 51
++ PR-27 (SKIP), PR-30 (LOCKED)
+
+### **SIDE PROJECT**
+15. PR-PORTFOLIO (Cinematic Resume) — PENDING
+
+---
+
+## 🎯 NEXT STEP
+
+**Pilih salah satu:**
+1. **PR-7** (YouTube) — 🔴 KRITIS, butuh `html_builder.py` & `embed_parser.py`
+2. **PR-8** (Instagram) — 🔴 KRITIS, butuh file yang sama
+3. **PR-4** (GITHUB_REPO) — 🟡 MEDIUM, cepet
+4. **PR-40** (Thumbnail) — 🟡 PILIH ⭐🥇
+5. **PR-PORTFOLIO** (Cinematic Resume) — 🟡 MEDIUM
+
+**Rekomendasi:** Mulai dari **PR-7** — karena ini **KRITIS** & user **paling ngerasain** (YouTube error).
+
+---
+
+**END OF BACKLOG v7.2.8**
