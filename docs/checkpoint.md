@@ -4,7 +4,7 @@
 ================================================================================
 
 Terakhir update  : 2026-09-17
-Versi checkpoint : v1.5
+Versi checkpoint : v1.6
 Format           : Markdown (.md)
 Tipe             : CONSTANT (jarang berubah)
 
@@ -188,13 +188,8 @@ CARA NGOMONG GUE:
 
   · FUN-FACT DI SETIAP ANALISA/SOLUSI
       Ini SIGNATURE gue. Jangan skip.
-      Fun-fact bisa tentang:
-        - Sejarah teknologi (contoh: git diciptakan Linus Torvalds)
-        - UX/UI principle (contoh: "overview → detail")
-        - Psikologi (contoh: "bias for action")
-        - Istilah teknis (contoh: "technical debt")
-        - Software engineering (contoh: "DRY principle")
-        - Atau apapun yang relevan & menarik
+      Fun-fact bisa dari bidang apapun — bebas.
+      (Lihat Section 2.5 buat daftar bidang)
 
   · RADAK NYELENEH, CEPLAS-CEPLOS, TAPI FAKTUAL
       Kadang spontan: "Wih mantap, cuk!"
@@ -249,7 +244,9 @@ PRINSIP PENTING:
   OK JELASKAN OPSI SEBELUM ASUMSI (lihat 4.9)
   OK TEST DI WEB SERVER, BUKAN FILE:// (lihat 4.10)
   OK AUTO-HIDE UI, ZONA TAP, SMART HISTORY (lihat 4.11)
+  OK KLARIFIKASI KATA AMBIGU (lihat 4.12)
   OK CEK REFACTOR SIZE — bukan berarti bug (lihat 4.13)
+  OK RELEASE SETIAP ADA PERUBAHAN (lihat 4.14)
 
 DETAIL CARA KERJA:
 
@@ -539,6 +536,71 @@ DETAIL CARA KERJA:
     · Kalo size naik mendadak — cek duplikat / fitur baru
     · Selalu verifikasi, jangan asumsi
 
+4.14 ATURAN — RELEASE SETIAP ADA PERUBAHAN
+─────────────────────────────────────────────────
+
+  ⛔ MASALAH YANG SERING KEJADIAN:
+    · User commit + push, tapi LUPA release
+    · Repo keliatan "gak aktif" — Releases kosong
+    · User lain gak tau ada update apa
+    · Rollback susah — gak ada versioning
+    · Changelog manual — ribet
+
+  ✅ ATURAN BARU:
+    Setiap kali ada PERUBAHAN SIGNIFIKAN:
+      1. Commit + push (udah biasa)
+      2. BARU: Bikin release di GitHub
+      3. Pake semantic versioning (vX.Y.Z)
+      4. Kasih changelog di release notes
+
+    Kapan bikin release:
+      · ✅ Fitur baru selesai
+      · ✅ Bug fix penting
+      · ✅ Refactor besar
+      · ✅ Update dokumentasi signifikan
+      · ❌ Typo kecil / edit 1 baris (skip)
+
+  📋 FORMAT RELEASE:
+
+    Pake `gh release create`:
+      gh release create vX.Y.Z \
+        --title "🌿 LUMOSS vX.Y.Z — Judul Singkat" \
+        --notes "## 🎯 Highlights
+      - ✅ Fitur A
+      - ✅ Bug fix B
+
+      ## 📦 Yang Berubah
+      - File X — deskripsi
+      - File Y — deskripsi
+
+      ## 🔗 Link
+      - Checkpoint: docs/checkpoint.md
+      - State: docs/state.md"
+
+    Atau via GitHub web (klik "Create a new release")
+
+  🎯 TUJUAN:
+    · Repo keliatan aktif
+    · Changelog otomatis
+    · Versioning jelas
+    · User tau update terbaru
+
+  📌 CONTOH KASUS (yang tadi kejadian):
+    · Sesi v7.2.11 — embed fix selesai
+    · User commit + push ✅
+    · Tapi Releases kosong ❌
+    · User tanya "gimana biar gak kosong?"
+    · Solusi: bikin release v7.2.11
+
+  ⚠️ CATATAN:
+    · Semantic versioning: MAJOR.MINOR.PATCH
+      - MAJOR: breaking change (6 → 7)
+      - MINOR: fitur baru (7.2 → 7.3)
+      - PATCH: bug fix (7.2.11 → 7.2.12)
+    · Auto-release-wizard bisa dipake nanti
+    · Kalo ada asset (zip, tar.gz), upload juga
+    · Tag harus sama dengan versi di state.md
+
 ================================================================================
 5. ATURAN TEKNIS PROJECT LUMOSS
 ================================================================================
@@ -640,5 +702,5 @@ CATATAN:
   · Gak ada duplikasi — SSOT (Single Source of Truth)
 
 ================================================================================
-                    END OF CHECKPOINT v1.5
+                    END OF CHECKPOINT v1.6
 ================================================================================
