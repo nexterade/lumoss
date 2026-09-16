@@ -1,14 +1,14 @@
-# 🚀 AMUV7 — Automated Media Uploader v7
+# 🌿 LUMOSS — Media Garden, in bloom
 
 <p align="center">
-  <img src="https://img.shields.io/badge/AMUV7-v7.1.2-2BEE34?style=for-the-badge&logo=android&logoColor=white" alt="AMUV7 Version">
-  <img src="https://img.shields.io/badge/Python-3.11%2B-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python">
+  <img src="https://img.shields.io/badge/LUMOSS-v7.2.8-2BEE34?style=for-the-badge&logo=leaflet&logoColor=white" alt="LUMOSS Version">
+  <img src="https://img.shields.io/badge/Python-3.14%2B-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python">
   <img src="https://img.shields.io/badge/Termux-Android-000000?style=for-the-badge&logo=termux&logoColor=white" alt="Termux">
   <img src="https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge" alt="MIT License">
 </p>
 
 <p align="center">
-  <b>Upload media otomatis dari HP, tanpa drama, tanpa klik-klik sampai jempol keriting. 🗿</b>
+  <b>Upload media otomatis dari HP, tanpa drama, tanpa klik-klik sampai jempol keriting. 🌿</b>
 </p>
 
 <p align="center">
@@ -17,34 +17,40 @@
 
 ---
 
-## 🧠 AMUV7 itu apaan, sih?
+## 🌿 LUMOSS itu apaan, sih?
 
-**AMUV7 (Automated Media Uploader v7)** adalah project automation berbasis Python yang dirancang untuk mengelola dan mengunggah koleksi media dari Android melalui **Termux**.
+**LUMOSS (Luminous Moss)** adalah project automation berbasis Python yang dirancang untuk mengelola dan mengunggah koleksi media dari Android melalui **Termux**.
+
+> Dulu dikenal sebagai **AMUV7 (Automated Media Uploader v7)** — sekarang dibranding ulang jadi LUMOSS.
 
 Bayangin begini:
 
 > 📱 Kamu punya folder berisi foto/video.  
-> 📂 AMUV7 ngecek isinya.  
-> 🔍 AMUV7 menghitung statistiknya.  
-> 🧠 AMUV7 tahu mana yang sudah dan belum diproses.  
+> 📂 LUMOSS ngecek isinya.  
+> 🔍 LUMOSS menghitung statistiknya.  
+> 🧠 LUMOSS tahu mana yang sudah dan belum diproses.  
 > ☁️ Kamu tinggal pilih mau upload sekarang atau nanti.  
 > 😎 Sisanya biarkan mesin yang kerja.
 
 Project ini dikembangkan dengan pendekatan **CLI-first**, tetapi tampilannya sengaja dibuat lebih kece daripada terminal zaman dinosaurus.
 
-Tema visual saat ini adalah:
+Tema visual:
 
 > 🌿 **Luminous Moss** — `#2BEE34` + dark terminal aesthetic.
 
+Tagline:
+
+> **Media Garden, in bloom.**
+
 ---
 
-# 📌 FEATURE PINNED
+## 📌 FEATURE PINNED
 
 > Bagian ini adalah fitur-fitur yang paling layak dipamerkan. Karena kalau nggak dipin, nanti dikira cuma script Python biasa. 😌
 
 ### 🟢 01 — Automated Media Upload
 
-AMUV7 menangani proses upload media melalui engine uploader yang sudah tersedia di project.
+LUMOSS menangani proses upload media melalui engine uploader yang sudah tersedia di project.
 
 Flow sederhananya:
 
@@ -64,33 +70,45 @@ Flow sederhananya:
 
 ---
 
-### 👥 02 — Multi Account
+### 👥 02 — Multi Account + Multi Folder
 
-AMUV7 memiliki struktur **multi-account**.
+LUMOSS memiliki struktur **multi-account** dengan dukungan **multi-folder media** per akun.
 
-Contoh struktur media:
+Struktur folder:
 
 ```text
-accounts/
-├── cantika/
-│   └── media/
-│       ├── foto.jpg
-│       └── video.mp4
+lumoss/
+├── accounts/
+│   ├── active.json
+│   ├── cantika/
+│   │   └── config.json
+│   └── akun_lain/
+│       └── config.json
 │
-├── akun_lain/
-│   └── media/
-│       └── ...
+├── output/
+│   ├── cantika/
+│   │   ├── index.html
+│   │   └── manager.html
+│   └── akun_lain/
 │
-└── ...
+└── cache/
+    ├── cantika/
+    │   ├── uploads_cache.json
+    │   └── deleted.json
+    └── akun_lain/
 ```
 
-Setiap account dapat memiliki folder media dan konfigurasi masing-masing.
+Setiap akun punya:
+- **Config sendiri** — `accounts/<slug>/config.json`
+- **Output HTML sendiri** — `output/<slug>/`
+- **Cache sendiri** — `cache/<slug>/`
+- **Multi-folder media** — `media_dirs` array
 
 ---
 
 ### 📊 03 — Media Statistics
 
-Menu **Cek Folder Media** dapat menampilkan informasi seperti:
+Menu **Cek Folder Media** menampilkan informasi:
 
 ```text
 📊 STATISTIK MEDIA
@@ -131,18 +149,20 @@ Progress upload:
 ██████████████████████░░░░░░░░ 73%
 ```
 
-Status ini menggunakan cache yang tersedia pada account untuk menentukan apakah media sudah memiliki URL/status upload.
+Status menggunakan **cache key unik** `{source_label}/{rel_path}` untuk tracking.
+
+Contoh key: `"Nagram/VID_20260718_154608_914.mp4"`
 
 ---
 
 ### 🧭 05 — Upload Gate
 
-Ini salah satu UI terbaru AMUV7.
+Salah satu UI terbaru LUMOSS.
 
-Daripada langsung upload secara brutal, AMUV7 memberikan checkpoint:
+Daripada langsung upload secara brutal, LUMOSS memberikan checkpoint:
 
 ```text
-AMUV7 :: UPLOAD GATE
+LUMOSS :: UPLOAD GATE
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 › Media detected
@@ -164,73 +184,35 @@ Default:
 N = Jangan dulu
 ```
 
-Tekan:
+Tekan `Y` / `y` / `ya` / `1` → upload dimulai.
 
-- `Y`
-- `y`
-- `ya`
-- `1`
+Tekan `Enter` / `N` / `n` → kembali ke menu.
 
-→ upload dimulai.
-
-Tekan:
-
-- `Enter`
-- `N`
-- `n`
-
-→ kembali ke menu.
-
-Input lainnya juga kembali ke menu agar tidak terjadi eksekusi upload secara tidak sengaja.
+Input lain → kembali ke menu (safety).
 
 ---
 
 ### 🌈 06 — Cyber Moss Gradient
 
-Pilihan Upload Gate memakai ANSI True Color.
+Pilihan Upload Gate memakai **ANSI True Color**:
 
 ```text
 [Y]  Boleh
 ```
-
-menggunakan gradient:
-
-> 🟢 Neon Green → Luminous Moss
-
-Sedangkan:
+→ gradient 🟢 Neon Green → Luminous Moss
 
 ```text
 [N]  Jangan dulu
 ```
+→ gradient 🟡 Soft Gold → Amber
 
-menggunakan:
-
-> 🟡 Soft Gold → Amber
-
-Arrow:
-
-```text
-◄
-```
-
-hanya muncul pada opsi yang sedang menjadi **default configuration**.
+Arrow `◄` muncul di opsi default.
 
 ---
 
 ### 🧹 07 — Long Filename Cleanup
 
-Nama file super panjang bisa bikin terminal berubah menjadi:
-
-```text
-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.mp4
-```
-
-Alias:
-
-> "Terminal saya kenapa jadi novel?"
-
-AMUV7 sekarang memiliki mekanisme pemendekan nama:
+Nama file super panjang dipersingkat biar terminal gak jadi novel:
 
 ```text
 _short_name(path, max_len=34)
@@ -243,17 +225,13 @@ Contoh:
 SaveVid.Net_AQOCb1o7y3aBl1WxCI7Q...mp4
 ```
 
-Ekstensi tetap dipertahankan.
-
-Daftar file yang ditampilkan juga dibatasi agar layar Android tidak menjadi scroll hell.
+Ekstensi tetap dipertahankan. **Nama file asli gak diubah** — cuma tampilannya.
 
 ---
 
 ### 📁 08 — Subfolder / Category Detection
 
-Media di dalam subfolder tetap dihitung.
-
-Contoh:
+Media di dalam subfolder tetap dihitung:
 
 ```text
 📁 Kategori:
@@ -262,38 +240,47 @@ Contoh:
 › Wisata                (13 file)
 ```
 
-Struktur folder tetap bisa dipakai untuk mengorganisir media tanpa harus mengacak-acak semuanya ke satu folder.
+Struktur folder tetap bisa dipakai untuk mengorganisir media tanpa ngacak-ngacak.
 
 ---
 
-### 🎨 09 — Luminous Moss UI
+### 🎨 09 — Luminous Moss UI (v7.2.8)
 
 Palet utama:
 
 ```text
 Primary Moss   #2BEE34
+Secondary Moss #37F650
+Tertiary Moss  #50FF64
 Dark Base      #141414
 ```
 
-Tema ini diterapkan pada beberapa bagian project, termasuk:
+**Fitur UI v7.2.3 → v7.2.6:**
 
-- Gallery
-- Manager
-- About
-- Menu utilities
-- CLI helpers
-- Upload progress
-- Upload Gate
+- ✅ **Banner LUMOSS** — border ngikutin lebar ASCII art (gak hardcoded)
+- ✅ **`layout_widths()`** — full-width otomatis dari `term_width()`
+- ✅ **`render_full_box()`** — 1 box full-width
+- ✅ **`render_two_col_box()`** — 2 kolom 1 border utuh
+- ✅ **`render_group_box()`** — grup menu border utuh
+- ✅ **`render_merged_box()`** — 1 box, multiple section (horizontal)
+- ✅ **`render_merged_group()`** — 1 box, multiple grup menu (horizontal)
+- ✅ **`render_vertical_box()`** — section stack atas-bawah
+- ✅ **`render_vertical_group()`** — grup menu stack atas-bawah
+- ✅ **Emoji auto-convert** — `EMOJI_TO_UNICODE` mapping ~150 emoji → Unicode symbol
+- ✅ **`convert_emoji()`** — auto-convert pas input (nama, judul)
+- ✅ **`strip_emoji()`** — strip sisa emoji gak dikenal
+- ✅ **🌿 (LUMOSS_SYMBOL)** — KEEP, gak di-convert (simbol utama LUMOSS)
+- ✅ **Safety net** — double convert kalo user edit config manual
 
-Hasil akhirnya:
+Hasil akhir:
 
 > 🌿 terminal gelap + neon moss + sedikit cyber = nggak bikin mata langsung minta resign.
 
 ---
 
-# 🖼️ GALLERY — 5 PR UTAMA
+## 🖼️ GALLERY — 5 PR UTAMA
 
-Salah satu milestone besar AMUV7 adalah penyempurnaan `templates/gallery.html`.
+Salah satu milestone besar LUMOSS adalah penyempurnaan `templates/gallery.html`.
 
 Lima PR utama yang sudah diselesaikan:
 
@@ -301,13 +288,9 @@ Lima PR utama yang sudah diselesaikan:
 
 Video dibuat lebih terkontrol posisinya agar tampilan gallery tidak terasa miring atau random.
 
----
-
 ### ② 🌫️ Dynamic Backdrop Blur
 
 Gallery menggunakan konsep backdrop blur dinamis untuk membuat media lebih menyatu dengan tampilan sekitarnya.
-
-Tujuannya:
 
 ```text
 Media utama
@@ -317,92 +300,110 @@ Backdrop mengikuti media
 Visual terasa lebih immersive
 ```
 
----
-
 ### ③ 👆 Touch Gesture Swipe
 
 Interaksi video mendukung gesture sentuh/swipe sehingga pengalaman penggunaan di perangkat mobile terasa lebih natural.
-
----
 
 ### ④ 🧩 Metadata Grid Redesign
 
 Informasi metadata disusun ulang menjadi grid agar lebih rapi, mudah dipindai, dan tidak terlihat seperti dump teks.
 
----
-
 ### ⑤ 🌿 Moss Theme Synchronization
 
 Tema gallery disinkronkan dengan identitas visual Luminous Moss.
 
-Jadi:
-
 ```text
 CLI
 Manager
-About
 Gallery
    ↓
 🌿 Luminous Moss
 ```
 
-Bukan lagi masing-masing punya kepribadian sendiri. 😂
-
 ---
 
-# ⚙️ ARSITEKTUR PROJECT
+## ⚙️ ARSITEKTUR PROJECT
 
-Struktur penting project saat ini:
+Struktur project v7.2.8:
 
 ```text
-amuv7/
+lumoss/
 │
-├── amuv7.py
-├── menu.py
-├── menu_tools.py
-├── ui_helpers.py
-├── account_manager.py
-├── config_manager.py
-├── html_builder.py
-├── uploader.py
-├── tools.py
+├── accounts/                    ← Config + active.json
+│   ├── active.json
+│   ├── akun_utama/
+│   └── cantika/
 │
-└── templates/
-    ├── gallery.html
-    ├── manager.html
-    └── about.html
+├── output/                      ← Hasil generate
+│   └── <slug>/
+│       ├── index.html
+│       └── manager.html
+│
+├── cache/                       ← Cache & state
+│   └── <slug>/
+│       ├── uploads_cache.json
+│       └── deleted.json
+│
+├── templates/                   ← Template HTML
+│   ├── gallery.html
+│   └── manager.html
+│
+├── docs/                        ← Dokumentasi
+│   ├── checkpoint.md            ← CONSTANT
+│   ├── state.md                 ← DYNAMIC
+│   └── backlog.md               ← DYNAMIC
+│
+├── backup/                      ← Backup
+│
+├── account_manager.py           ← v7.2.6
+├── config_manager.py            ← v7.2.6
+├── embed_parser.py              ← v7.2.6
+├── global_config.json           ← v7.2.6
+├── html_builder.py              ← v7.2.6
+├── lumoss.py                    ← v7.2.6 (entry point)
+├── media_processor.py           ← v7.2.6
+├── menu.py                      ← v7.2.6
+├── menu_account.py              ← v7.2.6
+├── menu_embed.py                ← v7.2.6
+├── menu_tools.py                ← v7.2.6
+├── tools.py                     ← v7.2.6
+├── ui_helpers.py                ← v7.2.6
+├── uploader.py                  ← v7.2.6
+├── README.md
+└── requirements.txt
 ```
 
 ### 🔩 Komponen penting
 
 | File | Peran |
 |---|---|
-| `amuv7.py` | Entry point CLI |
+| `lumoss.py` | Entry point CLI |
 | `menu.py` | Menu utama dan workflow interaktif |
+| `menu_account.py` | Menu manajemen akun |
+| `menu_embed.py` | Menu embed system |
 | `menu_tools.py` | Utility menu & terminal UI |
-| `ui_helpers.py` | Warna, cursor, dan helper visual |
+| `ui_helpers.py` | Warna, cursor, layout, emoji converter |
 | `account_manager.py` | Manajemen multi-account |
 | `config_manager.py` | Konfigurasi project |
+| `media_processor.py` | Processing media (thumbnail, EXIF, dll) |
 | `html_builder.py` | Generator HTML |
+| `embed_parser.py` | Parser embed URL (YouTube, Instagram, dll) |
 | `uploader.py` | Engine/proses upload |
 | `tools.py` | Subprocess helper & statistik |
 | `gallery.html` | Template gallery |
 | `manager.html` | Template manager |
-| `about.html` | Halaman informasi/about |
 
 ---
 
-# 📱 DIBUAT UNTUK SIAPA?
-
-AMUV7 dibuat terutama untuk:
+## 📱 DIBUAT UNTUK SIAPA?
 
 ### 📱 Android Power User
 
-Orang yang ingin melakukan automation langsung dari HP menggunakan Termux.
+Yang ingin automation langsung dari HP menggunakan Termux.
 
 ### 🗂️ Kolektor Media
 
-Yang punya banyak foto/video dan malas melakukan pekerjaan manual satu per satu.
+Yang punya banyak foto/video dan malas kerja manual satu per satu.
 
 ### 🧑‍💻 Python Tinkerer
 
@@ -442,102 +443,91 @@ klik → tunggu → klik → scroll → klik → ulangi
 
 ---
 
-# 🧰 REQUIREMENTS
+## 🧰 REQUIREMENTS
 
-AMUV7 dikembangkan untuk environment:
+LUMOSS dikembangkan untuk environment:
 
 ```text
 Android
 └── Termux
-    └── Python 3.11+
+    └── Python 3.14+
 ```
 
-Direktori project yang digunakan:
+Direktori project:
 
 ```text
-/storage/emulated/0/Project/amuv7/
+/storage/emulated/0/Project/lumoss/
 ```
 
-> ⚠️ Requirement eksternal yang lebih spesifik bergantung pada konfigurasi uploader dan environment project yang digunakan. Jangan mengasumsikan dependency tambahan hanya dari README ini; gunakan konfigurasi/dependency yang memang disediakan project.
+> ⚠️ Requirement eksternal spesifik bergantung pada konfigurasi uploader & environment. Gunakan dependency yang disediakan project (lihat `requirements.txt`).
 
 ---
 
-# 🚀 INSTALASI DI TERMUX
+## 🚀 INSTALASI DI TERMUX
 
 > Tutorial ini dibuat untuk orang yang baru kenal Termux. Santai. Kita nggak akan pura-pura semua orang lahir sambil pegang terminal. 😭
 
-## 1️⃣ Install Termux
+### 1️⃣ Install Termux
 
 Pastikan Termux sudah terpasang di Android.
-
-Kemudian buka:
 
 ```bash
 pkg update && pkg upgrade
 ```
 
----
-
-## 2️⃣ Aktifkan akses storage
-
-Jalankan:
+### 2️⃣ Aktifkan akses storage
 
 ```bash
 termux-setup-storage
 ```
 
-Android akan meminta izin storage.
+Android akan meminta izin storage. Pilih **Allow / Izinkan**.
 
-Pilih:
-
-> **Allow / Izinkan**
-
-Setelah berhasil, biasanya storage dapat diakses melalui:
+Storage dapat diakses melalui:
 
 ```text
 /storage/emulated/0/
 ```
 
----
-
-## 3️⃣ Pastikan Python tersedia
-
-Cek:
+### 3️⃣ Pastikan Python tersedia
 
 ```bash
 python --version
 ```
 
-Target environment AMUV7:
+Target: **Python 3.14+**
 
-```text
-Python 3.11+
-```
-
-Kalau Python belum tersedia:
+Kalau belum:
 
 ```bash
 pkg install python
 ```
 
----
-
-## 4️⃣ Masuk ke project
+### 4️⃣ Clone repo
 
 ```bash
-cd /storage/emulated/0/Project/amuv7/
+cd /storage/emulated/0/Project/
+git clone https://github.com/nexterade/lumoss.git
+cd lumoss
 ```
 
-Cek isi folder:
+### 5️⃣ Install dependencies
 
 ```bash
+pip install -r requirements.txt
+```
+
+### 6️⃣ Masuk ke project
+
+```bash
+cd /storage/emulated/0/Project/lumoss/
 ls
 ```
 
-Kamu seharusnya melihat file-file project seperti:
+Kamu seharusnya melihat:
 
 ```text
-amuv7.py
+lumoss.py
 menu.py
 uploader.py
 config_manager.py
@@ -546,33 +536,25 @@ config_manager.py
 
 ---
 
-# ▶️ CARA MENJALANKAN
+## ▶️ CARA MENJALANKAN
 
 Dari direktori project:
 
 ```bash
-python amuv7.py
+python lumoss.py
 ```
-
-Jika project menggunakan executable/script wrapper yang tersedia di environment kamu, ikuti entry point yang disediakan project.
 
 ---
 
-# 🧭 CARA MENGGUNAKAN — VERSI ORANG AWAM
+## 🧭 CARA MENGGUNAKAN — VERSI ORANG AWAM
 
-## Step 1 — Jalankan AMUV7
+### Step 1 — Jalankan LUMOSS
 
 ```bash
-python amuv7.py
+python lumoss.py
 ```
 
----
-
-## Step 2 — Pilih akun
-
-Gunakan menu account yang tersedia.
-
-Konsepnya:
+### Step 2 — Pilih akun
 
 ```text
 Menu Utama
@@ -582,33 +564,11 @@ Account
 Pilih akun aktif
 ```
 
----
+### Step 3 — Masukkan media
 
-## Step 3 — Masukkan media
+Taruh foto/video ke folder media account. Setiap akun bisa punya **beberapa folder media** (multi-folder support).
 
-Taruh foto/video ke folder media account.
-
-Contoh:
-
-```text
-accounts/
-└── cantika/
-    └── media/
-        ├── foto1.jpg
-        ├── foto2.png
-        ├── video1.mp4
-        │
-        ├── Keluarga/
-        │   ├── foto3.jpg
-        │   └── foto4.jpg
-        │
-        └── Wisata/
-            └── liburan.mp4
-```
-
----
-
-## Step 4 — Cek Folder Media
+### Step 4 — Cek Folder Media
 
 Masuk:
 
@@ -617,9 +577,7 @@ Menu Utama
    › Cek Folder Media
 ```
 
-AMUV7 akan melakukan scanning.
-
-Kamu akan mendapatkan gambaran seperti:
+LUMOSS akan scanning:
 
 ```text
 📊 STATISTIK MEDIA
@@ -629,7 +587,7 @@ Total size    › 18.6 MB
 Subfolder     › 2
 ```
 
-Kemudian status:
+Status:
 
 ```text
 📤 STATUS UPLOAD
@@ -638,13 +596,9 @@ Kemudian status:
 ◷ Belum  › 7 file (10.8 MB)
 ```
 
----
+### Step 5 — Periksa file yang belum upload
 
-## Step 5 — Periksa file yang belum upload
-
-AMUV7 menampilkan daftar secara ringkas.
-
-Misalnya:
+Daftar ringkas:
 
 ```text
 📋 Rincian file
@@ -656,19 +610,9 @@ Misalnya:
 • savevid_aQ0Cb1o7y3aBl1WxCI7Q...mp4
 ```
 
-Kalau nama terlalu panjang:
+Nama panjang dipersingkat otomatis.
 
-```text
-nama-super-panjang-yang-bikin-terminal-menangis...mp4
-```
-
-akan dipersingkat.
-
----
-
-## Step 6 — Upload Gate
-
-AMUV7 bertanya:
+### Step 6 — Upload Gate
 
 ```text
 │ Mau diupload sekarang gak?
@@ -677,47 +621,13 @@ AMUV7 bertanya:
 [N]  Jangan dulu ◄
 ```
 
-### Mau upload?
+**Mau upload:** `Y` / `ya` / `1`
 
-Ketik:
-
-```text
-Y
-```
-
-atau:
-
-```text
-ya
-```
-
-atau:
-
-```text
-1
-```
-
-Kemudian proses upload dipanggil melalui callback uploader yang sudah tersedia.
-
-### Belum mau upload?
-
-Tekan:
-
-```text
-Enter
-```
-
-atau:
-
-```text
-N
-```
-
-AMUV7 kembali ke menu.
+**Belum mau:** `Enter` / `N` → kembali ke menu.
 
 ---
 
-# 🛡️ KENAPA DEFAULT-NYA N?
+## 🛡️ KENAPA DEFAULT-NYA N?
 
 Karena automation itu keren.
 
@@ -725,25 +635,19 @@ Automation yang salah pencet:
 
 > **tidak keren.** 💀
 
-Default:
-
-```text
-N = Jangan dulu
-```
-
-berfungsi sebagai safety gate sederhana agar media tidak langsung di-upload hanya karena user masuk ke menu pengecekan.
+Default `N = Jangan dulu` berfungsi sebagai **safety gate** agar media tidak langsung di-upload hanya karena user masuk ke menu pengecekan.
 
 ---
 
-# 🧪 DEBUGGING DASAR
+## 🧪 DEBUGGING DASAR
 
-Kalau kamu melakukan modifikasi Python dan ingin mengecek syntax sebelum menjalankan:
+Cek syntax:
 
 ```bash
 python -m py_compile menu.py
 ```
 
-Jika tidak ada output error:
+Kalau gak ada output error:
 
 ```text
 ✅ Syntax aman
@@ -755,17 +659,13 @@ Kalau ada error:
 SyntaxError
 ```
 
-jangan panik.
-
-Itu Python sedang bilang:
+Jangan panik. Python sedang bilang:
 
 > "Bro, ada typo."
 
 ---
 
-# 🔧 WORKFLOW PENGEMBANGAN YANG DISARANKAN
-
-Kalau ingin memodifikasi AMUV7:
+## 🔧 WORKFLOW PENGEMBANGAN YANG DISARANKAN
 
 ```text
 1. Backup
@@ -797,34 +697,32 @@ error
 
 ---
 
-# 🧬 CONFIGURATION
+## 🧬 CONFIGURATION
 
-Tema utama saat ini:
+Tema utama:
 
 ```text
 Theme: moss
-Version: 7.1.0
+Version: 7.2.8
 Primary: #2BEE34
 Base: #141414
 ```
 
-Default theme dikendalikan melalui konfigurasi project.
+Default theme dikendalikan melalui `global_config.json`.
 
-Jangan hard-code perubahan konfigurasi di banyak file kalau sebenarnya nilai tersebut sudah tersedia melalui config manager.
+Jangan hard-code konfigurasi di banyak file kalau sudah tersedia via config manager.
 
 ---
 
-# 🎨 DESIGN PHILOSOPHY
+## 🎨 DESIGN PHILOSOPHY
 
-AMUV7 bukan cuma ingin:
+LUMOSS bukan cuma ingin:
 
 > "yang penting jalan."
 
 Tapi:
 
 > **"jalan + enak dilihat + enak dipakai."**
-
-Prinsip visualnya:
 
 ```text
 Dark Terminal
@@ -837,16 +735,16 @@ Useful Information
       +
 Mobile Friendly
       =
-🌿 AMUV7 UI
+🌿 LUMOSS UI
 ```
 
 ---
 
-# 🗺️ ROADMAP
+## 🗺️ ROADMAP
 
-> Roadmap ini adalah arah pengembangan yang direncanakan, bukan janji bahwa semua item sudah tersedia.
+> Roadmap ini adalah arah pengembangan yang direncanakan, bukan janji.
 
-## 🟢 Phase 1 — Core
+### ✅ Phase 1 — Core (SELESAI)
 
 - [x] Automated uploader foundation
 - [x] CLI menu
@@ -856,221 +754,154 @@ Mobile Friendly
 - [x] Upload progress
 - [x] Media statistics
 
----
+### ✅ Phase 2 — Rebranding (SELESAI)
 
-## 🟢 Phase 2 — UI Refresh
+- [x] Rebranding amuv7 → lumoss
+- [x] Struktur baru: `accounts/` + `output/` + `cache/`
+- [x] Multi-folder media support
+- [x] Onboarding wajib pilih folder
+- [x] Skip folder & file sampah
+- [x] Cache key unik `{source_label}/{rel_path}`
 
-- [x] Luminous Moss theme
-- [x] Manager UI redesign
-- [x] About UI redesign
-- [x] Gallery theme synchronization
-- [x] Cyber Moss Upload Gate
-- [x] Gradient upload options
-- [x] Compact long filenames
+### ✅ Phase 3 — UI Polish v7.2.3 → v7.2.6 (SELESAI)
 
----
+- [x] Banner LUMOSS full-width
+- [x] `layout_widths()` — auto dari term_width
+- [x] `render_merged_box()` & `render_merged_group()`
+- [x] `render_vertical_box()` & `render_vertical_group()`
+- [x] Emoji auto-convert (~150 mapping)
+- [x] `strip_emoji()` safety net
+- [x] 🌿 LUMOSS_SYMBOL keep
 
-## 🟡 Phase 3 — Gallery Experience
+### ✅ Phase 4 — Git Init (SELESAI v7.2.7)
 
-- [x] Video centering
-- [x] Dynamic backdrop blur
-- [x] Touch gesture swipe
-- [x] Metadata grid redesign
-- [x] Moss theme synchronization
+- [x] Git init
+- [x] `.gitignore` setup
+- [x] Initial commit
+- [x] Push ke GitHub
+- [ ] (opsional) GitHub Actions
 
----
+### 🔵 Phase 5 — FASE 5 PR (38 PR, PENDING)
 
-## 🟡 Phase 4 — UX Polish
+Detail di `docs/backlog.md`. Highlight:
 
-- [ ] Gabungkan seluruh dashboard + confirmation menjadi satu `UPLOAD GATE`
-- [ ] Optimasi layout untuk layar Android kecil
-- [ ] Penyempurnaan responsive terminal UI
-- [ ] Pengurangan output terminal yang tidak perlu
-- [ ] Better error recovery
-- [ ] More granular upload controls
+- [ ] PR-7 YouTube Error 153 (KRITIS)
+- [ ] PR-8 Instagram embed header (KRITIS)
+- [ ] PR-1 Layout Main Menu
+- [ ] PR-2 Tag lightbox
+- [ ] PR-4 `GITHUB_REPO` inject
 
----
-
-## 🔵 Phase 5 — Automation++
-
-Ide pengembangan:
-
-- [ ] Scheduled upload
-- [ ] Queue management
-- [ ] Retry system yang lebih pintar
-- [ ] Upload history viewer
-- [ ] Filtering media
-- [ ] Search media
-- [ ] Per-account upload statistics
-- [ ] Better logging
-- [ ] Backup/restore configuration
+### 🟣 Phase 6 — Backlog v7.3.0 (13 saran, PENDING)
 
 ---
 
-## 🟣 Phase 6 — Gallery++
+## 📈 VERSION HISTORY
 
-Ide jangka panjang:
+### `v7.2.8` — Documentation Update
+- Merge `PR-FASE5.md` → `backlog.md` (39 item)
+- Update state: FASE 2 selesai, side project Cinematic Resume
+- Checkpoint: tambah larangan keras aturan tag `#`
+- Lowercase file names di `docs/`
 
-- [ ] Lazy loading yang lebih agresif
-- [ ] Thumbnail optimization
-- [ ] Better video preview performance
-- [ ] Gallery caching
-- [ ] Improved mobile gesture system
-- [ ] Advanced media metadata
-- [ ] More gallery themes
+### `v7.2.7` — Git Init
+- Git init + push ke GitHub
+- `.gitignore` setup
+- README rebranding
 
----
+### `v7.2.6` — Emoji Auto-Convert (UI Polish)
+- `EMOJI_TO_UNICODE` mapping (~150 emoji → Unicode symbol)
+- `convert_emoji()` + `strip_emoji()`
+- 🌿 LUMOSS_SYMBOL (keep)
 
-# 📈 VERSION HISTORY
+### `v7.2.5` — Vertical Layout
+- `render_vertical_box()`
+- `render_vertical_group()`
+- Sub-judul "AKUN & RINGKASAN" / "MENU UTAMA"
 
-## `v7.1.2` — Upload Gate Dashboard
+### `v7.2.4` — Merged Boxes
+- `render_merged_box()`
+- `render_merged_group()`
 
-### Added
+### `v7.2.3` — UI Overhaul
+- Banner LUMOSS auto-width
+- `layout_widths()` full-width
+- Helper layout baru
+- Emoji → Unicode symbol di submenu
 
-- Cyber Moss Upload Gate.
-- Media statistics integrated into Upload Gate dashboard.
-- Upload status integrated into dashboard.
-- Upload progress visualization.
-- Compact file listing.
-- Long filename shortening.
-- Subfolder/category compact display.
-- Gradient Y/N options.
-- Default arrow indicator.
+### `v7.2.2` — Struktur Baru
+- Struktur folder terpisah: `accounts/` + `output/` + `cache/`
+- Multi-folder media support
+- Onboarding wajib pilih folder
+- Skip folder & file sampah (`.thumbnails`, `.cache`, Android, dll)
+- Cache key unik: `{source_label}/{rel_path}`
 
-### Behavior
+### `v7.1.2` — Upload Gate Dashboard (AMUV7)
+- Cyber Moss Upload Gate
+- Media statistics + status dashboard
+- Upload progress visualization
+- Compact file listing
+- Long filename shortening
+- Subfolder/category compact display
+- Gradient Y/N options
 
-```text
-Y / ya / 1 → Upload
-N / Enter   → Back
-Other input → Back
-```
-
----
-
-## `v7.1.1` — Cyber Moss Upload Gate
-
-### Added
-
-- Upload confirmation prompt.
-- Default `N`.
-- Cyber Moss visual style.
-- Borderless terminal UI.
-- Gradient options.
-- Dynamic default arrow.
-
----
-
-## `v7.1.0` — Luminous Moss Synchronization
-
-### Added / Updated
-
-- Global theme `moss`.
-- Default theme configuration.
-- Luminous Moss manager UI.
-- Luminous Moss about UI.
-- Moss terminal helpers.
-- Moss upload progress.
+### `v7.1.x` & sebelumnya (AMUV7)
+- Gallery & Media UX improvements
+- Video centering, backdrop blur, touch swipe
+- Metadata grid redesign
+- Gallery theme synchronization
 
 ---
 
-## `v7.0.x` — Gallery & Media UX
+## 🧯 TROUBLESHOOTING
 
-Major improvements included:
-
-- Video centering.
-- Dynamic backdrop blur.
-- Touch gesture/swipe interaction.
-- Metadata grid redesign.
-- Gallery theme synchronization.
-- Media statistics.
-- Uploaded/not-uploaded status tracking.
-- Enhanced media folder checking.
-
----
-
-# 🧯 TROUBLESHOOTING
-
-## ❌ "Python command tidak ditemukan"
-
-Coba:
+### ❌ "Python command tidak ditemukan"
 
 ```bash
 pkg install python
-```
-
-Lalu:
-
-```bash
 python --version
 ```
 
----
-
-## ❌ Storage tidak bisa diakses
-
-Jalankan:
+### ❌ Storage tidak bisa diakses
 
 ```bash
 termux-setup-storage
 ```
 
-Kemudian berikan permission Android.
+Berikan permission Android.
 
----
-
-## ❌ Script error setelah diedit
-
-Pertama:
+### ❌ Script error setelah diedit
 
 ```bash
 python -m py_compile menu.py
 ```
 
-Kalau gagal, baca baris error yang ditunjukkan Python.
+Baca baris error yang ditunjukkan Python.
 
----
-
-## ❌ Upload tidak dimulai
+### ❌ Upload tidak dimulai
 
 Pastikan:
+1. Ada media yang belum diupload
+2. Akun aktif sudah dipilih
+3. Konfigurasi akun benar
+4. Callback/engine uploader tersedia
+5. Kamu memilih `Y` / `ya` / `1`
 
-1. Ada media yang belum diupload.
-2. Account aktif sudah dipilih.
-3. Konfigurasi account benar.
-4. Callback/engine uploader tersedia.
-5. Kamu memilih:
+### ❌ Nama file terlalu panjang
 
-```text
-Y
-```
+LUMOSS sudah punya mekanisme pemendekan nama. Nama file asli **tidak diubah**.
 
-atau:
+### ❌ Git push ditolak
 
-```text
-ya
-```
-
-atau:
-
-```text
-1
-```
+Pastikan:
+1. `gh auth status` → logged in
+2. Remote udah di-set: `git remote -v`
+3. Branch udah di-track: `git push -u origin main`
 
 ---
 
-## ❌ Nama file terlalu panjang
+## 🤝 CONTRIBUTING
 
-AMUV7 sudah memiliki mekanisme pemendekan nama pada tampilan daftar file.
-
-Nama file asli **tidak diubah** hanya karena nama yang ditampilkan dipersingkat.
-
----
-
-# 🤝 CONTRIBUTING
-
-Pull request, issue, ide UI, dan eksperimen sangat welcome.
-
-Workflow sederhana:
+Pull request, issue, ide UI, eksperimen sangat welcome.
 
 ```text
 Fork
@@ -1086,7 +917,7 @@ Commit
 Pull Request
 ```
 
-Sebelum mengirim perubahan Python:
+Sebelum kirim perubahan Python:
 
 ```bash
 python -m py_compile <file>.py
@@ -1098,25 +929,23 @@ Dan sebisa mungkin:
 
 ---
 
-# 🧪 DEVELOPMENT NOTES
+## 🧪 DEVELOPMENT NOTES
 
-AMUV7 masih aktif dikembangkan.
+LUMOSS masih aktif dikembangkan.
 
-Beberapa bagian UI dan automation dapat berubah antar versi.
+Tiga file dokumentasi inti (lihat `docs/`):
 
-Checkpoint project digunakan untuk menjaga state pengembangan dan mencegah perubahan baru menghapus pekerjaan sebelumnya.
+| File | Tipe | Fungsi |
+|------|------|--------|
+| `checkpoint.md` | CONSTANT | Peran, kepribadian, aturan |
+| `state.md` | DYNAMIC | Progress, struktur, status fase |
+| `backlog.md` | DYNAMIC | Detail PR/issues |
 
-Untuk sesi development, biasakan membuat:
-
-```text
-checkpoint.md
-```
-
-setelah milestone besar.
+Biasakan update `state.md` tiap milestone besar.
 
 ---
 
-# ❤️ DIBUAT DENGAN
+## ❤️ DIBUAT DENGAN
 
 ```text
 ☕ kopi
@@ -1135,9 +964,9 @@ Dan tentu saja:
 
 ---
 
-# 🙏 TERIMA KASIH KEPADA
+## 🙏 TERIMA KASIH KEPADA
 
-AMUV7 dibangun dengan memanfaatkan ekosistem open-source dan inspirasi dari berbagai tools, library, dokumentasi, komunitas, serta para developer yang membagikan pengetahuan mereka.
+LUMOSS dibangun dengan memanfaatkan ekosistem open-source dan inspirasi dari berbagai tools, library, dokumentasi, komunitas, serta para developer yang membagikan pengetahuan mereka.
 
 Terima kasih khusus kepada:
 
@@ -1155,15 +984,13 @@ Jawabannya:
 
 ---
 
-# 👤 AUTHOR
-
-> **Catatan:** identitas GitHub, foto profil, kontak, dan link donasi belum tersedia di source/checkpoint project yang menjadi basis README ini. Karena itu bagian berikut sengaja memakai placeholder dan **tidak mengarang identitas author**.
+## 👤 AUTHOR
 
 <p align="center">
-  <img src="https://github.com/YOUR_GITHUB_USERNAME.png?size=180" width="120" height="120" style="border-radius:50%" alt="Author Profile">
+  <img src="https://github.com/nexterade.png?size=180" width="120" height="120" style="border-radius:50%" alt="Author Profile">
 </p>
 
-<h3 align="center">👨‍💻 YOUR NAME / YOUR ALIAS</h3>
+<h3 align="center">🌿 nexterade</h3>
 
 <p align="center">
   <i>Builder • Tinkerer • Automation Enjoyer • Professional "coba dulu" specialist</i>
@@ -1172,7 +999,7 @@ Jawabannya:
 ### 🧑‍💻 Bio
 
 > Seorang manusia yang percaya bahwa kalau sebuah pekerjaan bisa dibuat otomatis,  
-> kenapa harus dilakukan manual berkali-kali?  
+> kenapa harus dilakukan manual berkali-kali?
 >
 > Suka ngoprek Python, terminal, Android, automation, UI, dan project yang awalnya kecil...
 > kemudian entah kenapa berubah menjadi project besar. 💀
@@ -1181,22 +1008,22 @@ Jawabannya:
 
 | Channel | Link |
 |---|---|
-| 🐙 GitHub | `https://github.com/YOUR_GITHUB_USERNAME` |
-| 💬 Telegram | `YOUR_TELEGRAM_CONTACT` |
-| 📧 Email | `YOUR_EMAIL@example.com` |
-| 🌐 Website | `YOUR_WEBSITE` |
-| ☕ Donation | `YOUR_DONATION_LINK` |
+| 🐙 GitHub | https://github.com/nexterade |
+| 💬 Telegram | https://t.me/nexterade |
+| 📧 Email | nexterade@gmail.com |
+| 🌐 Website | https://nexterade.github.io |
+| 🐙 Repo | https://github.com/nexterade/lumoss |
 
 ### 💚 Support Development
 
-Kalau AMUV7 membantu pekerjaanmu dan ingin mendukung pengembangannya:
+Kalau LUMOSS membantu pekerjaanmu dan ingin mendukung pengembangannya:
 
 ```text
-☕ Buy me a coffee
-💚 Donate
 ⭐ Star repository
 🐛 Report bug
 💡 Kirim ide
+🔧 Submit PR
+📢 Share
 ```
 
 > Bahkan satu ⭐ GitHub kadang cukup untuk membuat developer kembali membuka laptop setelah bilang:
@@ -1205,37 +1032,14 @@ Kalau AMUV7 membantu pekerjaanmu dan ingin mendukung pengembangannya:
 
 ---
 
-# 💰 DONASI
+## 📜 LICENSE
 
-Project ini gratis dan menggunakan **MIT License**.
-
-Jika ingin mendukung:
-
-```text
-☕ YOUR_DONATION_LINK
-```
-
-Pilihan platform dapat diisi sesuai akun author, misalnya:
-
-- Ko-fi
-- Saweria
-- Trakteer
-- GitHub Sponsors
-- PayPal
-- platform donasi lain
-
-> Jangan memasukkan link pembayaran pribadi sebelum mengganti placeholder dengan link resmi author.
-
----
-
-# 📜 LICENSE
-
-AMUV7 menggunakan **MIT License**.
+LUMOSS menggunakan **MIT License**.
 
 ```text
 MIT License
 
-Copyright (c) 2026 YOUR NAME / YOUR ALIAS
+Copyright (c) 2026 nexterade
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -1256,11 +1060,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-> ⚠️ Ganti `YOUR NAME / YOUR ALIAS` dengan nama pemegang copyright sebelum repository dipublikasikan.
-
 ---
 
-# ⭐ SUPPORT THE PROJECT
+## ⭐ SUPPORT THE PROJECT
 
 Kalau project ini berguna:
 
@@ -1271,7 +1073,6 @@ Kalau project ini berguna:
 💡 Suggest features
 🔧 Submit PR
 📢 Share
-☕ Donate
 ```
 
 Yang paling simpel:
@@ -1280,9 +1081,9 @@ Yang paling simpel:
 
 ---
 
-# 🧭 FINAL WORD
+## 🧭 FINAL WORD
 
-AMUV7 bukan project yang lahir langsung sempurna.
+LUMOSS bukan project yang lahir langsung sempurna.
 
 Ia berkembang lewat:
 
@@ -1312,7 +1113,7 @@ fix lagi
 
 Dan begitulah kehidupan developer.
 
-**AMUV7 — Automate the boring stuff. Keep the moss glowing. 🌿⚡**
+**LUMOSS — Media Garden, in bloom. 🌿⚡**
 
 <p align="center">
   <b>Made with 🧠 + 🐍 + 📱 + ☕ + sedikit chaos.</b>
