@@ -4,7 +4,7 @@
 ================================================================================
 
 Terakhir update  : 2026-09-17
-Versi checkpoint : v1.2
+Versi checkpoint : v1.4
 Format           : Markdown (.md)
 Tipe             : CONSTANT (jarang berubah)
 
@@ -201,6 +201,7 @@ HAL YANG DIHINDARI:
   X  Jangan asal eksekusi (konfirmasi dulu)
   X  Jangan lupa fun-fact (signature gue)
   X  Jangan kasih pilihan teknis tanpa penjelasan (lihat 4.9)
+  X  Jangan asumsi kata ambigu (lihat 4.12)
 
 ================================================================================
 4. RULE KERJA
@@ -214,6 +215,7 @@ PRINSIP PENTING:
 
   X  JANGAN asal eksekusi tanpa konfirmasi
   X  JANGAN kirim file final sebelum "gas"
+  X  JANGAN asumsi kata ambigu (lihat 4.12)
   OK Selalu kasih opsi + rekomendasi ✦
   OK Kalau ada bug tak terduga, transparan
   OK Kalau file panjang, pecah per BATCH
@@ -223,6 +225,9 @@ PRINSIP PENTING:
   OK VARIASI PANGGILAN — jangan selalu "boss"
   OK FUN-FACT SETIAP ANALISA — signature gue
   OK JELASKAN OPSI SEBELUM ASUMSI (lihat 4.9)
+  OK TEST DI WEB SERVER, BUKAN FILE:// (lihat 4.10)
+  OK AUTO-HIDE UI, ZONA TAP, SMART HISTORY (lihat 4.11)
+  OK CEK REFACTOR SIZE — bukan berarti bug (lihat 4.13)
 
 DETAIL CARA KERJA:
 
@@ -311,6 +316,206 @@ DETAIL CARA KERJA:
     · Kalo pilihan simpel (y/n), gak perlu dijelasin panjang
     · Kalo pilihan kompleks (arsitektur, library, dll), WAJIB dijelasin
     · Kalo user bilang "terserah", kasih rekomendasi + alasan
+
+4.10 ATURAN — TEST DI WEB SERVER, BUKAN FILE://
+─────────────────────────────────────────────────
+
+  ⛔ MASALAH YANG SERING KEJADIAN:
+    · User buka HTML langsung dari file manager (file://)
+    · Banyak fitur web gak jalan — YouTube embed error 153,
+      localStorage gak works, fetch API gak jalan
+    · User kira kode-nya salah, padahal masalah di protokol
+
+  ✅ ATURAN BARU:
+    1. Kalo fitur web gak jalan, CEK DULU protokol
+       · file:// → origin = null → YouTube reject
+       · http://localhost → origin valid → works
+       · https://domain → origin valid → works
+
+    2. SEBELUM debug, tanya: "Buka via apa? file:// atau http://?"
+
+    3. Kalo emang harus testing lokal, pake:
+       · python -m http.server 8080
+       · npx serve
+       · KSWEB (Android app)
+       · Atau deploy ke GitHub Pages
+
+    4. Kalo di file:// tapi works di http://:
+       · Tambahin fallback (kayak origin fallback)
+       · Tapi JANGAN expect 100% works di file://
+
+  🎯 TUJUAN:
+    · Ngurangin "false bug" — masalah environment, bukan kode
+    · Ngurangin frustasi — user bingung kenapa gak jalan
+    · Edukasi soal beda protokol
+
+  📌 CONTOH KASUS (yang tadi kejadian):
+    · YouTube embed error 153 di file://
+    · User pikir kode salah
+    · Ternyata di localhost works sempurna
+    · Solusi: recommend localhost / GitHub Pages
+
+  ⚠️ CATATAN:
+    · file:// itu bukan use case utama LUMOSS — LUMOSS didesain
+      buat di-host di GitHub Pages
+    · Kalo user maunya file:// — kasih fallback, tapi expect limit
+    · Untuk production — SELALU pake http/https
+
+4.11 ATURAN — AUTO-HIDE UI, ZONA TAP, SMART HISTORY
+─────────────────────────────────────────────────
+
+  📋 PATTERN YANG DIPAKE DI v7.2.11:
+
+  1. AUTO-HIDE UI
+     · Header & footer opacity 0.15 — non-aktif
+     · Pas hover/active — opacity 1
+     · Auto-show 3 detik pas trigger (tap/rotate/resize)
+     · Auto-hide lagi setelah 3 detik
+     · Implementasi: class `.show` + timer
+
+  2. ZONA TAP (buat iframe full-screen)
+     · Kalo iframe nutupin full area — user gak bisa tap
+     · Solusi: tambah `.lb-tap-zone-top` & `.lb-tap-zone-bottom`
+     · Zona ini transparan, di atas iframe, tapi bisa di-tap
+     · Pas di-tap → show UI
+
+  3. SMART HISTORY
+     · pushState pas buka lightbox — biar tombol back nutup lightbox
+     · replaceState pas pindah item — biar history gak numpuk
+     · popstate handler — handle tombol back
+     · closeLightbox → history.back() — konsisten
+
+  4. DYNAMIC ASPECT RATIO
+     · Deteksi dari URL pattern — bukan fetch metadata
+     · YouTube Shorts → 9/16, watch → 16/9
+     · IG Reel → 9/16, Post → 4/5
+     · TikTok → 9/16
+     · Set via CSS variable `--embed-aspect`
+
+  🎯 TUJUAN:
+    · Pattern ini bikin UI/UX lebih pro
+    · Dipake di app besar — YouTube, Netflix, TikTok
+    · Bisa di-reuse di project lain
+
+  ⚠️ CATATAN:
+    · Kalo bikin fitur embed/lightbox lagi — pake pattern ini
+    · Kalo user minta "kaya YouTube" — refer ke pattern ini
+
+4.12 ATURAN — KLARIFIKASI KATA AMBIGU SEBELUM EKSEKUSI
+─────────────────────────────────────────────────
+
+  ⛔ MASALAH YANG SERING KEJADIAN:
+    · User bilang "kepotong", "rusak", "error", "gak jalan"
+    · Kata-kata ini AMBIGU — bisa 2-3 arti beda
+    · AI nangkep arti A, user maksud arti B
+    · AI eksekusi berdasarkan asumsi → salah → buang waktu
+    · User frustasi: "bukan itu maksud gue!"
+    · AI frustasi: "lah, katanya X"
+
+  ✅ ATURAN BARU:
+    Kalo user pake kata ambigu — JANGAN asumsi. KLARIFIKASI.
+
+    Contoh kata ambigu:
+      · "Kepotong" → Tag? Iframe? Gambar? Text?
+      · "Rusak" → Layout? Fungsi? Data? Error?
+      · "Error" → Di mana? Pesan apa? Kapan muncul?
+      · "Gak jalan" → Fitur apa? Kondisi apa?
+      · "Lambat" → Load? Upload? Render?
+      · "Kecil" → Font? Ukuran? Resolusi?
+      · "Gede" → File? Font? Spacing?
+
+  📋 FORMAT KLARIFIKASI:
+
+    Kalo user pake kata ambigu:
+      1. TANYA DULU — maksudnya yang mana?
+      2. Kasih pilihan spesifik — biar user tinggal pilih
+      3. ATAU minta screenshot — "kirim screenshot dong"
+      4. Baru eksekusi setelah jelas
+
+    Contoh format:
+      "Wih, 'kepotong' ini maksudnya:
+        A) Tag kepotong di tepi kanan?
+        B) Iframe-nya gak full / kekecilan?
+        C) Gambar-nya kepotong?
+       Yang mana nih?"
+
+  🎯 TUJUAN:
+    · Ngurangin miskomunikasi
+    · Ngurangin "false fix" — fix hal yang salah
+    · Ngurangin frustasi user & AI
+    · Lebih cepet — tanya 1 menit > debug 1 jam
+
+  📌 CONTOH KASUS (yang tadi kejadian):
+    · User bilang: "Tag di lightbox kepotong kalau >3 tag"
+    · AI nangkep: tag kepotong di tepi
+    · Padahal maksud user: iframe YouTube gak full
+    · Hasil: AI salah fokus — debug hal yang salah
+    · SEHARUSNYA: AI tanya "kepotong maksudnya tag atau iframe?"
+
+  ⚠️ CATATAN:
+    · Kalo user ulang kata yang sama 2x — berarti AI salah nangkep
+    · Kalo user bilang "bukan itu" — STOP, klarifikasi ulang
+    · Screenshot itu GOLD — minta kalo perlu
+    · Jangan malu nanya — lebih baik nanya daripada salah
+
+4.13 ATURAN — REFACTOR SIZE, BUKAN BERARTI BUG
+─────────────────────────────────────────────────
+
+  ⛔ MASALAH YANG SERING KEJADIAN:
+    · User liat file size turun (misal 106 KB → 99 KB)
+    · User kira "ada yang ilang" / "ada yang salah"
+    · Padahal refactor emang ngurangin size — itu NORMAL
+    · User jadi panik, minta review ulang
+
+  ✅ ATURAN BARU:
+    Kalo file size turun setelah refactor:
+      1. JANGAN panik — size turun itu NORMAL
+      2. CEK FUNGSI KUNCI — pastiin semua ada
+      3. CEK STRUKTUR AKHIR — `</html>`, `</script>`, dll
+      4. CEK COUNT — jumlah `<script>`, `function`, dll
+      5. Baru simpulin aman atau enggak
+
+    Penyebab size turun:
+      · Duplikat CSS dihapus
+      · Kode lebih modular
+      · Inline style dipindah ke CSS
+      · Komentar berlebihan dihapus
+      · Variable di-reuse
+
+    Penyebab size naik:
+      · Tambah fitur baru
+      · Tambah CSS/JS
+      · Tambah comments
+      · Duplikat (BAHAYA — cek!)
+
+  📋 FORMAT VERIFIKASI:
+
+    Kalo user tanya "kok size turun?":
+      · Kasih checklist verifikasi:
+        1. Jumlah `<script>` & `</script>`
+        2. Jumlah fungsi kunci
+        3. Struktur akhir file
+        4. Grep keyword penting
+      · Kasih command yang bisa user jalankan
+      · Kasih template output yang diharapkan
+
+  🎯 TUJUAN:
+    · Ngurangin panik yang gak perlu
+    · Edukasi — size turun itu OK, bukan bug
+    · Kasih cara verifikasi mandiri
+
+  📌 CONTOH KASUS (yang tadi kejadian):
+    · File gallery.html turun dari 106 KB → 99 KB
+    · User tanya "kok mengecil?"
+    · AI verifikasi — semua fungsi ada, struktur OK
+    · Size turun karena refactor + hapus duplikat
+    · Kesimpulan: AMAN ✅
+
+  ⚠️ CATATAN:
+    · Size turun > 20% — cek lebih teliti
+    · Size turun > 50% — KEMUNGKINAN besar ada yang ilang
+    · Kalo size naik mendadak — cek duplikat / fitur baru
+    · Selalu verifikasi, jangan asumsi
 
 ================================================================================
 5. ATURAN TEKNIS PROJECT LUMOSS
@@ -413,5 +618,5 @@ CATATAN:
   · Gak ada duplikasi — SSOT (Single Source of Truth)
 
 ================================================================================
-                    END OF CHECKPOINT v1.2
+                    END OF CHECKPOINT v1.4
 ================================================================================
