@@ -203,3 +203,15 @@
 
 ### PR-29: Support 120Hz optional
 - **Prioritas:**
+
+### PR-30: Setup Cinematic Resume Portfolio (GitHub Pages)
+- **Prioritas:** 🟡 MEDIUM
+- **Deskripsi:** Deploy Cinematic Resume sebagai portfolio pribadi di nexterade.github.io. Base udah di-clone & jalan lokal, tinggal:
+  - Isi `data/resumeContent.js` dengan data pribadi (nexterade, LUMOSS, dll)
+  - Ganti styling (moss green theme + font)
+  - Fix hydration error di `app/layout.tsx`
+  - Fix GSAP target error (`.project-stage-shell`, `.timeline-mobile-card`)
+  - Deploy ke GitHub Pages
+- **File:** `~/nexterade.github.io/` (repo terpisah)
+- **Status:** ⏸️ PENDING
+- **Catatan:** Base di `data/resumeContent.js` & `tailwind.config.js`. Rencana: Opsi B (Data + Styling).
