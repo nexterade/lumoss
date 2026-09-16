@@ -1,0 +1,71 @@
+{
+  "version": "7.2.2",
+  "build_date": "2026-09-16",
+  "theme": {
+    "default": "moss",
+    "available": [
+      "moss",
+      "dark",
+      "light",
+      "amoled",
+      "midnight",
+      "sunset"
+    ]
+  },
+  "layout": {
+    "default": "mosaic",
+    "available": [
+      "mosaic",
+      "grid"
+    ]
+  },
+  "gallery": {
+    "items_per_page": 24,
+    "infinite_scroll_default": true,
+    "mosaic_row_unit_px": 8,
+    "mosaic_min_column_px": 160
+  },
+  "autoplay": {
+    "gallery_enabled": true,
+    "gallery_mode": "auto",
+    "gallery_visibility_threshold": 0.6,
+    "gallery_debounce_ms": 300,
+    "gallery_max_concurrent": 1,
+    "lightbox_enabled": true,
+    "muted": true,
+    "loop": true,
+    "video_preload": "metadata"
+  },
+  "features": {
+    "enable_ocr": false,
+    "enable_face_detect": false,
+    "enable_color_tag": true,
+    "enable_thumbnail": true,
+    "enable_exif": true,
+    "enable_auto_tag": true,
+    "enable_embed_import": true
+  },
+  "ocr": {
+    "max_words": 3,
+    "lang": "ind+eng",
+    "min_image_size": 800
+  },
+  "thumbnail": {
+    "max_size_px": 720,
+    "quality": 80,
+    "format": "webp",
+    "cleanup_max_age_days": 30
+  },
+  "upload": {
+    "workers": 1,
+    "verify_cached_urls": false,
+    "catbox_max_size_mb": 200,
+    "batch_pause_every": 30,
+    "batch_pause_seconds": 60,
+    "retry_max": 3,
+    "delay_between_files": 2,
+    "thumbnail_time_estimate": 2.5,
+    "overhead_estimate": 5,
+    "assumed_rate_kbps": 500
+  }
+}

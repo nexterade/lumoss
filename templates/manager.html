@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="moss">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#141414">
+<title>Manager · /*PROJECT_TITLE*/</title>
+<style>
+/* ═══════════════════════════════════════════════════════════
+   AMUV7 MANAGER — STYLE (v7.2.0 LUMINOUS MOSS)
+   ═══════════════════════════════════════════════════════════ */
+
+:root{
+  --bg:#141414; --surface:#1a1f1a; --border:#2a332a;
+  --text:#f0fff0; --muted:#8a9a8a; --accent:#2bee34;
+  --danger:#f85149; --success:#2bee34; --warning:#eab308;
+}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:var(--bg); color:var(--text); padding:16px; font-size:14px;
+  min-height:100vh;
+}
+
+/* Header */
+.header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:6px;flex-wrap:wrap;}
+.header h1{font-size:1.4rem;display:flex;align-items:center;gap:8px;}
+.header-actions{display:flex;gap:8px;flex-wrap:wrap;}
+.sub{color:var(--muted);font-size:.85rem;margin-bottom:16px;line-height:1.5;}
+
+/* Buttons */
+button{
+  padding:8px 12px;border-radius:6px;border:1px solid var(--border);
+  background:var(--surface);color:var(--text);font-size:.85rem;
+  cursor:pointer;transition:.15s;font-family:inherit;
+  display:inline-flex;align-items:center;gap:6px;
+}
+button:hover{background:#232923;border-color:var(--accent);}
+button:active{transform:scale(.97);}
+button.primary{background:var(--accent);color:#141414;border-color:var(--accent);font-weight:700;}
+button.primary:hover{background:#1bbf22;}
+button.danger{background:rgba(248,81,73,.15);color:var(--danger);border-color:var(--danger);}
+button.danger:hover{background:rgba(248,81,73,.25);}
+button.success{background:rgba(43,238,52,.15);color:var(--success);border-color:var(--success);}
+button.success:hover{background:rgba(43,238,52,.25);}
+button.ghost{background:transparent;}
+button.small{padding:5px 9px;font-size:.75rem;}
+
+/* Stats grid */
+.stats{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
+  gap:10px;margin-bottom:16px;
+}
+.stat{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:8px;padding:12px;text-align:center;
+  transition:.15s;
+}
+.stat:hover{border-color:var(--accent);}
+.stat b{display:block;font-size:1.4rem;color:var(--accent);margin-bottom:2px;}
+.stat span{font-size:.75rem;color:var(--muted);}
+
+/* Filter bar */
+.bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
+.bar input{
+  flex:1;min-width:200px;padding:8px 12px;border-radius:6px;
+  border:1px solid var(--border);background:var(--surface);color:var(--text);
+  font-size:.85rem;font-family:inherit;outline:none;
+}
+.bar input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(43,238,52,.2);}
+.bar select{
+  padding:8px 12px;border-radius:6px;border:1px solid var(--border);
+  background:var(--surface);color:var(--text);font-size:.85rem;
+  font-family:inherit;outline:none;cursor:pointer;
+}
+
+/* Bulk actions */
+.bulk-bar{
+  display:none;align-items:center;gap:8px;flex-wrap:wrap;
+  background:rgba(43,238,52,.1);border:1px solid rgba(43,238,52,.3);
+  border-radius:8px;padding:10px 12px;margin-bottom:12px;
+}
+.bulk-bar.show{display:flex;}
+.bulk-bar .count{font-weight:600;color:var(--accent);}
+
+/* Table */
+.table-wrap{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:8px;overflow:hidden;overflow-x:auto;
+}
+table{width:100%;border-collapse:collapse;min-width:720px;}
+th,td{
+  padding:10px;text-align:left;border-bottom:1px solid var(--border);
+  font-size:.82rem;vertical-align:middle;
+}
+th{
+  background:#141414;color:var(--muted);font-weight:600;
+  text-transform:uppercase;font-size:.7rem;letter-spacing:.5px;
+  position:sticky;top:0;z-index:10;
+}
+tr:last-child td{border-bottom:none;}
+tr:hover{background:#232923;}
+tr.blacklisted{opacity:.4;}
+tr.blacklisted td:nth-child(3){text-decoration:line-through;}
+tr.blacklisted td:nth-child(3)::before{content:"🗑️ ";}
+
+/* Checkbox column */
+.col-check{width:32px;text-align:center;}
+.col-check input{transform:scale(1.2);cursor:pointer;accent-color:var(--accent);}
+
+/* Thumb */
+.thumb{
+  width:44px;height:44px;object-fit:cover;border-radius:6px;
+  background:#141414;cursor:pointer;transition:.15s;
+}
+.thumb:hover{transform:scale(1.05);}
+
+/* File name */
+.fname{font-weight:600;color:var(--text);}
+.fpath{color:var(--muted);font-size:.7rem;margin-top:2px;word-break:break-all;}
+.tags{margin-top:3px;display:flex;flex-wrap:wrap;gap:2px;}
+.tag{
+  display:inline-block;background:rgba(43,238,52,.15);color:var(--accent);
+  padding:1px 6px;border-radius:4px;font-size:.65rem;
+}
+
+/* URL */
+.url{
+  color:var(--accent);text-decoration:none;font-size:.75rem;
+  word-break:break-all;
+}
+.url:hover{text-decoration:underline;}
+
+/* Actions */
+.row-actions{display:flex;gap:4px;flex-wrap:wrap;}
+
+/* Empty state */
+.empty{text-align:center;padding:60px 20px;color:var(--muted);}
+.empty .emoji{font-size:2.5rem;display:block;margin-bottom:12px;}
+
+/* Toast */
+.toast{
+  position:fixed;bottom:20px;right:20px;
+  background:#1a1f1a;border:1px solid var(--border);color:var(--text);
+  padding:12px 18px;border-radius:8px;
+  box-shadow:0 4px 16px rgba(0,0,0,.6);
+  animation:slideIn .3s ease-out;
+  z-index:1000;max-width:320px;font-size:.85rem;
+}
+.toast.success{border-color:var(--success);}
+.toast.error{border-color:var(--danger);}
+.toast.warning{border-color:var(--warning);}
+@keyframes slideIn{from{transform:translateX(100%);opacity:0;}to{transform:translateX(0);opacity:1;}}
+
+/* Modal (preview) */
+.modal{
+  position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.9);
+  display:none;align-items:center;justify-content:center;
+  padding:20px;backdrop-filter:blur(8px);
+}
+.modal.active{display:flex;}
+.modal-content{
+  max-width:90vw;max-height:90vh;position:relative;
+}
+.modal-content img,.modal-content video{
+  max-width:100%;max-height:85vh;border-radius:8px;display:block;
+}
+.modal-close{
+  position:absolute;top:-40px;right:0;background:none;border:none;
+  color:#fff;font-size:2rem;cursor:pointer;padding:4px 12px;
+}
+.modal-info{
+  color:#fff;font-size:.8rem;text-align:center;margin-top:8px;
+  background:rgba(0,0,0,.7);padding:6px 12px;border-radius:6px;
+  display:inline-block;
+}
+
+/* v7.2.0: Unmute button (Instagram style) */
+.modal-unmute{
+  position:absolute;bottom:12px;right:12px;
+  width:44px;height:44px;border-radius:50%;
+  background:rgba(0,0,0,.72);
+  border:1.5px solid rgba(255,255,255,.3);
+  color:#fff;font-size:1.15rem;cursor:pointer;
+  display:none;align-items:center;justify-content:center;
+  backdrop-filter:blur(8px);
+  z-index:2010;
+}
+.modal-unmute.show{display:flex;}
+.modal-unmute.muted::after{
+  content:"";position:absolute;width:22px;height:2px;background:#ff5555;
+  transform:rotate(45deg);border-radius:1px;
+}
+
+/* Responsive */
+@media (max-width:600px){
+  body{padding:12px;}
+  .header h1{font-size:1.15rem;}
+  th,td{padding:8px 6px;font-size:.75rem;}
+  .thumb{width:38px;height:38px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════
+     HEADER
+     ═══════════════════════════════════════════════════════════ -->
+<div class="header">
+  <h1>⚙️ Manager Panel</h1>
+  <div class="header-actions">
+    <button onclick="goBack()">← Kembali</button>
+    <a href="index.html" style="text-decoration:none;"><button>🖼️ Buka Galeri</button></a>
+  </div>
+</div>
+<p class="sub">
+  Kelola file di Catbox. Tandai untuk dihapus (blacklist), lalu download <code>deleted.json</code>.
+  File yang di-blacklist bakal otomatis tersembunyi saat re-generate galeri.
+</p>
+
+<!-- ═══════════════════════════════════════════════════════════
+     STATS
+     ═══════════════════════════════════════════════════════════ -->
+<div class="stats" id="stats"></div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     FILTER BAR
+     ═══════════════════════════════════════════════════════════ -->
+<div class="bar">
+  <input type="text" id="search" placeholder="🔍 Cari nama file / tag / kategori..." oninput="render()">
+  <select id="filter-type" onchange="render()">
+    <option value="all">Semua Tipe</option>
+    <option value="image">🖼️ Gambar</option>
+    <option value="video">🎬 Video</option>
+    <option value="embed">🌐 Embed</option>
+  </select>
+  <select id="filter-status" onchange="render()">
+    <option value="all">Semua Status</option>
+    <option value="active">✅ Aktif</option>
+    <option value="blacklist">🗑️ Blacklist</option>
+  </select>
+  <select id="sort-by" onchange="render()">
+    <option value="date_desc">📅 Terbaru</option>
+    <option value="date_asc">📅 Terlama</option>
+    <option value="name_asc">🔤 Nama A-Z</option>
+    <option value="size_desc">💾 Ukuran Besar</option>
+    <option value="size_asc">💾 Ukuran Kecil</option>
+  </select>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     BULK ACTIONS
+     ═══════════════════════════════════════════════════════════ -->
+<div class="bulk-bar" id="bulkBar">
+  <span class="count" id="bulkCount">0 dipilih</span>
+  <button class="small danger" onclick="bulkBlacklist()">🗑️ Blacklist Terpilih</button>
+  <button class="small success" onclick="bulkRestore()">↩️ Pulihkan Terpilih</button>
+  <button class="small ghost" onclick="clearSelection()">✖️ Batal Pilih</button>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     EXPORT / ACTION BAR
+     ═══════════════════════════════════════════════════════════ -->
+<div class="bar">
+  <button class="primary" onclick="downloadBlacklist()">⬇️ Download deleted.json</button>
+  <button class="danger" onclick="clearBlacklist()">🗑️ Bersihkan Blacklist</button>
+  <button onclick="openCatboxManager()">🌐 Buka Catbox Manager</button>
+  <button onclick="exportCSV()">📊 Export CSV</button>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     TABLE
+     ═══════════════════════════════════════════════════════════ -->
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th class="col-check"><input type="checkbox" id="checkAll" onchange="toggleCheckAll(this.checked)"></th>
+        <th>Preview</th>
+        <th>Nama / Path</th>
+        <th>Kategori</th>
+        <th>Tanggal</th>
+        <th>Ukuran</th>
+        <th>URL</th>
+        <th>Aksi</th>
+      </tr>
+    </thead>
+    <tbody id="tbody"></tbody>
+  </table>
+</div>
+
+<div class="empty" id="empty" style="display:none;">
+  <span class="emoji">📭</span>
+  <p>Tidak ada file yang cocok dengan filter.</p>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     PREVIEW MODAL
+     ═══════════════════════════════════════════════════════════ -->
+<div class="modal" id="previewModal" onclick="closePreview(event)">
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closePreview()">&times;</button>
+    <div id="previewContent" style="position:relative;"></div>
+    <div class="modal-info" id="previewInfo"></div>
+    <button class="modal-unmute muted" id="modalUnmute" onclick="toggleModalUnmute(event)" aria-label="Unmute">🔊</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     MANAGER SCRIPT (v7.2.0)
+     ═══════════════════════════════════════════════════════════ -->
+<script>
+const DATA = /*DATA_PLACEHOLDER*/;
+const DELETED_FROM_FILE = /*DELETED_PLACEHOLDER*/;
+const CATBOX_MANAGE_URL = "https://catbox.moe/user/manage.php";
+const PROJECT_TITLE = /*PROJECT_TITLE_JS*/;
+
+function esc(s){
+  return String(s == null ? "" : s)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+const escAttr = esc;
+
+function formatBytes(b){
+  if (!b) return "0 B";
+  const k = 1024, s = ["B","KB","MB","GB"];
+  const i = Math.floor(Math.log(b) / Math.log(k));
+  return parseFloat((b / Math.pow(k, i)).toFixed(1)) + " " + s[i];
+}
+
+// v7.2.0 N17/N28: DELETED_FROM_FILE prioritas (source of truth dari server),
+// localStorage cuma buat yang belum ada di file
+let blacklist = {};
+try {
+  blacklist = JSON.parse(localStorage.getItem("amuv7_blacklist") || "{}");
+} catch(e) { blacklist = {}; }
+
+// Merge: file menang (kalau ada)
+const _fileBl = DELETED_FROM_FILE || {};
+Object.keys(_fileBl).forEach(k => {
+  blacklist[k] = _fileBl[k];
+});
+
+// Hapus entry localStorage yang gak ada di file (kalau file ada)
+// Ini biar sync kalo user hapus via file
+if (Object.keys(_fileBl).length > 0) {
+  Object.keys(blacklist).forEach(k => {
+    if (!(k in _fileBl) && blacklist[k] && blacklist[k].reason === "file") {
+      // Skip — ini cuma cleanup kalo perlu
+    }
+  });
+}
+
+let selected = new Set();
+
+function showToast(msg, type = "info", duration = 2500){
+  const t = document.createElement("div");
+  t.className = "toast " + type;
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => { try { t.remove(); } catch(e){} }, duration);
+}
+
+// v7.2.0 C5: back button pake history.back() + fallback
+function goBack(){
+  if (window.history.length > 1 && document.referrer && document.referrer !== "") {
+    window.history.back();
+  } else {
+    window.location.href = "index.html";
+  }
+}
+
+function renderStats(){
+  const total = DATA.length;
+  const images = DATA.filter(d => d.type === "image").length;
+  const videos = DATA.filter(d => d.type === "video").length;
+  const embeds = DATA.filter(d => d.type === "embed").length;
+  const bl = Object.keys(blacklist).length;
+  const totalSize = DATA.reduce((a,c) => a + (c.size || 0), 0);
+
+  document.getElementById("stats").innerHTML = `
+    <div class="stat"><b>${total}</b><span>Total File</span></div>
+    <div class="stat"><b>${images}</b><span>🖼️ Gambar</span></div>
+    <div class="stat"><b>${videos}</b><span>🎬 Video</span></div>
+    <div class="stat"><b>${embeds}</b><span>🌐 Embed</span></div>
+    <div class="stat"><b>${bl}</b><span>🗑️ Blacklist</span></div>
+    <div class="stat"><b>${formatBytes(totalSize)}</b><span>Total Ukuran</span></div>
+  `;
+}
+
+function render(){
+  const q = document.getElementById("search").value.toLowerCase().trim();
+  const typeF = document.getElementById("filter-type").value;
+  const statusF = document.getElementById("filter-status").value;
+  const sortBy = document.getElementById("sort-by").value;
+
+  let items = DATA.filter(item => {
+    if (typeF !== "all" && item.type !== typeF) return false;
+    const isBl = !!blacklist[item.id];
+    if (statusF === "active" && isBl) return false;
+    if (statusF === "blacklist" && !isBl) return false;
+    if (q) {
+      const s = [item.title, item.filename, item.category, ...(item.tags || [])].join(" ").toLowerCase();
+      if (!s.includes(q)) return false;
+    }
+    return true;
+  });
+
+  items.sort((a,b) => {
+    switch(sortBy){
+      case "date_asc": return (a.date || "").localeCompare(b.date || "");
+      case "name_asc": return (a.filename || "").localeCompare(b.filename || "");
+      case "size_desc": return (b.size || 0) - (a.size || 0);
+      case "size_asc": return (a.size || 0) - (b.size || 0);
+      default: return (b.date || "").localeCompare(a.date || "");
+    }
+  });
+
+  const tb = document.getElementById("tbody");
+  const em = document.getElementById("empty");
+
+  if (!items.length) {
+    tb.innerHTML = "";
+    em.style.display = "block";
+    updateBulkBar();
+    return;
+  }
+  em.style.display = "none";
+
+  tb.innerHTML = items.map(item => {
+    const isBl = !!blacklist[item.id];
+    const thumb = item.type === "video" ? (item.video_thumb || "") : (item.thumb || "");
+    let thumbHtml;
+    if (thumb) {
+      thumbHtml = `<img class="thumb" src="${escAttr(thumb)}" loading="lazy" onerror="this.style.background='#2a332a';this.src='';" onclick="openPreview('${escAttr(item.id)}')">`;
+    } else {
+      const emoji = item.type === "video" ? "🎬" : (item.type === "embed" ? "🌐" : "🖼️");
+      thumbHtml = `<div class="thumb" style="display:flex;align-items:center;justify-content:center;color:var(--muted);cursor:pointer;" onclick="openPreview('${escAttr(item.id)}')">${emoji}</div>`;
+    }
+    const tags = (item.tags || []).slice(0, 4).map(t => `<span class="tag">#${esc(t)}</span>`).join("");
+    const isChecked = selected.has(item.id) ? "checked" : "";
+
+    return `<tr class="${isBl ? 'blacklisted' : ''}" data-id="${escAttr(item.id)}">
+      <td class="col-check"><input type="checkbox" ${isChecked} onchange="toggleSelect('${escAttr(item.id)}', this.checked)"></td>
+      <td>${thumbHtml}</td>
+      <td>
+        <div class="fname">${esc(item.title || item.filename)}</div>
+        <div class="fpath">${esc(item.filename || "")}</div>
+        <div class="tags">${tags}</div>
+      </td>
+      <td>${esc(item.category || "-")}</td>
+      <td>${esc(item.date || "-")}</td>
+      <td>${formatBytes(item.size)}</td>
+      <td><a class="url" href="${escAttr(item.url)}" target="_blank" rel="noopener">${esc(item.url)}</a></td>
+      <td>
+        <div class="row-actions">
+          ${isBl 
+            ? `<button class="small success" onclick="toggleBlacklist('${escAttr(item.id)}')">↩️ Pulihkan</button>`
+            : `<button class="small danger" onclick="toggleBlacklist('${escAttr(item.id)}')">🗑️ Hapus</button>`}
+          <button class="small" onclick="openPreview('${escAttr(item.id)}')">👁️</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join("");
+
+  updateBulkBar();
+}
+
+function toggleSelect(id, checked){
+  if (checked) selected.add(id);
+  else selected.delete(id);
+  updateBulkBar();
+}
+
+function toggleCheckAll(checked){
+  const checkboxes = document.querySelectorAll("#tbody input[type=checkbox]");
+  checkboxes.forEach(cb => {
+    cb.checked = checked;
+    const tr = cb.closest("tr");
+    if (tr) {
+      const id = tr.dataset.id;
+      if (checked) selected.add(id);
+      else selected.delete(id);
+    }
+  });
+  updateBulkBar();
+}
+
+function clearSelection(){
+  selected.clear();
+  document.querySelectorAll("#tbody input[type=checkbox]").forEach(cb => cb.checked = false);
+  const ca = document.getElementById("checkAll");
+  if (ca) ca.checked = false;
+  updateBulkBar();
+}
+
+function updateBulkBar(){
+  const bar = document.getElementById("bulkBar");
+  const cnt = document.getElementById("bulkCount");
+  if (!bar || !cnt) return;
+  if (selected.size > 0) {
+    bar.classList.add("show");
+    cnt.textContent = selected.size + " dipilih";
+  } else {
+    bar.classList.remove("show");
+  }
+}
+
+function toggleBlacklist(id){
+  if (blacklist[id]) {
+    delete blacklist[id];
+    showToast("Item dipulihkan ✓", "success");
+  } else {
+    const item = DATA.find(d => d.id === id);
+    if (!item) return;
+    if (!confirm(`Tandai "${item.title}" untuk dihapus?\n\nFile di Catbox TIDAK otomatis terhapus. Setelah download deleted.json, buka ${CATBOX_MANAGE_URL} untuk hapus manual.`)) return;
+    blacklist[id] = {
+      filename: item.filename,
+      url: item.url,
+      deleted_at: new Date().toISOString(),
+      reason: "user"
+    };
+    showToast("Item ditandai untuk dihapus 🗑️", "warning");
+  }
+  saveBlacklist();
+  renderStats();
+  render();
+}
+
+function bulkBlacklist(){
+  if (!selected.size) return;
+  if (!confirm(`Tandai ${selected.size} file untuk dihapus?`)) return;
+  let count = 0;
+  selected.forEach(id => {
+    const item = DATA.find(d => d.id === id);
+    if (item && !blacklist[id]) {
+      blacklist[id] = {
+        filename: item.filename,
+        url: item.url,
+        deleted_at: new Date().toISOString(),
+        reason: "bulk"
+      };
+      count++;
+    }
+  });
+  saveBlacklist();
+  showToast(`${count} file ditandai untuk dihapus 🗑️`, "warning");
+  clearSelection();
+  renderStats();
+  render();
+}
+
+function bulkRestore(){
+  if (!selected.size) return;
+  if (!confirm(`Pulihkan ${selected.size} file?`)) return;
+  let count = 0;
+  selected.forEach(id => {
+    if (blacklist[id]) {
+      delete blacklist[id];
+      count++;
+    }
+  });
+  saveBlacklist();
+  showToast(`${count} file dipulihkan ✓`, "success");
+  clearSelection();
+  renderStats();
+  render();
+}
+
+function saveBlacklist(){
+  localStorage.setItem("amuv7_blacklist", JSON.stringify(blacklist));
+}
+
+function downloadBlacklist(){
+  if (!Object.keys(blacklist).length) {
+    showToast("Blacklist kosong", "warning");
+    return;
+  }
+  const blob = new Blob([JSON.stringify(blacklist, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "deleted.json";
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast("deleted.json didownload ✓", "success");
+}
+
+function clearBlacklist(){
+  if (!Object.keys(blacklist).length) {
+    showToast("Blacklist sudah kosong", "warning");
+    return;
+  }
+  if (!confirm("Bersihkan semua blacklist? (file di Catbox TIDAK terhapus)")) return;
+  blacklist = {};
+  saveBlacklist();
+  clearSelection();
+  renderStats();
+  render();
+  showToast("Blacklist dibersihkan ✓", "success");
+}
+
+// v7.2.0 N16/C3: Preview dengan Instagram-style unmute
+function openPreview(id){
+  const item = DATA.find(d => d.id === id);
+  if (!item) return;
+
+  const content = document.getElementById("previewContent");
+  const info = document.getElementById("previewInfo");
+  const unmuteBtn = document.getElementById("modalUnmute");
+  if (unmuteBtn) unmuteBtn.classList.remove("show");
+
+  if (item.type === "video") {
+    content.innerHTML = `<video id="modalVideo" controls autoplay playsinline src="${escAttr(item.url)}" ${item.video_thumb ? `poster="${escAttr(item.video_thumb)}"` : ""}></video>`;
+    const v = document.getElementById("modalVideo");
+    if (v && unmuteBtn) {
+      // Coba autoplay dengan suara dulu (Instagram style)
+      v.volume = 1.0;
+      v.muted = false;
+      v.play().catch(() => {
+        // Gagal → muted + tombol unmute
+        v.muted = true;
+        v.play().catch(() => {});
+        unmuteBtn.classList.add("show", "muted");
+      });
+    }
+  } else if (item.type === "embed") {
+    content.innerHTML = `<div style="width:80vw;max-width:900px;aspect-ratio:16/9;background:#000;border-radius:8px;overflow:hidden;"><iframe src="${escAttr(item.url)}" style="width:100%;height:100%;border:none;" allowfullscreen allow="autoplay; encrypted-media; picture-in-picture; fullscreen;"></iframe></div>`;
+  } else {
+    content.innerHTML = `<img src="${escAttr(item.url)}" alt="${escAttr(item.title)}">`;
+  }
+
+  info.textContent = `${item.title || item.filename} · ${formatBytes(item.size)} · ${item.category || "-"}`;
+  document.getElementById("previewModal").classList.add("active");
+}
+
+function toggleModalUnmute(e){
+  if (e) e.stopPropagation();
+  const v = document.getElementById("modalVideo");
+  const btn = document.getElementById("modalUnmute");
+  if (!v || !btn) return;
+  if (v.muted) {
+    v.muted = false;
+    v.volume = 1.0;
+    btn.classList.remove("muted");
+    btn.textContent = "🔊";
+    setTimeout(() => { if (!v.muted) btn.classList.remove("show"); }, 2000);
+  } else {
+    v.muted = true;
+    btn.classList.add("muted");
+    btn.textContent = "🔇";
+    btn.classList.add("show");
+  }
+}
+
+function closePreview(event){
+  if (event && event.target && event.target.id !== "previewModal") return;
+  const content = document.getElementById("previewContent");
+  if (content) content.innerHTML = "";
+  const btn = document.getElementById("modalUnmute");
+  if (btn) btn.classList.remove("show");
+  document.getElementById("previewModal").classList.remove("active");
+}
+
+function exportCSV(){
+  if (!DATA.length) {
+    showToast("Tidak ada data", "warning");
+    return;
+  }
+  const headers = ["id","title","filename","category","date","size_bytes","type","url","thumb","tags"];
+  const rows = DATA.map(item => [
+    item.id || "",
+    item.title || "",
+    item.filename || "",
+    item.category || "",
+    item.date || "",
+    item.size || 0,
+    item.type || "",
+    item.url || "",
+    item.thumb || "",
+    (item.tags || []).join(";")
+  ]);
+
+  const csv = [headers, ...rows].map(row =>
+    row.map(cell => {
+      const s = String(cell).replace(/"/g, '""');
+      return `"${s}"`;
+    }).join(",")
+  ).join("\n");
+
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "amuv7_export.csv";
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast("CSV didownload ✓", "success");
+}
+
+function openCatboxManager(){
+  window.open(CATBOX_MANAGE_URL, "_blank");
+}
+
+window.addEventListener("keydown", e => {
+  if (e.key === "Escape") {
+    const pm = document.getElementById("previewModal");
+    if (pm && pm.classList.contains("active")) closePreview();
+  }
+  if ((e.ctrlKey || e.metaKey) && e.key === "k") {
+    e.preventDefault();
+    const s = document.getElementById("search");
+    if (s) s.focus();
+  }
+});
+
+renderStats();
+render();
+</script>
+</body>
+</html>
