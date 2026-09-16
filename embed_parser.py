@@ -1,6 +1,9 @@
 """
-lumoss — Embed Parser (v7.2.2 MEDIA GARDEN)
+lumoss — Embed Parser (v7.2.11 MEDIA GARDEN)
 Parse URL dari embed.txt jadi item gallery_data.
+
+Changelog v7.2.11:
+- Deteksi aspect_ratio per platform (landscape/portrait)
 
 Support:
 - Direct link: .jpg, .jpeg, .png, .gif, .webp, .bmp, .mp4, .mkv, .webm, .mov, .avi
@@ -10,34 +13,6 @@ Support:
 - TikTok: /@user/video/
 - Twitter/X: /status/
 - Vimeo: /123456789
-
-Fungsi utama:
-    parse_embed_line(url, index=1, slug="default") -> dict | None
-
-Format return (sama kayak gallery_data item):
-    {
-        "id": "embed_xxx",
-        "title": "...",
-        "filename": "...",
-        "category": "Embed",
-        "date": "YYYY-MM-DD HH:MM:SS",
-        "uploaded_at": None,
-        "year": "YYYY",
-        "month_key": "YYYY-MM",
-        "month_display": "Bulan YYYY",
-        "size": 0,
-        "ext": "URL",
-        "type": "embed" | "image" | "video",
-        "url": "...",          # embed URL (iframe src) atau direct URL
-        "thumb": "...",        # thumbnail (opsional)
-        "video_thumb": None,
-        "video_mime": None,
-        "geo": None,
-        "camera": {},
-        "tags": ["embed", "youtube"],
-        "source": "YouTube",   # label sumber
-        "original_url": "...", # URL asli sebelum dikonversi
-    }
 """
 
 import os
@@ -51,37 +26,17 @@ except ImportError:
     from urlparse import urlparse, parse_qs
 
 
-# ═══════════════════════════════════════════════════════════
-# CONSTANTS
-# ═══════════════════════════════════════════════════════════
-
-# Bulan Indonesia (untuk month_display)
 MONTH_NAMES_ID = [
     "", "Januari", "Februari", "Maret", "April", "Mei", "Juni",
     "Juli", "Agustus", "September", "Oktober", "November", "Desember"
 ]
 
-# Ekstensi direct media
 IMAGE_EXTS = (".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp", ".svg")
 VIDEO_EXTS = (".mp4", ".mkv", ".webm", ".mov", ".avi", ".m4v", ".ogv")
 
 
-# ═══════════════════════════════════════════════════════════
-# MAIN ENTRY
-# ═══════════════════════════════════════════════════════════
-
 def parse_embed_line(url, index=1, slug="default"):
-    """
-    Parse 1 baris URL jadi item dict.
-    
-    Args:
-        url: URL string (dari embed.txt)
-        index: nomor urut (buat ID)
-        slug: slug akun (buat namespace ID)
-    
-    Returns:
-        dict item, atau None kalau URL invalid
-    """
+    """Parse 1 baris URL jadi item dict."""
     url = (url or "").strip()
     if not url or url.startswith("#"):
         return None
@@ -89,13 +44,9 @@ def parse_embed_line(url, index=1, slug="default"):
     if not (url.startswith("http://") or url.startswith("https://")):
         return None
 
-    # Detect platform
     platform = detect_platform(url)
-
-    # Build base item
     base = _build_base_item(url, index, slug, platform)
 
-    # Dispatch per platform
     if platform == "youtube":
         result = _parse_youtube(url, base)
     elif platform == "instagram":
@@ -113,28 +64,21 @@ def parse_embed_line(url, index=1, slug="default"):
     elif platform == "direct_video":
         result = _parse_direct_video(url, base)
     else:
-        # Unknown: treat as generic embed iframe
         result = _parse_generic(url, base)
 
     return result
 
 
-# ═══════════════════════════════════════════════════════════
-# PLATFORM DETECTION
-# ═══════════════════════════════════════════════════════════
-
 def detect_platform(url):
     """Deteksi platform dari URL."""
     u = url.lower()
 
-    # Direct media (cek ekstensi dulu)
     path = urlparse(url).path.lower()
     if any(path.endswith(ext) for ext in IMAGE_EXTS):
         return "direct_image"
     if any(path.endswith(ext) for ext in VIDEO_EXTS):
         return "direct_video"
 
-    # Platform embed
     if "youtube.com" in u or "youtu.be" in u or "youtube-nocookie.com" in u:
         return "youtube"
     if "instagram.com" in u or "instagr.am" in u:
@@ -151,10 +95,6 @@ def detect_platform(url):
     return "generic"
 
 
-# ═══════════════════════════════════════════════════════════
-# BASE ITEM
-# ═══════════════════════════════════════════════════════════
-
 def _build_base_item(url, index, slug, platform):
     """Build base item dict (sebelum parsing spesifik)."""
     now = datetime.now()
@@ -164,11 +104,9 @@ def _build_base_item(url, index, slug, platform):
     month_idx = now.month
     month_display = f"{MONTH_NAMES_ID[month_idx]} {year_str}"
 
-    # Generate ID unik dari URL + index
     raw_id = f"{slug}:{url}:{index}"
     media_id = f"embed_{hashlib.md5(raw_id.encode('utf-8')).hexdigest()[:12]}"
 
-    # Filename dari URL path
     try:
         parsed = urlparse(url)
         path = parsed.path or ""
@@ -198,26 +136,20 @@ def _build_base_item(url, index, slug, platform):
         "tags": ["embed", platform],
         "source": platform.title(),
         "original_url": url,
+        "aspect_ratio": "16/9",
     }
 
-
-# ═══════════════════════════════════════════════════════════
-# YOUTUBE
-# ═══════════════════════════════════════════════════════════
 
 def _parse_youtube(url, base):
     """Parse YouTube URL → embed URL + thumbnail.
 
     v7.2.9 (PR-7): Fix error 153 dengan parameter origin + enablejsapi.
-    Origin pakai placeholder {ORIGIN} — di-replace di gallery.html
-    pake window.location.origin (dynamic).
+    v7.2.11: Deteksi aspect ratio (shorts = 9:16, watch = 16:9).
     """
     video_id = _extract_youtube_id(url)
     if not video_id:
         return None
 
-    # v7.2.9 PR-7: parameter embed (fix error 153)
-    # {ORIGIN} bakal di-replace di gallery.html pakai window.location.origin
     params = (
         "?origin={ORIGIN}"
         "&enablejsapi=1"
@@ -225,6 +157,9 @@ def _parse_youtube(url, base):
         "&modestbranding=1"
         "&playsinline=1"
     )
+
+    is_shorts = "/shorts/" in url.lower()
+    aspect = "9/16" if is_shorts else "16/9"
 
     base["url"] = f"https://www.youtube.com/embed/{video_id}{params}"
     base["thumb"] = f"https://img.youtube.com/vi/{video_id}/hqdefault.jpg"
@@ -234,7 +169,10 @@ def _parse_youtube(url, base):
     base["type"] = "embed"
     base["source"] = "YouTube"
     base["original_url"] = url
+    base["aspect_ratio"] = aspect
     base["tags"] = ["embed", "youtube", "video"]
+    if is_shorts:
+        base["tags"].append("shorts")
     return base
 
 
@@ -246,26 +184,21 @@ def _extract_youtube_id(url):
         path = parsed.path
         qs = parse_qs(parsed.query)
 
-        # youtu.be/ID
         if "youtu.be" in host:
             vid = path.lstrip("/").split("/")[0]
             return vid if vid else None
 
-        # youtube.com/watch?v=ID
         if "watch" in path:
             v = qs.get("v", [None])[0]
             if v:
                 return v
 
-        # youtube.com/embed/ID
         if "/embed/" in path:
             return path.split("/embed/")[1].split("/")[0].split("?")[0]
 
-        # youtube.com/shorts/ID
         if "/shorts/" in path:
             return path.split("/shorts/")[1].split("/")[0].split("?")[0]
 
-        # youtube.com/v/ID (old format)
         if "/v/" in path:
             return path.split("/v/")[1].split("/")[0].split("?")[0]
     except Exception:
@@ -273,24 +206,22 @@ def _extract_youtube_id(url):
     return None
 
 
-# ═══════════════════════════════════════════════════════════
-# INSTAGRAM
-# ═══════════════════════════════════════════════════════════
-
 def _parse_instagram(url, base):
-    """Parse Instagram URL → embed URL."""
+    """Parse Instagram URL → embed URL.
+
+    v7.2.9 (PR-8): /captioned/ biar caption + media muncul.
+    v7.2.11: Deteksi aspect ratio (reel/tv = 9:16, post = 4:5).
+    """
     try:
         parsed = urlparse(url)
         path = parsed.path.rstrip("/")
-        # /p/SHORTCODE/ atau /reel/SHORTCODE/ atau /tv/SHORTCODE/
         parts = [p for p in path.split("/") if p]
         if len(parts) < 2:
             return None
 
-        post_type = parts[0]  # p, reel, tv
+        post_type = parts[0]
         shortcode = parts[1]
 
-        # Instagram embed URL (PR-8: /captioned/ biar konten muncul)
         embed_url = f"https://www.instagram.com/{post_type}/{shortcode}/embed/captioned/"
         base["url"] = embed_url
         base["thumb"] = ""
@@ -300,6 +231,12 @@ def _parse_instagram(url, base):
         base["type"] = "embed"
         base["source"] = "Instagram"
         base["original_url"] = url
+
+        if post_type in ("reel", "tv"):
+            base["aspect_ratio"] = "9/16"
+        else:
+            base["aspect_ratio"] = "4/5"
+
         base["tags"] = ["embed", "instagram"]
         if post_type == "reel":
             base["tags"].append("reel")
@@ -308,14 +245,9 @@ def _parse_instagram(url, base):
         return None
 
 
-# ═══════════════════════════════════════════════════════════
-# FACEBOOK
-# ═══════════════════════════════════════════════════════════
-
 def _parse_facebook(url, base):
     """Parse Facebook URL → plugin embed URL."""
     try:
-        # Facebook plugin embed butuh URL asli
         encoded = quote(url, safe="")
         embed_url = (
             f"https://www.facebook.com/plugins/video.php?"
@@ -327,22 +259,19 @@ def _parse_facebook(url, base):
         base["ext"] = "MP4"
         base["type"] = "embed"
         base["source"] = "Facebook"
+        base["original_url"] = url
+        base["aspect_ratio"] = "16/9"
         base["tags"] = ["embed", "facebook"]
         return base
     except Exception:
         return None
 
 
-# ═══════════════════════════════════════════════════════════
-# TIKTOK
-# ═══════════════════════════════════════════════════════════
-
 def _parse_tiktok(url, base):
     """Parse TikTok URL → embed URL."""
     try:
         parsed = urlparse(url)
         path = parsed.path.rstrip("/")
-        # /@user/video/ID
         parts = [p for p in path.split("/") if p]
         video_id = None
         if "video" in parts:
@@ -360,20 +289,17 @@ def _parse_tiktok(url, base):
         base["ext"] = "MP4"
         base["type"] = "embed"
         base["source"] = "TikTok"
+        base["original_url"] = url
+        base["aspect_ratio"] = "9/16"
         base["tags"] = ["embed", "tiktok"]
         return base
     except Exception:
         return None
 
 
-# ═══════════════════════════════════════════════════════════
-# TWITTER / X
-# ═══════════════════════════════════════════════════════════
-
 def _parse_twitter(url, base):
     """Parse Twitter/X URL → embed via platform.twitter.com."""
     try:
-        # Ganti x.com → twitter.com
         clean_url = url.replace("x.com", "twitter.com")
         encoded = quote(clean_url, safe="")
         embed_url = f"https://platform.twitter.com/embed/Tweet.html?url={encoded}"
@@ -383,15 +309,13 @@ def _parse_twitter(url, base):
         base["ext"] = "HTML"
         base["type"] = "embed"
         base["source"] = "Twitter/X"
+        base["original_url"] = url
+        base["aspect_ratio"] = "16/9"
         base["tags"] = ["embed", "twitter"]
         return base
     except Exception:
         return None
 
-
-# ═══════════════════════════════════════════════════════════
-# VIMEO
-# ═══════════════════════════════════════════════════════════
 
 def _parse_vimeo(url, base):
     """Parse Vimeo URL → embed URL."""
@@ -409,15 +333,13 @@ def _parse_vimeo(url, base):
         base["ext"] = "MP4"
         base["type"] = "embed"
         base["source"] = "Vimeo"
+        base["original_url"] = url
+        base["aspect_ratio"] = "16/9"
         base["tags"] = ["embed", "vimeo", "video"]
         return base
     except Exception:
         return None
 
-
-# ═══════════════════════════════════════════════════════════
-# DIRECT IMAGE / VIDEO
-# ═══════════════════════════════════════════════════════════
 
 def _parse_direct_image(url, base):
     """Parse direct image URL."""
@@ -427,7 +349,7 @@ def _parse_direct_image(url, base):
         ext = os.path.splitext(filename)[1].lstrip(".").upper() or "JPG"
 
         base["url"] = url
-        base["thumb"] = url  # untuk image, thumb = url langsung
+        base["thumb"] = url
         base["title"] = filename
         base["filename"] = filename
         base["ext"] = ext
@@ -447,13 +369,14 @@ def _parse_direct_video(url, base):
         ext = os.path.splitext(filename)[1].lstrip(".").upper() or "MP4"
 
         base["url"] = url
-        base["thumb"] = ""  # video direct: gak ada thumb dari URL
+        base["thumb"] = ""
         base["title"] = filename
         base["filename"] = filename
         base["ext"] = ext
-        base["type"] = "video"  # pake native video player
+        base["type"] = "video"
         base["video_mime"] = _mime_for_ext(ext)
         base["source"] = "Direct Link"
+        base["aspect_ratio"] = "16/9"
         base["tags"] = ["embed", "direct", "video"]
         return base
     except Exception:
@@ -474,10 +397,6 @@ def _mime_for_ext(ext):
     }.get(ext, "video/mp4")
 
 
-# ═══════════════════════════════════════════════════════════
-# GENERIC (fallback)
-# ═══════════════════════════════════════════════════════════
-
 def _parse_generic(url, base):
     """Fallback: coba iframe embed langsung."""
     base["url"] = url
@@ -490,21 +409,8 @@ def _parse_generic(url, base):
     return base
 
 
-# ═══════════════════════════════════════════════════════════
-# HELPERS (public)
-# ═══════════════════════════════════════════════════════════
-
 def parse_file(embed_file, slug="default"):
-    """
-    Parse semua URL dari embed.txt → list item.
-    
-    Args:
-        embed_file: path ke embed.txt
-        slug: slug akun (namespace)
-    
-    Returns:
-        list of dict item (yang berhasil di-parse)
-    """
+    """Parse semua URL dari embed.txt → list item."""
     if not os.path.exists(embed_file):
         return []
 
@@ -532,10 +438,6 @@ def is_embed_url(url):
     platform = detect_platform(url)
     return platform not in ("direct_image", "direct_video")
 
-
-# ═══════════════════════════════════════════════════════════
-# EXPORT
-# ═══════════════════════════════════════════════════════════
 
 __all__ = [
     "parse_embed_line",
