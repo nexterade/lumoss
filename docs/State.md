@@ -4,13 +4,13 @@
 ================================================================================
 
 Terakhir update  : 2026-09-16
-Versi state      : v7.2.6
-Format           : Plain Text (.txt)
+Versi state      : v7.2.8
+Format           : Markdown (.md)
 Tipe             : DYNAMIC (update tiap sesi)
 
 📎 FILE TERKAIT:
-  · Checkpoint  : docs/checkpoint.txt      ← kepribadian + aturan (constant)
-  · Backlog     : docs/backlog.md          ← detail 38 PR (dynamic)
+  · Checkpoint  : docs/checkpoint.md        ← kepribadian + aturan (constant)
+  · Backlog     : docs/backlog.md           ← detail 38 PR (dynamic)
 
 ================================================================================
 1. STATUS PROJECT
@@ -25,26 +25,63 @@ Logo         : 🌿
 Tagline      : "Media Garden, in bloom"
 Author       : @nexterade
 License      : MIT
-Status       : 🎨 UI POLISH (v7.2.6)
+Status       : 🎨 UI POLISH (v7.2.6) + 🔧 GIT INIT (v7.2.7)
 
 TOOLKIT (SELESAI):
   Lokasi     : /storage/emulated/0/Project/auto-release-wizard/
   Fungsi     : Rilis project + 12 tools bantu (universal)
   Status     : ✅ 100% DONE (13 file)
 
+SIDE PROJECT (PENDING):
+  Nama       : Cinematic Resume Portfolio
+  Repo       : https://github.com/nexterade/nexterade.github.io
+  Lokal      : ~/nexterade.github.io/
+  Status     : ⏸️ PENDING (base jalan, rombak belum)
+  Detail     : Lihat section 8b — Side Project
+
 ================================================================================
 2. STATUS FASE
 ================================================================================
 
-✅ FASE 1 — REBRANDING (SELESAI, 8/8 step)
+✅ FASE 1   — REBRANDING (SELESAI, 8/8 step)
 ✅ FASE 1.5 — UI POLISH (SELESAI, v7.2.3 → v7.2.6)
-⏸️ FASE 2 — GIT INIT (PENDING)  ← NEXT!
-⏸️ FASE 3 — HYBRID MENU (v7.2.3)
-⏸️ FASE 4 — FASE 5 PR (38 PR, PENDING)
-⏸️ FASE 5 — BACKLOG v7.3.0 (PENDING)
+✅ FASE 2   — GIT INIT (SELESAI, v7.2.7)
+⏸️ FASE 3   — HYBRID MENU (v7.2.7)        ← NEXT!
+⏸️ FASE 4   — FASE 5 PR (38 PR, PENDING)
+⏸️ FASE 5   — BACKLOG v7.3.0 (PENDING)
+
+SIDE PROJECT (PENDING):
+⏸️ PORTFOLIO — CINEMATIC RESUME (lihat section 8b)
 
 ================================================================================
-3. STRUKTUR PROJECT
+3. GIT INFO
+================================================================================
+
+Repo URL     : https://github.com/nexterade/lumoss
+Protocol     : HTTPS
+Branch       : main
+Author       : nexter <nexterade@gmail.com>
+Commit Awal  : 58819eb — "chore: initial commit — LUMOSS v7.2.6"
+Remote       : origin (https://github.com/nexterade/lumoss.git)
+Status       : ✅ Up to date with origin/main
+
+.gitignore:
+  · accounts/*/ (kecuali active.json)
+  · output/
+  · cache/
+  · backup/
+  · __pycache__/, *.pyc
+  · venv/, .venv/, env/
+  · *.log, *.tmp, *.bak
+  · *.zip, *.tar.gz, *.rar
+  · fix_emoji.py
+  · templates/about.html
+
+File tracked : 24 files (lihat `git ls-files`)
+Ukuran repo  : 132 KiB
+
+================================================================================
+4. STRUKTUR PROJECT
 ================================================================================
 
 Path: /storage/emulated/0/Project/lumoss/
@@ -63,9 +100,11 @@ Path: /storage/emulated/0/Project/lumoss/
     │   ├── akun_utama/
     │   └── cantika/
     ├── templates/                   ✅ Template HTML
+    │   ├── gallery.html
+    │   └── manager.html
     ├── docs/                        ✅ Dokumentasi
-    │   ├── checkpoint.txt           ← CONSTANT
-    │   ├── state.txt                ← DYNAMIC (file ini)
+    │   ├── checkpoint.md            ← CONSTANT
+    │   ├── state.md                 ← DYNAMIC (file ini)
     │   └── backlog.md               ← DYNAMIC
     ├── backup/                      ✅ Backup
     │
@@ -87,7 +126,7 @@ Path: /storage/emulated/0/Project/lumoss/
     └── uploader.py                  ✅ v7.2.6
 
 ================================================================================
-4. STRUKTUR DATA
+5. STRUKTUR DATA
 ================================================================================
 
 accounts/active.json             — registry akun
@@ -103,7 +142,7 @@ Cache key format:
   Contoh: "Nagram/VID_20260718_154608_914.mp4"
 
 ================================================================================
-5. FITUR v7.2.2
+6. FITUR v7.2.2
 ================================================================================
 
 1. STRUKTUR FOLDER TERPISAH: accounts/ + output/ + cache/
@@ -119,14 +158,16 @@ Cache key format:
 6a. TEST REPORT (2026-09-16)
 ================================================================================
 
-✅ TEST 1 — Banner LUMOSS v7.2.2
-✅ TEST 2 — Onboarding (7 folder, .thumbnails HILANG)
-✅ TEST 3 — Bikin akun Cantika
-✅ TEST 4 — Upload Gate Dashboard
-✅ TEST 5 — Eksekusi Upload (2 file, 14.4 MB, 55s)
-✅ TEST 6 — Generate HTML (index.html + manager.html)
-✅ TEST 7 — Path display (accounts/output/cache)
-✅ TEST 8 — ConnectionError retry — SUKSES
+✅ TEST 1  — Banner LUMOSS v7.2.2
+✅ TEST 2  — Onboarding (7 folder, .thumbnails HILANG)
+✅ TEST 3  — Bikin akun Cantika
+✅ TEST 4  — Upload Gate Dashboard
+✅ TEST 5  — Eksekusi Upload (2 file, 14.4 MB, 55s)
+✅ TEST 6  — Generate HTML (index.html + manager.html)
+✅ TEST 7  — Path display (accounts/output/cache)
+✅ TEST 8  — ConnectionError retry — SUKSES
+✅ TEST 9  — Git Init + Push ke GitHub
+              (repo: nexterade/lumoss, branch: main)
 
 🎯 SEMUA FITUR JALAN SEMPURNA
 
@@ -184,10 +225,43 @@ SEMUA FIXED ✅
 
 ✅ FASE 1   — REBRANDING (SELESAI)
 ✅ FASE 1.5 — UI POLISH v7.2.3 → v7.2.6 (SELESAI)
-⏸️ FASE 2   — GIT INIT (PENDING)  ← NEXT
-⏸️ FASE 3   — HYBRID MENU (v7.2.7)
+✅ FASE 2   — GIT INIT (SELESAI v7.2.7)
+⏸️ FASE 3   — HYBRID MENU (v7.2.7)        ← NEXT
 ⏸️ FASE 4   — FASE 5 PR (38 PR)
 ⏸️ FASE 5   — BACKLOG v7.3.0 (13 saran)
+
+================================================================================
+8b. SIDE PROJECT — CINEMATIC RESUME PORTFOLIO
+================================================================================
+
+Status       : ⏸️ PENDING (base jalan, rombak belum)
+Repo         : https://github.com/nexterade/nexterade.github.io
+Lokal        : ~/nexterade.github.io/
+Base         : Cinematic Resume (Next.js 16.3.5, Webpack)
+Prioritas    : 🟡 MEDIUM
+
+SETUP YANG UDAH KELAR:
+  ✅ Fork repo Cinematic Resume
+  ✅ Clone ke Termux (~/nexterade.github.io/)
+  ✅ Pindah ke home — fix symlink error (FAT32)
+  ✅ npm install — 96 packages, 0 vulnerabilities
+  ✅ Preview lokal jalan: npm run dev -- --webpack
+
+YANG BELUM (TASK ROMBAK):
+  ⏸️ Isi data/resumeContent.js dengan data pribadi
+      (nexterade, LUMOSS, Auto Release Wizard, dll)
+  ⏸️ Ganti styling di tailwind.config.js — moss green theme
+  ⏸️ Fix hydration error di app/layout.tsx (font variable)
+  ⏸️ Fix GSAP target error (.project-stage-shell, .timeline-mobile-card)
+  ⏸️ Deploy ke GitHub Pages
+  ⏸️ Update README LUMOSS — isi field Website
+
+CATATAN TEKNIS:
+  · Next.js 16.3.5 — Turbopack GAK SUPPORT Android/arm64
+  · Dev server WAJIB pake Webpack: npm run dev -- --webpack
+  · Hydration error karena font variable — bukan fatal
+  · GSAP error karena section kosong — fix setelah isi data
+  · Struktur: app/, components/, data/, hooks/, lib/, scripts/
 
 ================================================================================
 9. CATATAN PENTING
@@ -195,7 +269,9 @@ SEMUA FIXED ✅
 
   · Akun real: Cantika (bukan dummy)
   · Akun dummy: Akun Utama (bisa dihapus kalau perlu)
-  · Git BELUM di-init — next task
+  · Git UDAH di-init — repo: github.com/nexterade/lumoss
+  · Branch: main | Protocol: HTTPS | Author: nexter
+  · Commit awal: 58819eb (initial commit v7.2.6)
   · PR FASE 5 detail: docs/backlog.md
   · Multi-folder media (media_dirs array)
   · Onboarding WAJIB pilih folder
@@ -204,9 +280,10 @@ SEMUA FIXED ✅
   · UI polished ke v7.2.6 (vertical layout + emoji auto-convert)
   · Submenu pake Unicode symbol (bukan emoji)
   · 🌿 = simbol utama Lumoss (gak di-convert)
-  · Git BELUM di-init — next task
-  · PR FASE 5 detail: docs/backlog.md
+  · Side project Cinematic Resume — PENDING (lihat 8b)
+  · ⛔ ATURAN KERAS: JANGAN kasih command Termux dengan tag #
+    (lihat checkpoint.md section 5)
 
 ================================================================================
-                    END OF STATE v7.2.6
+                    END OF STATE v7.2.8
 ================================================================================

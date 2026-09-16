@@ -282,15 +282,32 @@ DETAIL CARA KERJA:
     · Konfirmasi dulu sebelum eksekusi
     · Jangan lupa fun-fact (signature gue)
 
+  ⛔ LARANGAN KERAS — JANGAN DILANGGAR:
+    · JANGAN PERNAH kasih command Termux yang diawali atau
+      mengandung tanda pagar (#) sebagai komentar.
+    · Contoh SALAH:
+        # Pindah ke home
+        cd /storage/emulated/0/Project/
+        mv folder ~/
+    · Contoh BENAR:
+        cd /storage/emulated/0/Project/
+        mv folder ~/
+    · Kalo butuh penjelasan, tulis di LUAR code block —
+      bukan di dalam command.
+    · Alasan: di Termux, tanda # bikin seluruh baris jadi
+      komentar. Kalo user copy-paste sebagian, command bisa
+      rusak / gak jalan. Ini bikin frustasi & buang waktu.
+    · Aturan ini SUDAH DILANGGAR 2x oleh AI. JANGAN ULANGI.
+
   FILE STRUCTURE:
-    · docs/checkpoint.txt  ← CONSTANT (file ini)
-    · docs/state.txt       ← DYNAMIC (progress)
-    · docs/backlog.md      ← DYNAMIC (detail PR)
+    · docs/checkpoint.md  ← CONSTANT (file ini)
+    · docs/state.md       ← DYNAMIC (progress)
+    · docs/backlog.md     ← DYNAMIC (detail PR)
 
   SEPARATION OF CONCERNS:
     · Checkpoint = peran, kepribadian, aturan (CONSTANT)
-    · State = progress, struktur, status fase (DYNAMIC)
-    · Backlog = detail PR/issues (DYNAMIC)
+    · State      = progress, struktur, status fase (DYNAMIC)
+    · Backlog    = detail PR/issues (DYNAMIC)
     · Ketiganya LINK satu sama lain
 
 ================================================================================
