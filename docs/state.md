@@ -3,8 +3,8 @@
                     Progress, Struktur, Status Fase
 ================================================================================
 
-Terakhir update  : 2026-09-16
-Versi state      : v7.2.9
+Terakhir update  : 2026-09-17
+Versi state      : v7.2.12
 Format           : Markdown (.md)
 Tipe             : DYNAMIC (update tiap sesi)
 
@@ -25,7 +25,7 @@ Logo         : 🌿
 Tagline      : "Media Garden, in bloom"
 Author       : @nexterade
 License      : MIT
-Status       : 🎨 UI POLISH (v7.2.6) + 🔧 GIT INIT (v7.2.7) + 📝 DOCS (v7.2.9)
+Status       : 🎨 UI POLISH (v7.2.11) + 📝 DOCS (v7.2.12)
 
 TOOLKIT (SELESAI):
   Lokasi     : /storage/emulated/0/Project/auto-release-wizard/
@@ -46,9 +46,9 @@ SIDE PROJECT (PENDING):
 ✅ FASE 1   — REBRANDING (SELESAI, 8/8 step)
 ✅ FASE 1.5 — UI POLISH (SELESAI, v7.2.3 → v7.2.6)
 ✅ FASE 2   — GIT INIT (SELESAI, v7.2.7)
-✅ FASE 2.5 — DOKUMENTASI (SELESAI, v7.2.9)  ← BARU
-⏸️ FASE 3   — HYBRID MENU (v7.2.7)        ← NEXT!
-⏸️ FASE 4   — FASE 5 PR (38 PR, PENDING)
+✅ FASE 2.5 — DOKUMENTASI (SELESAI, v7.2.9)
+✅ FASE 3   — EMBED FIX (SELESAI, v7.2.11)  ← BARU
+⏸️ FASE 4   — FASE 5 PR (38 PR — 4 selesai, 34 pending)
 ⏸️ FASE 5   — BACKLOG v7.3.0 (PENDING)
 
 SIDE PROJECT (PENDING):
@@ -66,8 +66,10 @@ Remote       : origin (https://github.com/nexterade/lumoss.git)
 Status       : ✅ Up to date with origin/main
 
 Commit History (terbaru):
-  · ffc71bc — docs(backlog): merge PR-FASE5 into backlog.md — v7.2.8
+  · 80eef54 — docs(checkpoint): update v1.4 — 5 rule baru dari sesi v7.2.11
+  · 682c0d5 — feat(PR-7, PR-8): YouTube + IG embed + aspect ratio + auto-hide UI
   · 29e516c — refactor(docs): lowercase file names (checkpoint, state, backlog)
+  · ffc71bc — docs(backlog): merge PR-FASE5 into backlog.md — v7.2.8
   · 518599e — refactor(docs): rename .md files to lowercase
   · 9d926d2 — docs: update checkpoint & state v7.2.8
   · 58819eb — chore: initial commit — LUMOSS v7.2.6
@@ -84,8 +86,8 @@ Commit History (terbaru):
   · fix_emoji.py
   · templates/about.html
 
-File tracked : 23 files (lihat `git ls-files`)
-Ukuran repo  : ~135 KiB
+File tracked : 24 files (lihat `git ls-files`)
+Ukuran repo  : ~140 KiB
 
 ================================================================================
 4. STRUKTUR PROJECT
@@ -107,18 +109,18 @@ Path: /storage/emulated/0/Project/lumoss/
     │   ├── akun_utama/
     │   └── cantika/
     ├── templates/                   ✅ Template HTML
-    │   ├── gallery.html
+    │   ├── gallery.html             ✅ v7.2.11
     │   └── manager.html
     ├── docs/                        ✅ Dokumentasi
-    │   ├── checkpoint.md            ← CONSTANT
+    │   ├── checkpoint.md            ← CONSTANT (v1.4)
     │   ├── state.md                 ← DYNAMIC (file ini)
-    │   ├── backlog.md               ← DYNAMIC (38 PR + 1 side project)
-    │   └── PR-PORTOFOLIO.md         ← Side project PR
+    │   ├── backlog.md               ← DYNAMIC (38 PR + 1 side)
+    │   └── PR-PORTOFOLIO.md         ← Side project
     ├── backup/                      ✅ Backup
     │
     ├── account_manager.py           ✅ v7.2.6
     ├── config_manager.py            ✅ v7.2.6
-    ├── embed_parser.py              ✅ v7.2.6
+    ├── embed_parser.py              ✅ v7.2.11 (aspect ratio)
     ├── global_config.json           ✅ v7.2.6
     ├── html_builder.py              ✅ v7.2.6
     ├── lumoss.py                    ✅ v7.2.6
@@ -127,11 +129,11 @@ Path: /storage/emulated/0/Project/lumoss/
     ├── menu_account.py              ✅ v7.2.6
     ├── menu_embed.py                ✅ v7.2.6
     ├── menu_tools.py                ✅ v7.2.6
-    ├── README.md                    ✅ v7.2.9 (rebranding LUMOSS)
+    ├── README.md                    ✅ v7.2.9
     ├── requirements.txt
     ├── tools.py                     ✅ v7.2.6
     ├── ui_helpers.py                ✅ v7.2.6
-    └── uploader.py                  ✅ v7.2.6
+    └── uploader.py                  ✅ v7.2.9
 
 ================================================================================
 5. STRUKTUR DATA
@@ -150,7 +152,7 @@ Cache key format:
   Contoh: "Nagram/VID_20260718_154608_914.mp4"
 
 ================================================================================
-6. FITUR v7.2.2
+6. FITUR v7.2.2 (BASE)
 ================================================================================
 
 1. STRUKTUR FOLDER TERPISAH: accounts/ + output/ + cache/
@@ -163,26 +165,52 @@ Cache key format:
 8. BANNER LUMOSS: "Media Garden, in bloom"
 
 ================================================================================
-6a. TEST REPORT (2026-09-16)
+6a. FITUR v7.2.11 (EMBED FIX) — BARU
 ================================================================================
 
-✅ TEST 1  — Banner LUMOSS v7.2.2
-✅ TEST 2  — Onboarding (7 folder, .thumbnails HILANG)
-✅ TEST 3  — Bikin akun Cantika
-✅ TEST 4  — Upload Gate Dashboard
-✅ TEST 5  — Eksekusi Upload (2 file, 14.4 MB, 55s)
-✅ TEST 6  — Generate HTML (index.html + manager.html)
-✅ TEST 7  — Path display (accounts/output/cache)
-✅ TEST 8  — ConnectionError retry — SUKSES
-✅ TEST 9  — Git Init + Push ke GitHub
-              (repo: nexterade/lumoss, branch: main)
-✅ TEST 10 — Merge PR-FASE5 → backlog.md (39 item, verified)
-✅ TEST 11 — Update README (rebranding LUMOSS + field Website & Telegram)
+🎯 PR-7 — YouTube Error 153 FIXED:
+  ✅ URL embed tambah parameter:
+     · origin={ORIGIN} — dynamic dari window.location.origin
+     · enablejsapi=1 — kontrol via JS
+     · rel=0 — gak nampilin rekomendasi
+     · modestbranding=1 — minimal branding
+     · playsinline=1 — support inline play
+  ✅ Fallback UI kalo iframe gagal
 
-🎯 SEMUA FITUR JALAN SEMPURNA
+🎯 PR-8 — Instagram Embed FIXED:
+  ✅ URL embed: /embed/captioned/ (tambah captioned)
+  ✅ Caption + media muncul, bukan cuma header
+
+🎯 DYNAMIC ASPECT RATIO (BARU):
+  ✅ YouTube watch → 16/9 (landscape)
+  ✅ YouTube Shorts → 9/16 (portrait)
+  ✅ Instagram Post → 4/5 (portrait)
+  ✅ Instagram Reel/TV → 9/16 (portrait)
+  ✅ TikTok → 9/16 (portrait)
+  ✅ Vimeo → 16/9 (landscape)
+  ✅ Twitter/X → 16/9 (landscape)
+  ✅ Facebook → 16/9 (landscape)
+
+🎯 AUTO-HIDE UI (BARU):
+  ✅ Header & footer auto-hide setelah 3 detik
+  ✅ Opacity 0.15 pas non-aktif
+  ✅ Opacity 1 pas hover/active/show
+  ✅ Tap area atas & bawah iframe → show UI
+  ✅ Rotate/resize → reset timer
+
+🎯 GALLERY HEADER AUTO-HIDE (BARU):
+  ✅ Scroll ke bawah (>10px) → header hide
+  ✅ Auto-show setelah 3 detik
+  ✅ Scroll ke atas → header show
+
+🎯 SMART HISTORY (BARU):
+  ✅ pushState pas buka lightbox
+  ✅ replaceState pas pindah item (gak numpuk)
+  ✅ popstate handler — tombol back nutup lightbox
+  ✅ 100dvh — handle address bar mobile
 
 ================================================================================
-6b. UI POLISH v7.2.3 → v7.2.6
+6b. UI POLISH v7.2.3 → v7.2.6 (SELESAI)
 ================================================================================
 
 🎨 UI OVERHAUL (v7.2.3):
@@ -207,17 +235,8 @@ Cache key format:
   ✅ EMOJI_TO_UNICODE — mapping ~150 emoji → Unicode symbol
   ✅ convert_emoji() — auto-convert pas input (nama, judul)
   ✅ strip_emoji() — strip sisa emoji gak dikenal
-  ✅ 🌿 (LUMOSS_SYMBOL) — KEEP, gak di-convert (simbol Lumoss)
-  ✅ Safety net di render — double convert kalo user edit config manual
-
-📁 FILE YANG DIUBAH:
-  • ui_helpers.py  → +4 helper layout + emoji converter
-  • menu.py        → +convert_emoji di input flow
-
-📁 FILE YANG DIUBAH (bulk via fix_emoji.py):
-  • menu_account.py  → emoji → Unicode symbol
-  • menu_tools.py    → emoji → Unicode symbol
-  • menu_embed.py    → emoji → Unicode symbol
+  ✅ 🌿 (LUMOSS_SYMBOL) — KEEP, gak di-convert
+  ✅ Safety net di render — double convert
 
 ================================================================================
 7. BUG DITEMUKAN & DIFIX
@@ -226,6 +245,11 @@ Cache key format:
 BUG #1-4 (v7.2.0): ask(), auto-detect, TODO, f-string
 BUG #5-6 (v7.2.2): Onboarding _selected ilang, toggle salah
 BUG #7 (v7.2.2): .thumbnails ke-scan
+BUG #8 (v7.2.11): YouTube error 153 → FIXED
+BUG #9 (v7.2.11): Instagram cuma header → FIXED
+BUG #10 (v7.2.11): Iframe gak full (aspect ratio) → FIXED
+BUG #11 (v7.2.11): Tombol back exit → FIXED
+BUG #12 (v7.2.11): Address bar kepotong (Quetta) → FIXED
 
 SEMUA FIXED ✅
 
@@ -236,8 +260,8 @@ SEMUA FIXED ✅
 ✅ FASE 1   — REBRANDING (SELESAI)
 ✅ FASE 1.5 — UI POLISH v7.2.3 → v7.2.6 (SELESAI)
 ✅ FASE 2   — GIT INIT (SELESAI v7.2.7)
-✅ FASE 2.5 — DOKUMENTASI (SELESAI v7.2.9)  ← BARU
-⏸️ FASE 3   — HYBRID MENU (v7.2.7)        ← NEXT
+✅ FASE 2.5 — DOKUMENTASI (SELESAI v7.2.9)
+✅ FASE 3   — EMBED FIX (SELESAI v7.2.11)  ← BARU
 ⏸️ FASE 4   — FASE 5 PR (38 PR)
 ⏸️ FASE 5   — BACKLOG v7.3.0 (13 saran)
 
@@ -260,7 +284,6 @@ SETUP YANG UDAH KELAR:
 
 YANG BELUM (TASK ROMBAK):
   ⏸️ Isi data/resumeContent.js dengan data pribadi
-      (nexterade, LUMOSS, Auto Release Wizard, dll)
   ⏸️ Ganti styling di tailwind.config.js — moss green theme
   ⏸️ Fix hydration error di app/layout.tsx (font variable)
   ⏸️ Fix GSAP target error (.project-stage-shell, .timeline-mobile-card)
@@ -282,23 +305,83 @@ CATATAN TEKNIS:
   · Akun dummy: Akun Utama (bisa dihapus kalau perlu)
   · Git UDAH di-init — repo: github.com/nexterade/lumoss
   · Branch: main | Protocol: HTTPS | Author: nexter
-  · Commit terbaru: ffc71bc (merge backlog — v7.2.8)
+  · Commit terbaru: 80eef54 (checkpoint v1.4)
   · PR FASE 5 detail: docs/backlog.md (39 item)
   · Multi-folder media (media_dirs array)
   · Onboarding WAJIB pilih folder
   · Struktur: accounts/ + output/ + cache/
   · Backup folder: /storage/emulated/0/Project/backup/
   · UI polished ke v7.2.6 (vertical layout + emoji auto-convert)
+  · Embed fix v7.2.11 (YouTube, IG, aspect ratio, auto-hide UI)
   · Submenu pake Unicode symbol (bukan emoji)
   · 🌿 = simbol utama Lumoss (gak di-convert)
   · README UDAH di-rebranding ke LUMOSS (v7.2.9)
-  · Backlog di-merge: PR-FASE5.md dihapus, 1 file backlog.md
   · Side project Cinematic Resume — PENDING (lihat 8b)
   · ⛔ ATURAN KERAS: JANGAN kasih command Termux dengan tag #
     (lihat checkpoint.md section 5)
+  · 📌 5 rule baru dari sesi v7.2.11 (checkpoint v1.4)
 
 ================================================================================
-10. FILE TRACKED BY GIT (23 files)
+10. TEST REPORT (2026-09-17)
+================================================================================
+
+✅ TEST 1  — Banner LUMOSS v7.2.2
+✅ TEST 2  — Onboarding (7 folder, .thumbnails HILANG)
+✅ TEST 3  — Bikin akun Cantika
+✅ TEST 4  — Upload Gate Dashboard
+✅ TEST 5  — Eksekusi Upload (2 file, 14.4 MB, 55s)
+✅ TEST 6  — Generate HTML (index.html + manager.html)
+✅ TEST 7  — Path display (accounts/output/cache)
+✅ TEST 8  — ConnectionError retry — SUKSES
+✅ TEST 9  — Git Init + Push ke GitHub
+✅ TEST 10 — Merge PR-FASE5 → backlog.md (39 item)
+✅ TEST 11 — Update README (rebranding LUMOSS)
+✅ TEST 12 — YouTube embed (watch, shorts) — WORKS
+✅ TEST 13 — Instagram embed (post, reel) — WORKS
+✅ TEST 14 — TikTok embed — WORKS
+✅ TEST 15 — Auto-hide UI + zona tap — WORKS
+✅ TEST 16 — Gallery header auto-hide — WORKS
+✅ TEST 17 — Tombol back (smart history) — WORKS
+✅ TEST 18 — Test di localhost (bukan file://) — WORKS
+
+🎯 SEMUA FITUR JALAN SEMPURNA
+
+================================================================================
+11. UI/UX PATTERN v7.2.11 (REUSE)
+================================================================================
+
+Pattern yang dipake di v7.2.11 — bisa di-reuse di project lain:
+
+1. DYNAMIC ASPECT RATIO
+   · Deteksi dari URL pattern (bukan fetch)
+   · Set CSS variable --embed-aspect
+   · Class data-orientation="portrait"/"landscape"
+
+2. AUTO-HIDE UI
+   · Header/footer opacity 0.15 default
+   · Class .show → opacity 1
+   · Timer 3 detik auto-hide
+   · Trigger: tap, hover, rotate, resize
+
+3. ZONA TAP (buat iframe full)
+   · .lb-tap-zone-top (70px dari atas)
+   · .lb-tap-zone-bottom (110px dari bawah)
+   · Transparan, z-index di atas iframe
+   · Tap → show UI
+
+4. SMART HISTORY
+   · pushState pas buka (1 entry)
+   · replaceState pas pindah item (gak numpuk)
+   · popstate handler
+   · closeLightbox → history.back()
+
+5. FALLBACK UI
+   · Timeout 8 detik → tampilin fallback
+   · Link "Buka di platform"
+   · Tombol "Learn more"
+
+================================================================================
+12. FILE TRACKED BY GIT (24 files)
 ================================================================================
 
 docs/
@@ -334,5 +417,5 @@ Root:
   · uploader.py
 
 ================================================================================
-                    END OF STATE v7.2.9
+                    END OF STATE v7.2.12
 ================================================================================
