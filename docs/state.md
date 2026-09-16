@@ -4,13 +4,13 @@
 ================================================================================
 
 Terakhir update  : 2026-09-16
-Versi state      : v7.2.8
+Versi state      : v7.2.9
 Format           : Markdown (.md)
 Tipe             : DYNAMIC (update tiap sesi)
 
 📎 FILE TERKAIT:
   · Checkpoint  : docs/checkpoint.md        ← kepribadian + aturan (constant)
-  · Backlog     : docs/backlog.md           ← detail 38 PR (dynamic)
+  · Backlog     : docs/backlog.md           ← detail 38 PR + 1 side project (dynamic)
 
 ================================================================================
 1. STATUS PROJECT
@@ -25,7 +25,7 @@ Logo         : 🌿
 Tagline      : "Media Garden, in bloom"
 Author       : @nexterade
 License      : MIT
-Status       : 🎨 UI POLISH (v7.2.6) + 🔧 GIT INIT (v7.2.7)
+Status       : 🎨 UI POLISH (v7.2.6) + 🔧 GIT INIT (v7.2.7) + 📝 DOCS (v7.2.9)
 
 TOOLKIT (SELESAI):
   Lokasi     : /storage/emulated/0/Project/auto-release-wizard/
@@ -46,6 +46,7 @@ SIDE PROJECT (PENDING):
 ✅ FASE 1   — REBRANDING (SELESAI, 8/8 step)
 ✅ FASE 1.5 — UI POLISH (SELESAI, v7.2.3 → v7.2.6)
 ✅ FASE 2   — GIT INIT (SELESAI, v7.2.7)
+✅ FASE 2.5 — DOKUMENTASI (SELESAI, v7.2.9)  ← BARU
 ⏸️ FASE 3   — HYBRID MENU (v7.2.7)        ← NEXT!
 ⏸️ FASE 4   — FASE 5 PR (38 PR, PENDING)
 ⏸️ FASE 5   — BACKLOG v7.3.0 (PENDING)
@@ -61,9 +62,15 @@ Repo URL     : https://github.com/nexterade/lumoss
 Protocol     : HTTPS
 Branch       : main
 Author       : nexter <nexterade@gmail.com>
-Commit Awal  : 58819eb — "chore: initial commit — LUMOSS v7.2.6"
 Remote       : origin (https://github.com/nexterade/lumoss.git)
 Status       : ✅ Up to date with origin/main
+
+Commit History (terbaru):
+  · ffc71bc — docs(backlog): merge PR-FASE5 into backlog.md — v7.2.8
+  · 29e516c — refactor(docs): lowercase file names (checkpoint, state, backlog)
+  · 518599e — refactor(docs): rename .md files to lowercase
+  · 9d926d2 — docs: update checkpoint & state v7.2.8
+  · 58819eb — chore: initial commit — LUMOSS v7.2.6
 
 .gitignore:
   · accounts/*/ (kecuali active.json)
@@ -77,8 +84,8 @@ Status       : ✅ Up to date with origin/main
   · fix_emoji.py
   · templates/about.html
 
-File tracked : 24 files (lihat `git ls-files`)
-Ukuran repo  : 132 KiB
+File tracked : 23 files (lihat `git ls-files`)
+Ukuran repo  : ~135 KiB
 
 ================================================================================
 4. STRUKTUR PROJECT
@@ -105,7 +112,8 @@ Path: /storage/emulated/0/Project/lumoss/
     ├── docs/                        ✅ Dokumentasi
     │   ├── checkpoint.md            ← CONSTANT
     │   ├── state.md                 ← DYNAMIC (file ini)
-    │   └── backlog.md               ← DYNAMIC
+    │   ├── backlog.md               ← DYNAMIC (38 PR + 1 side project)
+    │   └── PR-PORTOFOLIO.md         ← Side project PR
     ├── backup/                      ✅ Backup
     │
     ├── account_manager.py           ✅ v7.2.6
@@ -119,7 +127,7 @@ Path: /storage/emulated/0/Project/lumoss/
     ├── menu_account.py              ✅ v7.2.6
     ├── menu_embed.py                ✅ v7.2.6
     ├── menu_tools.py                ✅ v7.2.6
-    ├── README.md
+    ├── README.md                    ✅ v7.2.9 (rebranding LUMOSS)
     ├── requirements.txt
     ├── tools.py                     ✅ v7.2.6
     ├── ui_helpers.py                ✅ v7.2.6
@@ -168,6 +176,8 @@ Cache key format:
 ✅ TEST 8  — ConnectionError retry — SUKSES
 ✅ TEST 9  — Git Init + Push ke GitHub
               (repo: nexterade/lumoss, branch: main)
+✅ TEST 10 — Merge PR-FASE5 → backlog.md (39 item, verified)
+✅ TEST 11 — Update README (rebranding LUMOSS + field Website & Telegram)
 
 🎯 SEMUA FITUR JALAN SEMPURNA
 
@@ -226,6 +236,7 @@ SEMUA FIXED ✅
 ✅ FASE 1   — REBRANDING (SELESAI)
 ✅ FASE 1.5 — UI POLISH v7.2.3 → v7.2.6 (SELESAI)
 ✅ FASE 2   — GIT INIT (SELESAI v7.2.7)
+✅ FASE 2.5 — DOKUMENTASI (SELESAI v7.2.9)  ← BARU
 ⏸️ FASE 3   — HYBRID MENU (v7.2.7)        ← NEXT
 ⏸️ FASE 4   — FASE 5 PR (38 PR)
 ⏸️ FASE 5   — BACKLOG v7.3.0 (13 saran)
@@ -271,8 +282,8 @@ CATATAN TEKNIS:
   · Akun dummy: Akun Utama (bisa dihapus kalau perlu)
   · Git UDAH di-init — repo: github.com/nexterade/lumoss
   · Branch: main | Protocol: HTTPS | Author: nexter
-  · Commit awal: 58819eb (initial commit v7.2.6)
-  · PR FASE 5 detail: docs/backlog.md
+  · Commit terbaru: ffc71bc (merge backlog — v7.2.8)
+  · PR FASE 5 detail: docs/backlog.md (39 item)
   · Multi-folder media (media_dirs array)
   · Onboarding WAJIB pilih folder
   · Struktur: accounts/ + output/ + cache/
@@ -280,10 +291,48 @@ CATATAN TEKNIS:
   · UI polished ke v7.2.6 (vertical layout + emoji auto-convert)
   · Submenu pake Unicode symbol (bukan emoji)
   · 🌿 = simbol utama Lumoss (gak di-convert)
+  · README UDAH di-rebranding ke LUMOSS (v7.2.9)
+  · Backlog di-merge: PR-FASE5.md dihapus, 1 file backlog.md
   · Side project Cinematic Resume — PENDING (lihat 8b)
   · ⛔ ATURAN KERAS: JANGAN kasih command Termux dengan tag #
     (lihat checkpoint.md section 5)
 
 ================================================================================
-                    END OF STATE v7.2.8
+10. FILE TRACKED BY GIT (23 files)
+================================================================================
+
+docs/
+  · backlog.md
+  · checkpoint.md
+  · state.md
+  · PR-PORTOFOLIO.md
+
+templates/
+  · gallery.html
+  · manager.html
+
+accounts/
+  · active.json
+
+Root:
+  · .gitignore
+  · README.md
+  · account_manager.py
+  · config_manager.py
+  · embed_parser.py
+  · global_config.json
+  · html_builder.py
+  · lumoss.py
+  · media_processor.py
+  · menu.py
+  · menu_account.py
+  · menu_embed.py
+  · menu_tools.py
+  · requirements.txt
+  · tools.py
+  · ui_helpers.py
+  · uploader.py
+
+================================================================================
+                    END OF STATE v7.2.9
 ================================================================================
