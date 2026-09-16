@@ -1,6 +1,10 @@
 """
-amuv7 — Uploader (v7.1.0 LUMINOUS MOSS)
+lumoss — Uploader (v7.2.9 MEDIA GARDEN)
 Mesin upload ke Catbox.moe dengan cursor-positioning & Luminous Moss aesthetic.
+
+Changelog v7.2.9:
+- REBRANDING: amuv7 → lumoss (header & komentar)
+- UPDATE: User-Agent konsisten (lumoss/7.2.9)
 """
 
 import os
@@ -32,6 +36,12 @@ except ImportError:
 
 CATBOX_API = "https://catbox.moe/user/api.php"
 CATBOX_MAX_FILE_SIZE = 200 * 1024 * 1024  # 200 MB
+
+# User-Agent (lumoss v7.2.9)
+_USER_AGENT = (
+    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
+    "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 lumoss/7.2.9"
+)
 
 # Session stats (di-update thread-safe)
 _STATS_LOCK = threading.Lock()
@@ -217,7 +227,7 @@ def _upload_streaming(file_path, data_fields, printer):
             data=monitor,
             headers={
                 "Content-Type": monitor.content_type,
-                "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36",
+                "User-Agent": _USER_AGENT,
             },
             timeout=600,
         )
@@ -252,7 +262,7 @@ def _upload_simple(file_path, data_fields):
             CATBOX_API,
             data=data_fields,
             files=files,
-            headers={"User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36"},
+            headers={"User-Agent": _USER_AGENT},
             timeout=600,
         )
         res.raise_for_status()

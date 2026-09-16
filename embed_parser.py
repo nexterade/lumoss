@@ -206,18 +206,34 @@ def _build_base_item(url, index, slug, platform):
 # ═══════════════════════════════════════════════════════════
 
 def _parse_youtube(url, base):
-    """Parse YouTube URL → embed URL + thumbnail."""
+    """Parse YouTube URL → embed URL + thumbnail.
+
+    v7.2.9 (PR-7): Fix error 153 dengan parameter origin + enablejsapi.
+    Origin pakai placeholder {ORIGIN} — di-replace di gallery.html
+    pake window.location.origin (dynamic).
+    """
     video_id = _extract_youtube_id(url)
     if not video_id:
         return None
 
-    base["url"] = f"https://www.youtube.com/embed/{video_id}"
+    # v7.2.9 PR-7: parameter embed (fix error 153)
+    # {ORIGIN} bakal di-replace di gallery.html pakai window.location.origin
+    params = (
+        "?origin={ORIGIN}"
+        "&enablejsapi=1"
+        "&rel=0"
+        "&modestbranding=1"
+        "&playsinline=1"
+    )
+
+    base["url"] = f"https://www.youtube.com/embed/{video_id}{params}"
     base["thumb"] = f"https://img.youtube.com/vi/{video_id}/hqdefault.jpg"
     base["title"] = f"YouTube — {video_id}"
     base["filename"] = f"youtube_{video_id}.mp4"
     base["ext"] = "MP4"
     base["type"] = "embed"
     base["source"] = "YouTube"
+    base["original_url"] = url
     base["tags"] = ["embed", "youtube", "video"]
     return base
 
@@ -274,8 +290,8 @@ def _parse_instagram(url, base):
         post_type = parts[0]  # p, reel, tv
         shortcode = parts[1]
 
-        # Instagram embed URL
-        embed_url = f"https://www.instagram.com/{post_type}/{shortcode}/embed/"
+        # Instagram embed URL (PR-8: /captioned/ biar konten muncul)
+        embed_url = f"https://www.instagram.com/{post_type}/{shortcode}/embed/captioned/"
         base["url"] = embed_url
         base["thumb"] = ""
         base["title"] = f"Instagram — {shortcode}"
@@ -283,6 +299,7 @@ def _parse_instagram(url, base):
         base["ext"] = "MP4"
         base["type"] = "embed"
         base["source"] = "Instagram"
+        base["original_url"] = url
         base["tags"] = ["embed", "instagram"]
         if post_type == "reel":
             base["tags"].append("reel")
