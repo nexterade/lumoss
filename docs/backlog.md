@@ -1,8 +1,8 @@
-# 📋 BACKLOG — LUMOSS v7.2.8
+# 📋 BACKLOG — LUMOSS v7.2.12
 
-**Update terakhir:** 2026-09-16
-**Total issues:** 38 PR (FASE 5) + 1 side project
-**Status:** ⏸️ BACKLOG (belum disentuh)
+**Update terakhir:** 2026-09-17
+**Total issues:** 38 PR (FASE 4) + 1 side project
+**Status:** ⏸️ BACKLOG (4 selesai, 34 pending)
 
 📎 **Checkpoint terkait:** `docs/checkpoint.md`
 📎 **State terkait:** `docs/state.md`
@@ -20,30 +20,72 @@
 | 🔒 LOCKED | 1 |
 | 🟢 FINAL | 4 |
 | 🟡 KESENTUH | 4 |
+| ✅ **SELESAI** | **4** |
+| ⏸️ **PENDING** | **34** |
 | **TOTAL PR LUMOSS** | **38** |
 | **SIDE PROJECT** | **1** |
 
-**PRIORITAS EKSEKUSI:**
-1. **PR-7** (YouTube Error 153) — 🔴 KRITIS
-2. **PR-8** (Instagram embed header) — 🔴 KRITIS
+**PRIORITAS EKSEKUSI (REVISI — PR-7, PR-8 SELESAI):**
+1. ~~PR-7 (YouTube Error 153)~~ ✅ **SELESAI**
+2. ~~PR-8 (Instagram embed)~~ ✅ **SELESAI**
 3. **PR-1** (Layout Main Menu) — 🟡 MEDIUM
-4. **PR-2** (Tag lightbox) — 🟡 MEDIUM
-5. **PR-4** (GITHUB_REPO gak di-inject) — 🟡 MEDIUM
+4. **PR-4** (GITHUB_REPO gak di-inject) — 🟡 MEDIUM
+5. **PR-6** (Cek tools.py v7.1.0) — 🟡 MEDIUM
 
 ---
 
-## 🐛 GRUP A — BUG FIX LAMA (6 PR)
+## ✅ SELESAI (4 PR)
+
+### ✅ PR-7: YouTube Error 153 — SELESAI
+- **Prioritas:** 🔴 KRITIS
+- **Deskripsi:** Embed YouTube error 153 (video unavailable / embedding disabled)
+- **File:** `html_builder.py`, `embed_parser.py`, `templates/gallery.html`
+- **Status:** ✅ **SELESAI v7.2.11**
+- **Solusi:**
+  - Tambah parameter `origin={ORIGIN}` (dynamic dari `window.location.origin`)
+  - Tambah `enablejsapi=1`, `rel=0`, `modestbranding=1`, `playsinline=1`
+  - Fallback UI kalo iframe gagal
+- **Verified:** TEST 12 (YouTube embed works)
+
+### ✅ PR-8: Instagram embed header doang — SELESAI
+- **Prioritas:** 🔴 KRITIS
+- **Deskripsi:** Embed Instagram cuma nampilin header, bukan konten
+- **File:** `embed_parser.py`, `templates/gallery.html`
+- **Status:** ✅ **SELESAI v7.2.11**
+- **Solusi:** URL embed tambah `/captioned/` — biar caption + media muncul
+- **Verified:** TEST 13 (IG post + reel works)
+
+### ✅ PR-2: Tag terkait di lightbox kepotong — SELESAI
+- **Prioritas:** 🟡 MEDIUM
+- **Deskripsi:** Tag di lightbox kepotong kalau >3 tag
+- **File:** `templates/gallery.html`
+- **Status:** ✅ **RESOLVED** (bukan bug LUMOSS — masalah browser Quetta)
+- **Kesimpulan:** Tag gak kepotong di Chrome — masalah di address bar Quetta yang di bawah
+- **Verified:** Screenshot Chrome vs Quetta
+
+### ✅ PR-12: Tag terkait kepotong (duplikat PR-2) — SELESAI
+- **Prioritas:** 🟢 MINOR
+- **Deskripsi:** Sama kayak PR-2 (duplikat)
+- **File:** `templates/gallery.html`
+- **Status:** ✅ **RESOLVED** (duplikat PR-2)
+
+### 🎁 BONUS (bukan PR di backlog, tapi included di v7.2.11):
+- ✅ **Dynamic aspect ratio** — YouTube, IG, TikTok, Vimeo, Twitter, FB
+- ✅ **Auto-hide UI** — portrait + landscape
+- ✅ **Zona tap** — buat show UI di iframe full
+- ✅ **Gallery header auto-hide** — scroll ke bawah
+- ✅ **Smart history** — tombol back nutup lightbox
+- ✅ **100dvh** — handle address bar mobile
+- ✅ **Rebranding** — amuv7 → lumoss (storage keys)
+
+---
+
+## 🐛 GRUP A — BUG FIX LAMA (5 PR PENDING)
 
 ### PR-1: Layout Main Menu berantakan
 - **Prioritas:** 🟡 MEDIUM
 - **Deskripsi:** Layout Main Menu v7.2.0 kadang berantakan di beberapa ukuran terminal
 - **File:** `menu.py`
-- **Status:** ⏸️ Belum difix
-
-### PR-2: Tag terkait di lightbox kepotong
-- **Prioritas:** 🟡 MEDIUM
-- **Deskripsi:** Tag di lightbox kepotong kalau lebih dari 3 tag
-- **File:** `templates/gallery.html`
 - **Status:** ⏸️ Belum difix
 
 ### PR-3: Emoji gear ⚙️ nyempil
@@ -72,19 +114,7 @@
 
 ---
 
-## 📺 GRUP B — EMBED SYSTEM (7 PR)
-
-### PR-7: YouTube Error 153
-- **Prioritas:** 🔴 KRITIS
-- **Deskripsi:** Embed YouTube error 153 (video unavailable / embedding disabled)
-- **File:** `html_builder.py`, `embed_parser.py`
-- **Status:** 🔴 CONFIRMED — belum difix
-
-### PR-8: Instagram embed header doang
-- **Prioritas:** 🔴 KRITIS
-- **Deskripsi:** Embed Instagram cuma nampilin header, bukan konten
-- **File:** `html_builder.py`, `embed_parser.py`
-- **Status:** ⚠️ Perlu VERIFIKASI
+## 📺 GRUP B — EMBED SYSTEM (5 PR PENDING)
 
 ### PR-9: Deteksi embed vs video
 - **Prioritas:** 🟡 MEDIUM
@@ -102,13 +132,7 @@
 - **Prioritas:** 🟢 MINOR
 - **Deskripsi:** Tambah link "Buka di platform" di lightbox embed
 - **File:** `templates/gallery.html`
-- **Status:** ⏸️ Belum difix
-
-### PR-12: Tag terkait kepotong
-- **Prioritas:** 🟢 MINOR
-- **Deskripsi:** Sama kayak PR-2 (duplikat)
-- **File:** `templates/gallery.html`
-- **Status:** ⏸️ Belum difix
+- **Status:** ⏸️ Belum difix (sebagian udah ada di fallback UI)
 
 ### PR-13: Konsistensi nama file embed
 - **Prioritas:** 🟢 MINOR
@@ -116,21 +140,21 @@
 - **File:** `embed_parser.py`
 - **Status:** ⏸️ Belum difix
 
----
-
-## ⚙️ GRUP C — SETTING (7 PR)
-
 ### PR-14: Auto-match favicon per platform
 - **Prioritas:** 🟢 MINOR
 - **Deskripsi:** Otomatis pilih favicon berdasarkan platform embed
 - **File:** `templates/gallery.html`, `embed_parser.py`
 - **Status:** ⏸️ Belum difix
 
+---
+
+## ⚙️ GRUP C — SETTING (6 PR PENDING)
+
 ### PR-15: Auto-hide header on scroll
 - **Prioritas:** 🟢 MINOR
 - **Deskripsi:** Header auto-hide saat scroll ke bawah
 - **File:** `templates/gallery.html`
-- **Status:** ⏸️ Belum difix
+- **Status:** ✅ **SELESAI v7.2.11** (bonus)
 
 ### PR-16: Menu Favicon (A+B Hybrid)
 - **Prioritas:** 🟢 FINAL
@@ -164,7 +188,7 @@
 
 ---
 
-## ✨ GRUP D — VISUAL POLISH (6 PR)
+## ✨ GRUP D — VISUAL POLISH (6 PR PENDING)
 
 ### PR-21: Animasi judul Glow Pulse
 - **Prioritas:** 🟢 FINAL
@@ -309,16 +333,9 @@
 - ⏸️ Isi `data/resumeContent.js` dengan data pribadi
 - ⏸️ Ganti styling di `tailwind.config.js` (moss green theme)
 - ⏸️ Fix hydration error di `app/layout.tsx`
-- ⏸️ Fix GSAP target error (`.project-stage-shell`, `.timeline-mobile-card`)
+- ⏸️ Fix GSAP target error
 - ⏸️ Deploy ke GitHub Pages
 - ⏸️ Update README LUMOSS — isi field Website
-
-**Catatan teknis:**
-- Next.js 16.3.5 — Turbopack **GAK SUPPORT** Android/arm64
-- Dev server **WAJIB** pake Webpack: `npm run dev -- --webpack`
-- Hydration error karena font variable — bukan fatal
-- GSAP error karena section kosong — fix setelah isi data
-- Struktur: `app/`, `components/`, `data/`, `hooks/`, `lib/`, `scripts/`
 
 ---
 
@@ -327,9 +344,11 @@
 | Kategori | Jumlah |
 |----------|--------|
 | **TOTAL PR (LUMOSS)** | **38 PR** |
-| ⏸️ Belum difix | 30 |
-| 🔴 KRITIS (confirmed) | 1 (PR-7) |
-| 🔴 KRITIS (verifikasi) | 1 (PR-8) |
+| ✅ SELESAI | **4** (PR-2, PR-7, PR-8, PR-12) |
+| ⏸️ PENDING | **34** |
+| 🔴 KRITIS | 0 (semua selesai) |
+| 🟡 MEDIUM | 4 (PR-1, PR-4, PR-6, PR-9) |
+| 🟢 MINOR | 22 |
 | ⚠️ SKIP | 1 (PR-27) |
 | 🔒 LOCKED | 1 (PR-30) |
 | 🟢 FINAL | 4 (PR-16, PR-21, PR-28, PR-29) |
@@ -340,47 +359,42 @@
 
 ## 🎯 URUTAN PENGERJAAN (REKOMENDASI)
 
-### **FASE 5A — KRITIS (2 PR)**
-1. PR-7 (YouTube Error 153)
-2. PR-8 (Instagram embed header)
+### **FASE 4A — MEDIUM (4 PR)** ⭐ **PRIORITAS**
+1. **PR-1** (Layout Main Menu) — 🟡 MEDIUM
+2. **PR-4** (GITHUB_REPO) — 🟡 MEDIUM
+3. **PR-6** (Cek tools.py) — 🟡 MEDIUM
+4. **PR-9** (Deteksi embed vs video) — 🟡 MEDIUM
 
-### **FASE 5B — MEDIUM (5 PR)**
-3. PR-1 (Layout Main Menu)
-4. PR-2 (Tag lightbox)
-5. PR-4 (GITHUB_REPO)
-6. PR-9 (Deteksi embed vs video)
-7. PR-10 (Info panel "0 B (MP4)")
+### **FASE 4B — FINAL (4 PR)**
+5. PR-16 (Menu Favicon)
+6. PR-21 (Animasi Glow Pulse)
+7. PR-28 (Smooth navigation)
+8. PR-29 (Support 120Hz)
 
-### **FASE 5C — FINAL (4 PR)**
-8. PR-16 (Menu Favicon)
-9. PR-21 (Animasi Glow Pulse)
-10. PR-28 (Smooth navigation)
-11. PR-29 (Support 120Hz)
+### **FASE 4C — PILIH (2 PR prioritas)**
+9. PR-40 (Thumbnail generation) ⭐🥇
+10. PR-43 (Pagination) ⭐🥈
 
-### **FASE 5D — PILIH (2 PR prioritas)**
-12. PR-40 (Thumbnail generation) ⭐🥇
-13. PR-43 (Pagination) ⭐🥈
-
-### **FASE 5E — SISANYA (23 PR)**
-14. PR-3, 5, 6, 11, 13, 14, 15, 17, 18, 19, 20, 22, 23, 24, 25, 26, 31, 32, 35, 38, 47, 51
+### **FASE 4D — MINOR (24 PR)**
+11. PR-3, PR-5, PR-10, PR-11, PR-13, PR-14, PR-15✅, PR-17, PR-18, PR-19, PR-20, PR-22, PR-23, PR-24, PR-25, PR-26, PR-31, PR-32, PR-35, PR-38, PR-47, PR-51
 + PR-27 (SKIP), PR-30 (LOCKED)
 
 ### **SIDE PROJECT**
-15. PR-PORTFOLIO (Cinematic Resume) — PENDING
+12. PR-PORTFOLIO (Cinematic Resume) — PENDING
 
 ---
 
 ## 🎯 NEXT STEP
 
 **Pilih salah satu:**
-1. **PR-7** (YouTube) — 🔴 KRITIS, butuh `html_builder.py` & `embed_parser.py`
-2. **PR-8** (Instagram) — 🔴 KRITIS, butuh file yang sama
-3. **PR-4** (GITHUB_REPO) — 🟡 MEDIUM, cepet
-4. **PR-40** (Thumbnail) — 🟡 PILIH ⭐🥇
-5. **PR-PORTFOLIO** (Cinematic Resume) — 🟡 MEDIUM
+1. **PR-1** (Layout Main Menu) — 🟡 MEDIUM, butuh `menu.py`
+2. **PR-4** (GITHUB_REPO) — 🟡 MEDIUM, cepet
+3. **PR-6** (Cek tools.py) — 🟡 MEDIUM, cek dulu
+4. **PR-9** (Deteksi embed) — 🟡 MEDIUM, butuh `embed_parser.py`
+5. **PR-40** (Thumbnail) — 🟡 PILIH ⭐🥇
 
-**Rekomendasi:** Mulai dari **PR-7** — karena ini **KRITIS** & user **paling ngerasain** (YouTube error).
+**Rekomendasi:** Mulai dari **PR-1** — karena udah lama pending & medium priority.
 
 ---
 
-**END OF BACKLOG v7.2.8**
+**END OF BACKLOG v7.2.12**
