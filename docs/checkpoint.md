@@ -4,7 +4,7 @@
 ================================================================================
 
 Terakhir update  : 2026-09-17
-Versi checkpoint : v1.6
+Versi checkpoint : v1.7
 Format           : Markdown (.md)
 Tipe             : CONSTANT (jarang berubah)
 
@@ -219,6 +219,7 @@ HAL YANG DIHINDARI:
   X  Jangan lupa fun-fact (signature gue)
   X  Jangan kasih pilihan teknis tanpa penjelasan (lihat 4.9)
   X  Jangan asumsi kata ambigu (lihat 4.12)
+  X  JANGAN kasih command Termux dengan tag # (lihat 4.15)
 
 ================================================================================
 4. RULE KERJA
@@ -233,6 +234,7 @@ PRINSIP PENTING:
   X  JANGAN asal eksekusi tanpa konfirmasi
   X  JANGAN kirim file final sebelum "gas"
   X  JANGAN asumsi kata ambigu (lihat 4.12)
+  X  JANGAN kasih command Termux dengan tag # (lihat 4.15)
   OK Selalu kasih opsi + rekomendasi ✦
   OK Kalau ada bug tak terduga, transparan
   OK Kalau file panjang, pecah per BATCH
@@ -298,7 +300,7 @@ DETAIL CARA KERJA:
     · User pilih salah satu, tapi GAK PAHAM bedanya
     · Hasil: salah pilih → eksekusi salah → buang waktu
 
-  ✅ ATURAN BARU:
+  ✅ ATURAN:
     Sebelum nge-kasih pilihan yang "aneh" / teknis / ambigu:
       1. JELASKAN DULU — apa itu, fungsinya apa, efeknya apa
       2. KASIH INFO SECUKUPNYA — biar user bisa mikir
@@ -323,29 +325,16 @@ DETAIL CARA KERJA:
     · Edukasi — bukan cuma eksekusi
     · User bisa ambil keputusan INFORMED, bukan asal ikut
 
-  📌 CONTOH KASUS (yang tadi kejadian):
-    · AI kasih pilihan "origin: A/B/C"
-    · User gak paham `origin` itu apa
-    · User asal pilih → salah → harus ulang
-    · SEHARUSNYA: AI jelasin DULU `origin` itu apa, fungsinya apa,
-      baru kasih pilihan A/B/C dengan efek masing-masing
-
-  ⚠️ CATATAN:
-    · Rule ini berlaku buat SEMUA pilihan teknis — bukan cuma origin
-    · Kalo pilihan simpel (y/n), gak perlu dijelasin panjang
-    · Kalo pilihan kompleks (arsitektur, library, dll), WAJIB dijelasin
-    · Kalo user bilang "terserah", kasih rekomendasi + alasan
-
 4.10 ATURAN — TEST DI WEB SERVER, BUKAN FILE://
 ─────────────────────────────────────────────────
 
-  ⛔ MASALAH YANG SERING KEJADIAN:
+  ⛔ MASALAH:
     · User buka HTML langsung dari file manager (file://)
     · Banyak fitur web gak jalan — YouTube embed error 153,
       localStorage gak works, fetch API gak jalan
     · User kira kode-nya salah, padahal masalah di protokol
 
-  ✅ ATURAN BARU:
+  ✅ ATURAN:
     1. Kalo fitur web gak jalan, CEK DULU protokol
        · file:// → origin = null → YouTube reject
        · http://localhost → origin valid → works
@@ -367,18 +356,6 @@ DETAIL CARA KERJA:
     · Ngurangin "false bug" — masalah environment, bukan kode
     · Ngurangin frustasi — user bingung kenapa gak jalan
     · Edukasi soal beda protokol
-
-  📌 CONTOH KASUS (yang tadi kejadian):
-    · YouTube embed error 153 di file://
-    · User pikir kode salah
-    · Ternyata di localhost works sempurna
-    · Solusi: recommend localhost / GitHub Pages
-
-  ⚠️ CATATAN:
-    · file:// itu bukan use case utama LUMOSS — LUMOSS didesain
-      buat di-host di GitHub Pages
-    · Kalo user maunya file:// — kasih fallback, tapi expect limit
-    · Untuk production — SELALU pake http/https
 
 4.11 ATURAN — AUTO-HIDE UI, ZONA TAP, SMART HISTORY
 ─────────────────────────────────────────────────
@@ -416,22 +393,16 @@ DETAIL CARA KERJA:
     · Dipake di app besar — YouTube, Netflix, TikTok
     · Bisa di-reuse di project lain
 
-  ⚠️ CATATAN:
-    · Kalo bikin fitur embed/lightbox lagi — pake pattern ini
-    · Kalo user minta "kaya YouTube" — refer ke pattern ini
-
 4.12 ATURAN — KLARIFIKASI KATA AMBIGU SEBELUM EKSEKUSI
 ─────────────────────────────────────────────────
 
-  ⛔ MASALAH YANG SERING KEJADIAN:
+  ⛔ MASALAH:
     · User bilang "kepotong", "rusak", "error", "gak jalan"
     · Kata-kata ini AMBIGU — bisa 2-3 arti beda
     · AI nangkep arti A, user maksud arti B
     · AI eksekusi berdasarkan asumsi → salah → buang waktu
-    · User frustasi: "bukan itu maksud gue!"
-    · AI frustasi: "lah, katanya X"
 
-  ✅ ATURAN BARU:
+  ✅ ATURAN:
     Kalo user pake kata ambigu — JANGAN asumsi. KLARIFIKASI.
 
     Contoh kata ambigu:
@@ -464,29 +435,15 @@ DETAIL CARA KERJA:
     · Ngurangin frustasi user & AI
     · Lebih cepet — tanya 1 menit > debug 1 jam
 
-  📌 CONTOH KASUS (yang tadi kejadian):
-    · User bilang: "Tag di lightbox kepotong kalau >3 tag"
-    · AI nangkep: tag kepotong di tepi
-    · Padahal maksud user: iframe YouTube gak full
-    · Hasil: AI salah fokus — debug hal yang salah
-    · SEHARUSNYA: AI tanya "kepotong maksudnya tag atau iframe?"
-
-  ⚠️ CATATAN:
-    · Kalo user ulang kata yang sama 2x — berarti AI salah nangkep
-    · Kalo user bilang "bukan itu" — STOP, klarifikasi ulang
-    · Screenshot itu GOLD — minta kalo perlu
-    · Jangan malu nanya — lebih baik nanya daripada salah
-
 4.13 ATURAN — REFACTOR SIZE, BUKAN BERARTI BUG
 ─────────────────────────────────────────────────
 
-  ⛔ MASALAH YANG SERING KEJADIAN:
+  ⛔ MASALAH:
     · User liat file size turun (misal 106 KB → 99 KB)
     · User kira "ada yang ilang" / "ada yang salah"
     · Padahal refactor emang ngurangin size — itu NORMAL
-    · User jadi panik, minta review ulang
 
-  ✅ ATURAN BARU:
+  ✅ ATURAN:
     Kalo file size turun setelah refactor:
       1. JANGAN panik — size turun itu NORMAL
       2. CEK FUNGSI KUNCI — pastiin semua ada
@@ -518,35 +475,17 @@ DETAIL CARA KERJA:
       · Kasih command yang bisa user jalankan
       · Kasih template output yang diharapkan
 
-  🎯 TUJUAN:
-    · Ngurangin panik yang gak perlu
-    · Edukasi — size turun itu OK, bukan bug
-    · Kasih cara verifikasi mandiri
-
-  📌 CONTOH KASUS (yang tadi kejadian):
-    · File gallery.html turun dari 106 KB → 99 KB
-    · User tanya "kok mengecil?"
-    · AI verifikasi — semua fungsi ada, struktur OK
-    · Size turun karena refactor + hapus duplikat
-    · Kesimpulan: AMAN ✅
-
-  ⚠️ CATATAN:
-    · Size turun > 20% — cek lebih teliti
-    · Size turun > 50% — KEMUNGKINAN besar ada yang ilang
-    · Kalo size naik mendadak — cek duplikat / fitur baru
-    · Selalu verifikasi, jangan asumsi
-
 4.14 ATURAN — RELEASE SETIAP ADA PERUBAHAN
 ─────────────────────────────────────────────────
 
-  ⛔ MASALAH YANG SERING KEJADIAN:
+  ⛔ MASALAH:
     · User commit + push, tapi LUPA release
     · Repo keliatan "gak aktif" — Releases kosong
     · User lain gak tau ada update apa
     · Rollback susah — gak ada versioning
     · Changelog manual — ribet
 
-  ✅ ATURAN BARU:
+  ✅ ATURAN:
     Setiap kali ada PERUBAHAN SIGNIFIKAN:
       1. Commit + push (udah biasa)
       2. BARU: Bikin release di GitHub
@@ -585,21 +524,96 @@ DETAIL CARA KERJA:
     · Versioning jelas
     · User tau update terbaru
 
-  📌 CONTOH KASUS (yang tadi kejadian):
-    · Sesi v7.2.11 — embed fix selesai
-    · User commit + push ✅
-    · Tapi Releases kosong ❌
-    · User tanya "gimana biar gak kosong?"
-    · Solusi: bikin release v7.2.11
+4.15 ATURAN — JANGAN KASIH COMMAND DENGAN TAG # (STRICT!)
+─────────────────────────────────────────────────
 
-  ⚠️ CATATAN:
-    · Semantic versioning: MAJOR.MINOR.PATCH
-      - MAJOR: breaking change (6 → 7)
-      - MINOR: fitur baru (7.2 → 7.3)
-      - PATCH: bug fix (7.2.11 → 7.2.12)
-    · Auto-release-wizard bisa dipake nanti
-    · Kalo ada asset (zip, tar.gz), upload juga
-    · Tag harus sama dengan versi di state.md
+  ⛔ LARANGAN KERAS — INI YANG PALING SERING DILANGGAR:
+
+    AI DILARANG KERAS memberikan command Termux yang:
+      · Diawali dengan tanda pagar (#)
+      · Mengandung tanda pagar (#) sebagai komentar
+      · Ada komentar inline setelah command (# seperti ini)
+
+  📌 CONTOH SALAH:
+
+    cd /storage/emulated/0/Project/lumoss
+    # Pindah ke folder project          ← ❌ INI SALAH!
+    git status
+    git add -A                          ← ❌ ada komentar di atas
+    # Commit semua perubahan            ← ❌ INI SALAH!
+    git commit -m "update"
+
+  📌 CONTOH BENAR:
+
+    cd /storage/emulated/0/Project/lumoss
+    git status
+    git add -A
+    git commit -m "update"
+
+    Penjelasan (di LUAR code block):
+    - Baris 1: pindah ke folder
+    - Baris 2: cek status
+    - Baris 3: stage semua
+    - Baris 4: commit
+
+  🔥 ALASAN KENAPA INI DILARANG:
+
+    1. Di Termux, tanda # bikin SELURUH BARIS jadi komentar
+    2. Kalo user COPY-PASTE SEBAGIAN, command bisa RUSAK
+    3. Kalo user COPY-PASTE SEMUA, baris komentar di-skip
+       tapi user gak tau mana yang di-skip
+    4. Ini BIKIN FRUSTASI & BUANG WAKTU
+    5. Sudah kejadian 3x — AI LANGGAR TERUS
+
+  ✅ ATURAN YANG BENER:
+
+    Kalo butuh penjelasan:
+      · Tulis di LUAR code block (sebagai teks biasa)
+      · ATAU kasih paragraf sebelum code block
+      · ATAU pisah jadi langkah-langkah terpisah
+      · JANGAN PERNAH taruh komentar # di dalam code block
+
+    Kalo butuh multi-step command:
+      · Kasih 1 command per code block
+      · Atau gabung pake `&&`
+      · Atau pake `;` (semicolon)
+      · JANGAN pake # sebagai comment
+
+    Kalo butuh "if-else" logic:
+      · Jelaskan dulu di teks
+      · Baru kasih command
+      · JANGAN bikin pseudo-code dengan #
+
+  🎯 TUJUAN:
+    · User bisa copy-paste dengan aman
+    · Gak ada command yang rusak karena #
+    · Gak ada frustasi karena "kok gak jalan?"
+    · User bisa fokus ke hasil, bukan debug command
+
+  ⚠️ KONSEKUENSI KALO LANGGAR:
+
+    · AI harus minta maaf
+    · AI harus kirim ulang command tanpa #
+    · Waktu terbuang 2x (bikin + fix)
+    · User frustration naik
+    · Ini UDAH KEJADIAN 3x — JANGAN TERULANG LAGI!
+
+  📌 CATATAN TAMBAHAN:
+
+    · Aturan ini berlaku buat SEMUA command Termux
+    · Berlaku buat bash, sh, zsh, apapun shell-nya
+    · Berlaku buat command multi-baris (pake backslash atau &&)
+    · Kalo butuh kasih contoh komentar, jelasin di teks aja
+    · INGAT: # di Termux = komentar. Jangan pake di command.
+
+  🎯 SELF-CHECK SEBELUM KIRIM COMMAND:
+
+    AI WAJIB cek 3 hal sebelum kirim command:
+      1. Ada tanda # gak di command?
+      2. Ada komentar inline gak?
+      3. Kalo ada → HAPUS, baru kirim
+
+    Kalo lupa cek → LANGGAR ATURAN → ulang dari awal.
 
 ================================================================================
 5. ATURAN TEKNIS PROJECT LUMOSS
@@ -615,7 +629,7 @@ DETAIL CARA KERJA:
   RULES KHUSUS:
     · Hindari bug f-string Python 3.14 (nested {})
     · Hindari `text/{X}` tanpa spasi
-    · Jangan pake tag # di perintah Termux
+    · Jangan pake tag # di perintah Termux (LIHAT 4.15!)
     · Konfirmasi dulu sebelum eksekusi
     · Jangan lupa fun-fact (signature gue)
 
@@ -623,8 +637,8 @@ DETAIL CARA KERJA:
     · JANGAN PERNAH kasih command Termux yang diawali atau
       mengandung tanda pagar (#) sebagai komentar.
     · Contoh SALAH:
-        # Pindah ke home
         cd /storage/emulated/0/Project/
+        # Pindah ke home
         mv folder ~/
     · Contoh BENAR:
         cd /storage/emulated/0/Project/
@@ -634,7 +648,7 @@ DETAIL CARA KERJA:
     · Alasan: di Termux, tanda # bikin seluruh baris jadi
       komentar. Kalo user copy-paste sebagian, command bisa
       rusak / gak jalan. Ini bikin frustasi & buang waktu.
-    · Aturan ini SUDAH DILANGGAR 2x oleh AI. JANGAN ULANGI.
+    · Aturan ini SUDAH DILANGGAR 3x oleh AI. JANGAN ULANGI.
 
   FILE STRUCTURE:
     · docs/checkpoint.md  ← CONSTANT (file ini)
@@ -702,5 +716,26 @@ CATATAN:
   · Gak ada duplikasi — SSOT (Single Source of Truth)
 
 ================================================================================
-                    END OF CHECKPOINT v1.6
+8. CHANGE LOG CHECKPOINT
+================================================================================
+
+v1.7 (2026-09-17):
+  · Rule 4.15 BARU — Jangan kasih command dengan tag # (STRICT)
+  · Strengthen section 5 — larangan # dengan contoh SALAH/BENAR
+  · Update rule count — 8 rule + 1 baru = 9 rule total
+  · Update referensi ke "SUDAH DILANGGAR 3x"
+  · Update "HAL YANG DIHINDARI" — tambah # di list
+
+v1.6 (2026-09-17):
+  · 6 rule baru dari sesi v7.2.11 (4.9 → 4.14)
+  · Rule 4.14 — release setiap perubahan
+
+v1.5 (sebelumnya):
+  · Rule kerja diperjelas
+
+v1.4 (sebelumnya):
+  · 5 rule baru dari sesi v7.2.11
+
+================================================================================
+                    END OF CHECKPOINT v1.7
 ================================================================================
