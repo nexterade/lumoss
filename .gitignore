@@ -55,4 +55,7 @@ fix_emoji.py
 *.rar
 
 # --- File deprecated ---
-templates/about.html
+templates/about.html*.bak
+*.bak_*
+setup-*.sh
+*-pointless-*
