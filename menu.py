@@ -72,7 +72,7 @@ import config_manager as cm
 # VERSION / CONSTANTS
 # ═══════════════════════════════════════════════════════════
 
-LUMOSS_VERSION = "v7.2.11"
+LUMOSS_VERSION = "v7.2.13"
 LUMOSS_GATE_TITLE = "LUMOSS :: UPLOAD GATE"
 LUMOSS_MENU_TITLE = "LUMOSS :: MAIN MENU"
 

@@ -94,7 +94,7 @@ C_GRAD_7 = C_MOSS_1
 
 PROJECT_NAME = "lumoss"
 PROJECT_FULL = "Lumoss — Media Garden"
-PROJECT_VERSION = "7.2.11"
+PROJECT_VERSION = "7.2.13"
 PROJECT_AUTHOR = "@nexterade"
 PROJECT_DESC = "Media Garden, in bloom"
 PROJECT_TAGLINE = "Media Garden, in bloom"

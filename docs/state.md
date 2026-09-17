@@ -4,7 +4,7 @@
 ================================================================================
 
 Terakhir update  : 2026-09-17
-Versi state      : v7.2.12
+Versi state      : v7.2.13
 Format           : Markdown (.md)
 Tipe             : DYNAMIC (update tiap sesi)
 
@@ -25,7 +25,7 @@ Logo         : 🌿
 Tagline      : "Media Garden, in bloom"
 Author       : @nexterade
 License      : MIT
-Status       : 🎨 UI POLISH (v7.2.11) + 📝 DOCS (v7.2.12) + ✅ FIX 5 PR
+Status       : 🎨 UI POLISH (v7.2.11) + 📝 DOCS (v7.2.13) + ✅ FIX 12 PR + 🎁 NEW 5 FITUR
 
 TOOLKIT (SELESAI):
   Lokasi     : /storage/emulated/0/Project/auto-release-wizard/
@@ -50,7 +50,8 @@ SIDE PROJECT (SELESAI):
 ✅ FASE 2.5 — DOKUMENTASI (SELESAI, v7.2.9)
 ✅ FASE 3   — EMBED FIX (SELESAI, v7.2.11)
 ✅ SIDE PROJECT — PORTFOLIO (SELESAI, v1.0)
-🔥 FASE 4   — FASE 5 PR (38 PR — 9 selesai, 29 pending) ← ONGOING!
+✅ FASE 3.5 — PLATFORM ICON + AUTO-TAG + PR-9/10/11 (SELESAI, v7.2.13)
+🔥 FASE 4   — FASE 5 PR (38 PR — 12 selesai, 26 pending) ← ONGOING!
 ⏸️ FASE 5   — BACKLOG v7.3.0 (PENDING)
 
 ================================================================================
@@ -65,16 +66,15 @@ Remote       : origin (https://github.com/nexterade/lumoss.git)
 Status       : ✅ Up to date with origin/main
 
 Commit History (terbaru):
+  · 8cea7dc — feat(v7.2.13): PR-9 + PR-10 + PR-11 + Platform Icon + Auto-Tag
   · 96fcf4f — chore: cleanup backup files + update .gitignore
   · 0625e69 — feat(PR-1,PR-3,PR-4,PR-5,PR-6): tree view + GITHUB_REPO fix + tools cleanup
-  · e7cc982 — (sebelumnya)
   · ac6003e — docs(checkpoint): update v1.6 — rule 4.14 (release setiap perubahan)
-  · 80eef54 — docs(checkpoint): update v1.4 — 5 rule baru dari sesi v7.2.11
-  · 682c0d5 — feat(PR-7, PR-8): YouTube + IG embed + aspect ratio + auto-hide UI
 
 Release Terbaru:
-  · v7.2.12 — 🌿 LUMOSS v7.2.12 — Tree View + GITHUB_REPO Fix
-    https://github.com/nexterade/lumoss/releases/tag/v7.2.12
+  · v7.2.13 — 🌿 LUMOSS v7.2.13 — Platform Icons + Auto-Tag
+    https://github.com/nexterade/lumoss/releases/tag/v7.2.13
+  · v7.2.12 — Tree View + GITHUB_REPO Fix
   · v7.2.11 — Embed Fix
   · v7.2.9  — Dokumentasi
 
@@ -92,7 +92,7 @@ Release Terbaru:
   · templates/about.html
 
 File tracked : 24 files (lihat `git ls-files`)
-Ukuran repo  : ~145 KiB
+Ukuran repo  : ~150 KiB
 
 ================================================================================
 4. STRUKTUR PROJECT
@@ -114,10 +114,11 @@ Path: /storage/emulated/0/Project/lumoss/
     │   ├── akun_utama/
     │   └── cantika/
     ├── templates/                   ✅ Template HTML
-    │   ├── gallery.html             ✅ v7.2.12
-    │   └── manager.html
+    │   ├── gallery.html             ✅ v7.2.13
+    │   ├── manager.html
+    │   └── platform-icons.js        ✅ v7.2.13 (BARU!)
     ├── docs/                        ✅ Dokumentasi
-    │   ├── checkpoint.md            ← CONSTANT (v1.7)
+    │   ├── checkpoint.md            ← CONSTANT (v1.8)
     │   ├── state.md                 ← DYNAMIC (file ini)
     │   ├── backlog.md               ← DYNAMIC (38 PR + 1 side)
     │   └── PR-PORTOFOLIO.md         ← Side project
@@ -125,19 +126,19 @@ Path: /storage/emulated/0/Project/lumoss/
     │
     ├── account_manager.py           ✅ v7.2.2
     ├── config_manager.py            ✅ v7.2.2
-    ├── embed_parser.py              ✅ v7.2.11 (aspect ratio)
-    ├── global_config.json           ✅ v7.2.2
-    ├── html_builder.py              ✅ v7.2.12 (GITHUB_REPO fix)
-    ├── lumoss.py                    ✅ v7.2.12 (pass github_repo)
+    ├── embed_parser.py              ✅ v7.2.13 (auto-tag + detection)
+    ├── global_config.json           ✅ v7.2.13
+    ├── html_builder.py              ✅ v7.2.13 (platform-icons)
+    ├── lumoss.py                    ✅ v7.2.12
     ├── media_processor.py           ✅ v7.2.0
-    ├── menu.py                      ✅ v7.2.11 (tree view)
+    ├── menu.py                      ✅ v7.2.13 (tree view)
     ├── menu_account.py              ✅ v7.2.2
     ├── menu_embed.py                ✅ v7.2.2
     ├── menu_tools.py                ✅ v7.2.2
-    ├── README.md                    ✅ v7.2.12
-    ├── requirements.txt             ✅ v7.2.12 (header lumoss)
-    ├── tools.py                     ✅ v7.2.11 (header clean)
-    ├── ui_helpers.py                ✅ v7.2.11 (tree + vwidth fix)
+    ├── README.md                    ✅ v7.2.13
+    ├── requirements.txt             ✅ v7.2.12
+    ├── tools.py                     ✅ v7.2.11
+    ├── ui_helpers.py                ✅ v7.2.13
     └── uploader.py                  ✅ v7.2.9
 
 ================================================================================
@@ -155,6 +156,17 @@ cache/<slug>/deleted.json        — blacklist
 Cache key format:
   {source_label}/{rel_path}
   Contoh: "Nagram/VID_20260718_154608_914.mp4"
+
+Embed item fields (v7.2.13):
+  {
+    "id": "embed_xxx",
+    "platform": "youtube",       ← NEW (lowercase slug)
+    "source": "YouTube",          ← display name
+    "original_url": "https://...",  ← URL asli ke platform
+    "no_iframe": false,           ← NEW (flag fallback)
+    "tags": ["embed", "youtube", "video"],  ← auto-tag
+    ...
+  }
 
 ================================================================================
 6. FITUR v7.2.2 (BASE)
@@ -174,87 +186,87 @@ Cache key format:
 ================================================================================
 
 🎯 PR-7 — YouTube Error 153 FIXED:
-  ✅ URL embed tambah parameter:
-     · origin={ORIGIN} — dynamic dari window.location.origin
-     · enablejsapi=1 — kontrol via JS
-     · rel=0 — gak nampilin rekomendasi
-     · modestbranding=1 — minimal branding
-     · playsinline=1 — support inline play
+  ✅ URL embed tambah parameter: origin, enablejsapi, rel, modestbranding, playsinline
   ✅ Fallback UI kalo iframe gagal
 
 🎯 PR-8 — Instagram Embed FIXED:
-  ✅ URL embed: /embed/captioned/ (tambah captioned)
-  ✅ Caption + media muncul, bukan cuma header
+  ✅ URL embed: /embed/captioned/
 
-🎯 DYNAMIC ASPECT RATIO (BARU):
-  ✅ YouTube watch → 16/9 (landscape)
-  ✅ YouTube Shorts → 9/16 (portrait)
-  ✅ Instagram Post → 4/5 (portrait)
-  ✅ Instagram Reel/TV → 9/16 (portrait)
-  ✅ TikTok → 9/16 (portrait)
-  ✅ Vimeo → 16/9 (landscape)
-  ✅ Twitter/X → 16/9 (landscape)
-  ✅ Facebook → 16/9 (landscape)
+🎯 DYNAMIC ASPECT RATIO:
+  ✅ YouTube watch → 16/9, Shorts → 9/16
+  ✅ Instagram Post → 4/5, Reel/TV → 9/16
+  ✅ TikTok → 9/16, Vimeo → 16/9
+  ✅ Twitter/X → 16/9, Facebook → 16/9
 
-🎯 AUTO-HIDE UI (BARU):
+🎯 AUTO-HIDE UI:
   ✅ Header & footer auto-hide setelah 3 detik
-  ✅ Opacity 0.15 pas non-aktif
-  ✅ Opacity 1 pas hover/active/show
-  ✅ Tap area atas & bawah iframe → show UI
-  ✅ Rotate/resize → reset timer
+  ✅ Zona tap atas & bawah iframe
 
-🎯 GALLERY HEADER AUTO-HIDE (BARU):
-  ✅ Scroll ke bawah (>10px) → header hide
-  ✅ Auto-show setelah 3 detik
-  ✅ Scroll ke atas → header show
-
-🎯 SMART HISTORY (BARU):
-  ✅ pushState pas buka lightbox
-  ✅ replaceState pas pindah item (gak numpuk)
-  ✅ popstate handler — tombol back nutup lightbox
-  ✅ 100dvh — handle address bar mobile
+🎯 SMART HISTORY:
+  ✅ pushState/replaceState + popstate
 
 ================================================================================
 6b. FITUR v7.2.12 (TREE VIEW + GITHUB_REPO FIX) — SELESAI
 ================================================================================
 
-🔥 5 PR SELESAI DALAM 1 SESI:
+✅ PR-1 — Layout Main Menu (tree view ala `tree` command)
+✅ PR-3 — Emoji gear ⚙ nyempil → symbol konsisten
+✅ PR-4 — GITHUB_REPO gak di-inject → chain fix
+✅ PR-5 — templates/about.html dihapus
+✅ PR-6 — tools.py header cleanup
 
-✅ PR-1 — Layout Main Menu (MEDIUM):
-  · SEBELUM: Box layout berantakan di beberapa ukuran terminal
-  · SESUDAH: Tree view ala `tree` command
-  · Karakter: │ ├── └── (Unicode box-drawing, 1-cell stabil)
-  · Warna: moss green (nyatu sama tema)
-  · File: ui_helpers.py (render_tree, render_tree_group), menu.py
+================================================================================
+6c. FITUR v7.2.13 (PLATFORM ICON + AUTO-TAG + PR-9/10/11) — SELESAI
+================================================================================
 
-✅ PR-3 — Emoji gear ⚙ nyempil (MINOR):
-  · SEBELUM: Emoji ⚙️ (2 char) bikin teks di sebelahnya geser
-  · SESUDAH: Symbol ⚙ (1 char) konsisten
-  · File: menu.py (sub-judul PENGATURAN)
+🔥 3 PR + 5 FITUR + 1 REFACTOR + 2 POLISH DALAM 1 RILIS:
 
-✅ PR-4 — GITHUB_REPO gak di-inject (MEDIUM):
-  · SEBELUM: window.GITHUB_REPO gak pernah di-set → link GitHub gak muncul
-  · SESUDAH: Chain fix — build_all → build_gallery_html → template
-  · Placeholder: /*GITHUB_REPO_PLACEHOLDER*/ di gallery.html
-  · JS: const GITHUB_REPO = ... (bukan window.GITHUB_REPO)
-  · Optional: kalo config kosong → link hidden (expected)
-  · File: html_builder.py, templates/gallery.html, lumoss.py
+✅ PR-9 — Deteksi embed vs video:
+  · A1: Cek extension di query string
+  · A2: Tambah HLS/DASH extension (.m3u8, .mpd)
+  · A3: is_embed_url() strict (whitelist)
+  · A4: _parse_generic() cek whitelist domain
+  · A5: _parse_twitter() flag no_iframe (endpoint deprecated)
 
-✅ PR-5 — templates/about.html (MINOR):
-  · File about.html dihapus (udah gak dipake sejak v7.2.0)
-  · About digabung ke gallery section
+✅ PR-10 — Info panel "0 B (MP4)":
+  · Buat embed: tampilin "Platform: YouTube (MP4)"
+  · Hide "Nama/Album/Ukuran/Upload" — gak relevan
+  · Tampilin "Link" + "Platform"
 
-✅ PR-6 — Cek tools.py v7.1.0 (MEDIUM):
-  · SEBELUM: tools.py header pake emoji 📤 💾 🗑️ → cursor positioning error
-  · SESUDAH: Ganti Unicode symbol (▶ = ✗ ↻ ⚒ ❦)
-  · Versi docstring → v7.2.11
-  · File: tools.py
+✅ PR-11 — Link "Buka di Platform":
+  · Tombol "🌐 Buka di [Platform]" (pake icon platform)
+  · Fallback UI buat no_iframe (Twitter/X)
 
-🎯 BONUS — GIT CLEANUP:
-  · Hapus menu.py.bak_v7.2.10 dari tracking
-  · Hapus setup-pointless-repo.sh
-  · Update .gitignore (*.bak, setup-*.sh, *-pointless-*)
-  · Commit: 96fcf4f
+🎁 FITUR BARU:
+
+1. PLATFORM ICON (SVG inline):
+   · YouTube, Instagram, TikTok, Facebook, Twitter/X, Vimeo
+   · Direct Image, Direct Video, Generic
+   · Background gradient per platform
+   · File: templates/platform-icons.js (BARU)
+
+2. AUTO-TAG dari URL embed:
+   · Extract tag dari URL path/query
+   · Config toggle: enable_embed_autotag (default ON)
+   · Config toggle: embed_autotag_fetch_title (default OFF)
+   · File: embed_parser.py
+
+3. FIELD BARU di item dict:
+   · `platform` — slug lowercase (youtube, instagram, dll)
+   · `original_url` — URL asli ke platform
+   · `no_iframe` — flag fallback
+
+4. REFACTOR: gallery.html + platform-icons.js dipisah
+   · html_builder.py inject platform-icons.js ke HTML
+   · Cleaner architecture
+
+5. ACTION BAR DYNAMIC:
+   · Embed → "🌐 Buka di [Platform]"
+   · Media biasa → "⬇️ Download"
+
+🎯 BONUS:
+   · Git cleanup (menu.py.bak + setup-pointless-repo.sh dihapus)
+   · .gitignore update
 
 ================================================================================
 7. BUG DITEMUKAN & DIFIX
@@ -271,6 +283,9 @@ BUG #12 (v7.2.11): Address bar kepotong (Quetta) → FIXED
 BUG #13 (v7.2.12): Border box miring (emoji width) → FIXED
 BUG #14 (v7.2.12): GITHUB_REPO gak di-inject → FIXED
 BUG #15 (v7.2.12): tools.py header cursor error → FIXED
+BUG #16 (v7.2.13): Info panel "0 B (MP4)" di embed → FIXED
+BUG #17 (v7.2.13): Action bar gak relevan buat embed → FIXED
+BUG #18 (v7.2.13): Link di info panel pake embed URL → FIXED
 
 SEMUA FIXED ✅
 
@@ -284,7 +299,8 @@ SEMUA FIXED ✅
 ✅ FASE 2.5 — DOKUMENTASI (SELESAI v7.2.9)
 ✅ FASE 3   — EMBED FIX (SELESAI v7.2.11)
 ✅ SIDE PROJECT — PORTFOLIO (SELESAI v1.0)
-🔥 FASE 4   — FASE 5 PR (38 PR — 9 selesai)
+✅ FASE 3.5 — PLATFORM ICON + AUTO-TAG (SELESAI v7.2.13)
+🔥 FASE 4   — FASE 5 PR (38 PR — 12 selesai)
 ⏸️ FASE 5   — BACKLOG v7.3.0 (13 saran)
 
 ================================================================================
@@ -298,32 +314,9 @@ Live URL     : https://nexterade.github.io
 Base         : Cinematic Resume (Next.js 16.3.5, Webpack)
 Prioritas    : 🟡 MEDIUM → ✅ DONE
 
-SETUP YANG UDAH KELAR:
-  ✅ Fork repo Cinematic Resume
-  ✅ Clone ke Termux (~/nexterade.github.io/)
-  ✅ Pindah ke home — fix symlink error (FAT32)
-  ✅ npm install — 96 packages, 0 vulnerabilities
-  ✅ Preview lokal: npm run dev -- --webpack
-  ✅ Personalisasi data (resumeContent.js) — nexterade
-  ✅ Personalisasi GitHub snapshot (githubSnapshot.json)
-  ✅ Fix null guards (HeroSection, LoaderOverlay)
-  ✅ Fix favicon (app/icon.svg — moss circle)
-  ✅ Fix Footer.js (repoUrl nexterade)
-  ✅ Fix next.config.mjs (basePath kosong)
-  ✅ Reset git history (fresh start)
-  ✅ Deploy via GitHub Actions
-  ✅ Live di https://nexterade.github.io
-
 TASK YANG BELUM:
   ⏸️ Update README LUMOSS — isi field Website
   ⏸️ Update README portfolio (masih template Amir)
-
-CATATAN TEKNIS:
-  · Next.js 16.3.5 — Turbopack GAK SUPPORT Android/arm64
-  · Dev server WAJIB pake Webpack: npm run dev -- --webpack
-  · Build WAJIB pake Webpack: npm run build -- --webpack
-  · basePath HARUS kosong (User Site, bukan Project Site)
-  · GitHub Actions: .github/workflows/deploy-pages.yml
 
 ================================================================================
 9. CATATAN PENTING
@@ -333,100 +326,78 @@ CATATAN TEKNIS:
   · Akun dummy: Akun Utama (bisa dihapus kalau perlu)
   · Git UDAH di-init — repo: github.com/nexterade/lumoss
   · Branch: main | Protocol: HTTPS | Author: nexter
-  · Commit terbaru: 96fcf4f (git cleanup)
-  · Release terbaru: v7.2.12 (Tree View + GITHUB_REPO Fix)
+  · Commit terbaru: 8cea7dc (v7.2.13)
+  · Release terbaru: v7.2.13 (Platform Icons + Auto-Tag)
   · PR FASE 5 detail: docs/backlog.md (39 item)
   · Multi-folder media (media_dirs array)
   · Onboarding WAJIB pilih folder
   · Struktur: accounts/ + output/ + cache/
   · Backup folder: /storage/emulated/0/Project/backup/
-  · UI tree view v7.2.12 (baru!)
-  · Embed fix v7.2.11 (YouTube, IG, aspect ratio, auto-hide UI)
+  · UI tree view v7.2.12
+  · Platform icons + auto-tag v7.2.13
+  · Embed fix v7.2.11
   · Submenu pake Unicode symbol (bukan emoji)
   · 🌿 = simbol utama Lumoss (gak di-convert)
   · Side project Cinematic Resume — SELESAI v1.0 (Live!)
-  · Portfolio URL: https://nexterade.github.io
   · ⛔ ATURAN KERAS: JANGAN kasih command Termux dengan tag #
     (lihat checkpoint.md section 5, rule 4.15)
-  · 📌 7 rule dari sesi v7.2.11 + 1 rule baru v7.2.12
-    (checkpoint v1.7)
-  · 🔥 5 PR selesai dalam 1 sesi (PR-1, PR-3, PR-4, PR-5, PR-6)
+  · 📌 8 rule + 1 baru = 9 rule total (checkpoint v1.8)
+  · 🔥 12 PR selesai total (dari 38)
 
 ================================================================================
 10. TEST REPORT (2026-09-17)
 ================================================================================
 
-✅ TEST 1  — Banner LUMOSS v7.2.2
-✅ TEST 2  — Onboarding (7 folder, .thumbnails HILANG)
-✅ TEST 3  — Bikin akun Cantika
-✅ TEST 4  — Upload Gate Dashboard
-✅ TEST 5  — Eksekusi Upload (2 file, 14.4 MB, 55s)
-✅ TEST 6  — Generate HTML (index.html + manager.html)
-✅ TEST 7  — Path display (accounts/output/cache)
-✅ TEST 8  — ConnectionError retry — SUKSES
-✅ TEST 9  — Git Init + Push ke GitHub
-✅ TEST 10 — Merge PR-FASE5 → backlog.md (39 item)
-✅ TEST 11 — Update README (rebranding LUMOSS)
-✅ TEST 12 — YouTube embed (watch, shorts) — WORKS
-✅ TEST 13 — Instagram embed (post, reel) — WORKS
-✅ TEST 14 — TikTok embed — WORKS
-✅ TEST 15 — Auto-hide UI + zona tap — WORKS
-✅ TEST 16 — Gallery header auto-hide — WORKS
-✅ TEST 17 — Tombol back (smart history) — WORKS
-✅ TEST 18 — Test di localhost (bukan file://) — WORKS
-✅ TEST 19 — Portfolio live (https://nexterade.github.io) — WORKS
-✅ TEST 20 — Tree view main menu (v7.2.12) — WORKS
-✅ TEST 21 — GITHUB_REPO inject (const GITHUB_REPO = "") — WORKS
-✅ TEST 22 — tools.py header clean (lumoss v7.2.11) — WORKS
-✅ TEST 23 — templates/about.html dihapus — WORKS
+✅ TEST 1-19  — (lihat state v7.2.12)
+✅ TEST 20    — Tree view main menu (v7.2.12) — WORKS
+✅ TEST 21    — GITHUB_REPO inject — WORKS
+✅ TEST 22    — tools.py header clean — WORKS
+✅ TEST 23    — templates/about.html dihapus — WORKS
+✅ TEST 24    — PR-9: deteksi embed vs video — WORKS
+✅ TEST 25    — Auto-Tag dari URL — WORKS (#shorts kedetect)
+✅ TEST 26    — Platform Icon (YouTube, IG, TikTok) — WORKS
+✅ TEST 27    — PR-11: Link "Buka di Platform" — WORKS
+✅ TEST 28    — PR-10: Info panel embed (bukan "0 B") — WORKS
+✅ TEST 29    — Action bar dynamic (Download vs Buka) — WORKS
+✅ TEST 30    — Auto-tag #shorts + #video — WORKS
 
 🎯 SEMUA FITUR JALAN SEMPURNA
 
 ================================================================================
-11. UI/UX PATTERN v7.2.12 (REUSE)
+11. UI/UX PATTERN v7.2.13 (REUSE)
 ================================================================================
 
-Pattern yang dipake di v7.2.12 — bisa di-reuse di project lain:
+Pattern yang dipake di v7.2.13 — bisa di-reuse di project lain:
 
-1. TREE VIEW (ala `tree` command)
-   · Karakter: │ ├── └── (Unicode box-drawing, 1-cell stabil)
-   · Warna: moss green (nyatu sama tema)
-   · Indent: 2 spasi per level
-   · File: ui_helpers.py (render_tree, render_tree_group)
+1. PLATFORM ICON (SVG inline)
+   · SVG path resmi per platform
+   · Inline ke HTML via build-time injection
+   · File terpisah (platform-icons.js) — gampang maintain
+   · Background gradient per platform
 
-2. DYNAMIC ASPECT RATIO
-   · Deteksi dari URL pattern (bukan fetch)
-   · Set CSS variable --embed-aspect
-   · Class data-orientation="portrait"/"landscape"
+2. AUTO-TAG dari URL
+   · Extract dari URL path/query
+   · Opt-in fetch HTML title
+   · Stop words filter
+   · Batasi max 8-10 tag
 
-3. AUTO-HIDE UI
-   · Header/footer opacity 0.15 default
-   · Class .show → opacity 1
-   · Timer 3 detik auto-hide
-   · Trigger: tap, hover, rotate, resize
+3. DYNAMIC ACTION BAR
+   · Conditional render berdasarkan tipe item
+   · Embed → "Buka di Platform"
+   · Media biasa → "Download"
 
-4. ZONA TAP (buat iframe full)
-   · .lb-tap-zone-top (70px dari atas)
-   · .lb-tap-zone-bottom (110px dari bawah)
-   · Transparan, z-index di atas iframe
-   · Tap → show UI
+4. PROGRESSIVE DISCLOSURE (Info Panel)
+   · Hide field gak relevan
+   · Embed: Platform + Link + Tag
+   · Media: Nama + Album + Ukuran + Upload
 
-5. SMART HISTORY
-   · pushState pas buka (1 entry)
-   · replaceState pas pindah item (gak numpuk)
-   · popstate handler
-   · closeLightbox → history.back()
+5. GRACEFUL DEGRADATION
+   · no_iframe flag → fallback UI
+   · Timeout 8 detik → tampilin link card
 
-6. FALLBACK UI
-   · Timeout 8 detik → tampilin fallback
-   · Link "Buka di platform"
-   · Tombol "Learn more"
-
-7. OPTIONAL FEATURE PATTERN (v7.2.12)
-   · Feature yang cuma aktif kalo user isi config
-   · Contoh: GITHUB_REPO (kalo kosong → link hidden)
-   · Defensive JS: `typeof X === "string" ? X : ""`
-   · File: html_builder.py, templates/gallery.html
+6. DEFENSIVE JS
+   · `typeof GITHUB_REPO === "string" ? GITHUB_REPO : ""`
+   · Guard clause sebelum use
 
 ================================================================================
 12. FILE TRACKED BY GIT (24 files)
@@ -441,6 +412,7 @@ docs/
 templates/
   · gallery.html
   · manager.html
+  · platform-icons.js         ← NEW v7.2.13
 
 accounts/
   · active.json
@@ -468,17 +440,17 @@ Root:
 13. NEXT STEP
 ================================================================================
 
-🔥 FASE 4 — ONGOING (9 PR selesai, 29 pending)
+🔥 FASE 4 — ONGOING (12 PR selesai, 26 pending)
 
 PRIORITAS BERIKUTNYA (medium):
-  1. PR-9 — Deteksi embed vs video (embed_parser.py)
-  2. PR-10 — Info panel "0 B (MP4)" (gallery.html)
-  3. PR-11 — Link "Buka di platform" (gallery.html)
-  4. PR-40 — Thumbnail generation (media_processor.py) ⭐🥇
-  5. PR-43 — Pagination / infinite scroll (gallery.html) ⭐🥈
+  1. PR-16 — Menu Favicon (A+B Hybrid) — 🟢 FINAL
+  2. PR-21 — Animasi Glow Pulse — 🟢 FINAL
+  3. PR-40 — Thumbnail generation (media_processor.py) ⭐🥇
+  4. PR-43 — Pagination / infinite scroll ⭐🥈
+  5. PR-28 — Smooth navigation — 🟢 FINAL
 
-REKOMENDASI: PR-9 (medium, embed_parser.py, low risk)
+REKOMENDASI: PR-16 (Menu Favicon — medium, low risk)
 
 ================================================================================
-                    END OF STATE v7.2.12
+                    END OF STATE v7.2.13
 ================================================================================
