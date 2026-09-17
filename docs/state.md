@@ -4,7 +4,7 @@
 ================================================================================
 
 Terakhir update  : 2026-09-17
-Versi state      : v7.2.12
+Versi state      : v7.2.13
 Format           : Markdown (.md)
 Tipe             : DYNAMIC (update tiap sesi)
 
@@ -25,18 +25,19 @@ Logo         : 🌿
 Tagline      : "Media Garden, in bloom"
 Author       : @nexterade
 License      : MIT
-Status       : 🎨 UI POLISH (v7.2.11) + 📝 DOCS (v7.2.12)
+Status       : 🎨 UI POLISH (v7.2.11) + 📝 DOCS (v7.2.13)
 
 TOOLKIT (SELESAI):
   Lokasi     : /storage/emulated/0/Project/auto-release-wizard/
   Fungsi     : Rilis project + 12 tools bantu (universal)
   Status     : ✅ 100% DONE (13 file)
 
-SIDE PROJECT (PENDING):
+SIDE PROJECT (SELESAI):
   Nama       : Cinematic Resume Portfolio
   Repo       : https://github.com/nexterade/nexterade.github.io
   Lokal      : ~/nexterade.github.io/
-  Status     : ⏸️ PENDING (base jalan, rombak belum)
+  Live       : https://nexterade.github.io
+  Status     : ✅ SELESAI v1.0 (Live!)
   Detail     : Lihat section 8b — Side Project
 
 ================================================================================
@@ -47,12 +48,10 @@ SIDE PROJECT (PENDING):
 ✅ FASE 1.5 — UI POLISH (SELESAI, v7.2.3 → v7.2.6)
 ✅ FASE 2   — GIT INIT (SELESAI, v7.2.7)
 ✅ FASE 2.5 — DOKUMENTASI (SELESAI, v7.2.9)
-✅ FASE 3   — EMBED FIX (SELESAI, v7.2.11)  ← BARU
+✅ FASE 3   — EMBED FIX (SELESAI, v7.2.11)
+✅ SIDE PROJECT — PORTFOLIO (SELESAI, v1.0)
 ⏸️ FASE 4   — FASE 5 PR (38 PR — 4 selesai, 34 pending)
 ⏸️ FASE 5   — BACKLOG v7.3.0 (PENDING)
-
-SIDE PROJECT (PENDING):
-⏸️ PORTFOLIO — CINEMATIC RESUME (lihat section 8b)
 
 ================================================================================
 3. GIT INFO
@@ -66,12 +65,12 @@ Remote       : origin (https://github.com/nexterade/lumoss.git)
 Status       : ✅ Up to date with origin/main
 
 Commit History (terbaru):
+  · ac6003e — docs(checkpoint): update v1.6 — rule 4.14 (release setiap perubahan)
   · 80eef54 — docs(checkpoint): update v1.4 — 5 rule baru dari sesi v7.2.11
   · 682c0d5 — feat(PR-7, PR-8): YouTube + IG embed + aspect ratio + auto-hide UI
-  · 29e516c — refactor(docs): lowercase file names (checkpoint, state, backlog)
+  · 34334a6 — docs(backlog): update v7.2.12 — 4 PR selesai
+  · eac3ea4 — docs(state): update v7.2.12 — FASE 3 (Embed Fix) selesai
   · ffc71bc — docs(backlog): merge PR-FASE5 into backlog.md — v7.2.8
-  · 518599e — refactor(docs): rename .md files to lowercase
-  · 9d926d2 — docs: update checkpoint & state v7.2.8
   · 58819eb — chore: initial commit — LUMOSS v7.2.6
 
 .gitignore:
@@ -87,7 +86,7 @@ Commit History (terbaru):
   · templates/about.html
 
 File tracked : 24 files (lihat `git ls-files`)
-Ukuran repo  : ~140 KiB
+Ukuran repo  : ~145 KiB
 
 ================================================================================
 4. STRUKTUR PROJECT
@@ -112,7 +111,7 @@ Path: /storage/emulated/0/Project/lumoss/
     │   ├── gallery.html             ✅ v7.2.11
     │   └── manager.html
     ├── docs/                        ✅ Dokumentasi
-    │   ├── checkpoint.md            ← CONSTANT (v1.4)
+    │   ├── checkpoint.md            ← CONSTANT (v1.6)
     │   ├── state.md                 ← DYNAMIC (file ini)
     │   ├── backlog.md               ← DYNAMIC (38 PR + 1 side)
     │   └── PR-PORTOFOLIO.md         ← Side project
@@ -165,7 +164,7 @@ Cache key format:
 8. BANNER LUMOSS: "Media Garden, in bloom"
 
 ================================================================================
-6a. FITUR v7.2.11 (EMBED FIX) — BARU
+6a. FITUR v7.2.11 (EMBED FIX) — SELESAI
 ================================================================================
 
 🎯 PR-7 — YouTube Error 153 FIXED:
@@ -214,29 +213,26 @@ Cache key format:
 ================================================================================
 
 🎨 UI OVERHAUL (v7.2.3):
-  ✅ Banner LUMOSS — border ngikutin lebar ASCII art (gak hardcoded 41)
+  ✅ Banner LUMOSS — border ngikutin lebar ASCII art
   ✅ layout_widths() — full-width otomatis dari term_width()
   ✅ render_full_box() — 1 box full-width
   ✅ render_two_col_box() — 2 kolom 1 border utuh
   ✅ render_group_box() — grup menu border utuh
-  ✅ Emoji di menu → Unicode symbol (◉ ▸ ◆ ▶ ↻ ▣ ◐ ❖ ⚒ ✎ ◈ ℹ ? ✗)
+  ✅ Emoji di menu → Unicode symbol
 
 🎨 MERGED BOXES (v7.2.4):
-  ✅ render_merged_box() — 1 box, multiple section (horizontal)
-  ✅ render_merged_group() — 1 box, multiple grup menu (horizontal)
+  ✅ render_merged_box() — 1 box, multiple section
+  ✅ render_merged_group() — 1 box, multiple grup menu
 
 🎨 VERTICAL LAYOUT (v7.2.5):
-  ✅ render_vertical_box() — section stack atas-bawah (Opsi C)
+  ✅ render_vertical_box() — section stack atas-bawah
   ✅ render_vertical_group() — grup menu stack atas-bawah
-  ✅ "AKUN & RINGKASAN" — sub-judul AKUN AKTIF / RINGKASAN
-  ✅ "MENU UTAMA" — sub-judul AKSI UTAMA / PENGATURAN
+  ✅ "AKUN & RINGKASAN" + "MENU UTAMA"
 
 🎨 EMOJI AUTO-CONVERT (v7.2.6):
-  ✅ EMOJI_TO_UNICODE — mapping ~150 emoji → Unicode symbol
-  ✅ convert_emoji() — auto-convert pas input (nama, judul)
-  ✅ strip_emoji() — strip sisa emoji gak dikenal
+  ✅ EMOJI_TO_UNICODE — mapping ~150 emoji
+  ✅ convert_emoji() + strip_emoji()
   ✅ 🌿 (LUMOSS_SYMBOL) — KEEP, gak di-convert
-  ✅ Safety net di render — double convert
 
 ================================================================================
 7. BUG DITEMUKAN & DIFIX
@@ -261,41 +257,48 @@ SEMUA FIXED ✅
 ✅ FASE 1.5 — UI POLISH v7.2.3 → v7.2.6 (SELESAI)
 ✅ FASE 2   — GIT INIT (SELESAI v7.2.7)
 ✅ FASE 2.5 — DOKUMENTASI (SELESAI v7.2.9)
-✅ FASE 3   — EMBED FIX (SELESAI v7.2.11)  ← BARU
+✅ FASE 3   — EMBED FIX (SELESAI v7.2.11)
+✅ SIDE PROJECT — PORTFOLIO (SELESAI v1.0)
 ⏸️ FASE 4   — FASE 5 PR (38 PR)
 ⏸️ FASE 5   — BACKLOG v7.3.0 (13 saran)
 
 ================================================================================
-8b. SIDE PROJECT — CINEMATIC RESUME PORTFOLIO
+8b. SIDE PROJECT — CINEMATIC RESUME PORTFOLIO (SELESAI!)
 ================================================================================
 
-Status       : ⏸️ PENDING (base jalan, rombak belum)
+Status       : ✅ SELESAI v1.0 — Live!
 Repo         : https://github.com/nexterade/nexterade.github.io
 Lokal        : ~/nexterade.github.io/
+Live URL     : https://nexterade.github.io
 Base         : Cinematic Resume (Next.js 16.3.5, Webpack)
-Prioritas    : 🟡 MEDIUM
+Prioritas    : 🟡 MEDIUM → ✅ DONE
 
 SETUP YANG UDAH KELAR:
   ✅ Fork repo Cinematic Resume
   ✅ Clone ke Termux (~/nexterade.github.io/)
   ✅ Pindah ke home — fix symlink error (FAT32)
   ✅ npm install — 96 packages, 0 vulnerabilities
-  ✅ Preview lokal jalan: npm run dev -- --webpack
+  ✅ Preview lokal: npm run dev -- --webpack
+  ✅ Personalisasi data (resumeContent.js) — nexterade
+  ✅ Personalisasi GitHub snapshot (githubSnapshot.json)
+  ✅ Fix null guards (HeroSection, LoaderOverlay)
+  ✅ Fix favicon (app/icon.svg — moss circle)
+  ✅ Fix Footer.js (repoUrl nexterade)
+  ✅ Fix next.config.mjs (basePath kosong)
+  ✅ Reset git history (fresh start)
+  ✅ Deploy via GitHub Actions
+  ✅ Live di https://nexterade.github.io
 
-YANG BELUM (TASK ROMBAK):
-  ⏸️ Isi data/resumeContent.js dengan data pribadi
-  ⏸️ Ganti styling di tailwind.config.js — moss green theme
-  ⏸️ Fix hydration error di app/layout.tsx (font variable)
-  ⏸️ Fix GSAP target error (.project-stage-shell, .timeline-mobile-card)
-  ⏸️ Deploy ke GitHub Pages
+TASK YANG BELUM:
   ⏸️ Update README LUMOSS — isi field Website
+  ⏸️ Update README portfolio (masih template Amir)
 
 CATATAN TEKNIS:
   · Next.js 16.3.5 — Turbopack GAK SUPPORT Android/arm64
   · Dev server WAJIB pake Webpack: npm run dev -- --webpack
-  · Hydration error karena font variable — bukan fatal
-  · GSAP error karena section kosong — fix setelah isi data
-  · Struktur: app/, components/, data/, hooks/, lib/, scripts/
+  · Build WAJIB pake Webpack: npm run build -- --webpack
+  · basePath HARUS kosong (User Site, bukan Project Site)
+  · GitHub Actions: .github/workflows/deploy-pages.yml
 
 ================================================================================
 9. CATATAN PENTING
@@ -305,7 +308,7 @@ CATATAN TEKNIS:
   · Akun dummy: Akun Utama (bisa dihapus kalau perlu)
   · Git UDAH di-init — repo: github.com/nexterade/lumoss
   · Branch: main | Protocol: HTTPS | Author: nexter
-  · Commit terbaru: 80eef54 (checkpoint v1.4)
+  · Commit terbaru: ac6003e (checkpoint v1.6)
   · PR FASE 5 detail: docs/backlog.md (39 item)
   · Multi-folder media (media_dirs array)
   · Onboarding WAJIB pilih folder
@@ -315,11 +318,11 @@ CATATAN TEKNIS:
   · Embed fix v7.2.11 (YouTube, IG, aspect ratio, auto-hide UI)
   · Submenu pake Unicode symbol (bukan emoji)
   · 🌿 = simbol utama Lumoss (gak di-convert)
-  · README UDAH di-rebranding ke LUMOSS (v7.2.9)
-  · Side project Cinematic Resume — PENDING (lihat 8b)
+  · Side project Cinematic Resume — SELESAI v1.0 (Live!)
+  · Portfolio URL: https://nexterade.github.io
   · ⛔ ATURAN KERAS: JANGAN kasih command Termux dengan tag #
     (lihat checkpoint.md section 5)
-  · 📌 5 rule baru dari sesi v7.2.11 (checkpoint v1.4)
+  · 📌 6 rule baru dari sesi v7.2.11 (checkpoint v1.6)
 
 ================================================================================
 10. TEST REPORT (2026-09-17)
@@ -343,6 +346,7 @@ CATATAN TEKNIS:
 ✅ TEST 16 — Gallery header auto-hide — WORKS
 ✅ TEST 17 — Tombol back (smart history) — WORKS
 ✅ TEST 18 — Test di localhost (bukan file://) — WORKS
+✅ TEST 19 — Portfolio live (https://nexterade.github.io) — WORKS
 
 🎯 SEMUA FITUR JALAN SEMPURNA
 
@@ -417,5 +421,5 @@ Root:
   · uploader.py
 
 ================================================================================
-                    END OF STATE v7.2.12
+                    END OF STATE v7.2.13
 ================================================================================

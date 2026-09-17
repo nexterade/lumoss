@@ -312,30 +312,44 @@
 
 ---
 
-## 🎬 SIDE PROJECT (1 — bukan bagian LUMOSS)
+## 🎬 SIDE PROJECT (1 — ✅ SELESAI!)
 
-### PR-PORTFOLIO: Cinematic Resume Portfolio
-- **Prioritas:** 🟡 MEDIUM
+### PR-PORTFOLIO: Cinematic Resume Portfolio — ✅ SELESAI v1.0
+- **Prioritas:** 🟡 MEDIUM → ✅ **DONE**
 - **Deskripsi:** Deploy Cinematic Resume sebagai portfolio pribadi di `nexterade.github.io`
 - **Repo:** `https://github.com/nexterade/nexterade.github.io`
 - **Lokal:** `~/nexterade.github.io/`
+- **Live:** **https://nexterade.github.io** 🎉
 - **Base:** Cinematic Resume (Next.js 16.3.5, Webpack)
-- **Status:** ⏸️ PENDING (base jalan, rombak belum)
+- **Status:** ✅ **SELESAI v1.0 — Live!**
 
 **Setup yang udah kelar:**
 - ✅ Fork repo Cinematic Resume
-- ✅ Clone ke Termux
-- ✅ Pindah ke home (fix symlink error)
-- ✅ `npm install` sukses (96 packages, 0 vulnerabilities)
-- ✅ Preview lokal jalan: `npm run dev -- --webpack`
+- ✅ Clone ke Termux (`~/nexterade.github.io/`)
+- ✅ Pindah ke home — fix symlink error (FAT32)
+- ✅ `npm install` — 96 packages, 0 vulnerabilities
+- ✅ Preview lokal: `npm run dev -- --webpack`
+- ✅ Personalisasi data (`resumeContent.js`) — nexterade
+- ✅ Personalisasi GitHub snapshot (`githubSnapshot.json`)
+- ✅ Fix null guards (HeroSection, LoaderOverlay)
+- ✅ Fix favicon (`app/icon.svg` — moss circle)
+- ✅ Fix Footer.js (repoUrl nexterade)
+- ✅ Fix `next.config.mjs` (basePath kosong)
+- ✅ Reset git history (fresh start)
+- ✅ Deploy via GitHub Actions
+- ✅ Live di **https://nexterade.github.io**
 
-**Task rombak (belum):**
-- ⏸️ Isi `data/resumeContent.js` dengan data pribadi
-- ⏸️ Ganti styling di `tailwind.config.js` (moss green theme)
-- ⏸️ Fix hydration error di `app/layout.tsx`
-- ⏸️ Fix GSAP target error
-- ⏸️ Deploy ke GitHub Pages
+**Task yang belum (follow-up):**
 - ⏸️ Update README LUMOSS — isi field Website
+- ⏸️ Update README portfolio (masih template Amir)
+
+**Catatan teknis:**
+- Next.js 16.3.5 — Turbopack **GAK SUPPORT** Android/arm64
+- Dev server **WAJIB** pake Webpack: `npm run dev -- --webpack`
+- Build **WAJIB** pake Webpack: `npm run build -- --webpack`
+- `basePath` **HARUS** kosong (User Site, bukan Project Site)
+- GitHub Actions: `.github/workflows/deploy-pages.yml`
+- Struktur: `app/`, `components/`, `data/`, `hooks/`, `lib/`, `scripts/`
 
 ---
 
