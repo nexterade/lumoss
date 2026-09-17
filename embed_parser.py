@@ -1,6 +1,22 @@
 """
-lumoss — Embed Parser (v7.2.11 MEDIA GARDEN)
+lumoss — Embed Parser (v7.2.13 MEDIA GARDEN)
 Parse URL dari embed.txt jadi item gallery_data.
+
+Changelog v7.2.13:
+- FIX (PR-9): Deteksi embed vs video lebih akurat
+  · A1: Cek extension di query string (bukan cuma path)
+  · A2: Tambah HLS/DASH extension (.m3u8, .mpd)
+  · A3: is_embed_url() lebih strict (whitelist platform)
+  · A4: _parse_generic() cek whitelist domain embed-able
+  · A5: _parse_twitter() catat endpoint deprecated
+- NEW (Auto-Tag):
+  · B1: _extract_embed_tags() — extract tag dari URL path
+  · B2: _fetch_page_title() — fetch HTML title (opt-in)
+  · B3: Config toggle enable_embed_autotag
+  · B4: Config toggle embed_autotag_fetch_title
+  · B5: Integrasi ke _build_base_item()
+- NEW (Platform Icon support):
+  · G4: Tambah field `platform` (slug lowercase) di item dict
 
 Changelog v7.2.11:
 - Deteksi aspect_ratio per platform (landscape/portrait)
@@ -18,6 +34,7 @@ Support:
 import os
 import re
 import hashlib
+import json
 from datetime import datetime
 
 try:
@@ -31,9 +48,254 @@ MONTH_NAMES_ID = [
     "Juli", "Agustus", "September", "Oktober", "November", "Desember"
 ]
 
-IMAGE_EXTS = (".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp", ".svg")
-VIDEO_EXTS = (".mp4", ".mkv", ".webm", ".mov", ".avi", ".m4v", ".ogv")
+IMAGE_EXTS = (".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp", ".svg", ".ico", ".tiff", ".heic")
+VIDEO_EXTS = (
+    ".mp4", ".mkv", ".webm", ".mov", ".avi", ".m4v", ".ogv",
+    ".m3u8",  # HLS playlist
+    ".mpd",   # DASH manifest
+    ".flv",   # Flash video (legacy)
+    ".wmv",   # Windows Media
+)
 
+# v7.2.13: Whitelist domain yang emang support iframe embed
+EMBED_WHITELIST = {
+    # Video platform
+    "youtube.com", "youtu.be", "youtube-nocookie.com",
+    "vimeo.com", "player.vimeo.com",
+    "dailymotion.com", "dai.ly",
+    "twitch.tv",
+    "bitchute.com",
+    "odysee.com",
+    "rumble.com",
+    # Audio platform
+    "soundcloud.com",
+    "spotify.com", "open.spotify.com",
+    "bandcamp.com",
+    # Code / dev
+    "codepen.io", "jsfiddle.net", "jsbin.com", "replit.com",
+    "github.dev", "gist.github.com",
+    # Social
+    "twitter.com", "x.com", "platform.twitter.com",
+    "instagram.com", "facebook.com", "tiktok.com",
+    # Maps
+    "google.com", "maps.google.com", "openstreetmap.org",
+    # Docs
+    "docs.google.com", "drive.google.com",
+}
+
+# v7.2.13: Mapping platform slug → display name
+PLATFORM_DISPLAY = {
+    "youtube": "YouTube",
+    "instagram": "Instagram",
+    "facebook": "Facebook",
+    "tiktok": "TikTok",
+    "twitter": "Twitter/X",
+    "vimeo": "Vimeo",
+    "direct_image": "Direct Image",
+    "direct_video": "Direct Video",
+    "generic": "Generic Embed",
+}
+
+
+# ═══════════════════════════════════════════════════════════
+# HELPER — URL ANALYSIS
+# ═══════════════════════════════════════════════════════════
+
+def _url_has_ext(url, exts):
+    """
+    v7.2.13 (A1): Cek extension di path ATAU query string.
+    
+    Contoh yang ke-handle:
+    - https://example.com/foto.jpg           → path match
+    - https://example.com/foto.jpg?x=1       → path match
+    - https://example.com/download?file=a.jpg → query match
+    """
+    try:
+        parsed = urlparse(url)
+        path_low = parsed.path.lower()
+        if any(path_low.endswith(ext) for ext in exts):
+            return True
+        query_low = parsed.query.lower()
+        # Cek token di query: file=xxx.jpg
+        for param_val in parse_qs(parsed.query).values():
+            for v in param_val:
+                if any(v.lower().endswith(ext) for ext in exts):
+                    return True
+        return False
+    except Exception:
+        return False
+
+
+def _is_domain_in_whitelist(url):
+    """
+    v7.2.13 (A4): Cek apakah domain URL ada di whitelist embed.
+    """
+    try:
+        parsed = urlparse(url)
+        host = parsed.netloc.lower()
+        # Hapus port kalo ada
+        if ":" in host:
+            host = host.split(":")[0]
+        # Hapus www prefix
+        if host.startswith("www."):
+            host = host[4:]
+        return host in EMBED_WHITELIST
+    except Exception:
+        return False
+
+
+# ═══════════════════════════════════════════════════════════
+# HELPER — AUTO-TAG (v7.2.13)
+# ═══════════════════════════════════════════════════════════
+
+# Stop words yang gak jadi tag
+_EMBED_STOP_WORDS = {
+    "the", "and", "for", "with", "from", "into", "onto", "over", "under",
+    "this", "that", "these", "those", "here", "there", "when", "where",
+    "what", "which", "who", "why", "how", "also", "just", "only", "very",
+    "more", "most", "less", "least", "many", "much", "some", "any",
+    "all", "each", "every", "both", "either", "neither", "none",
+    "http", "https", "www", "com", "net", "org", "html", "htm",
+    "watch", "video", "videos", "photo", "photos", "pic", "pics",
+    "embed", "embedded", "share", "shared", "post", "posts",
+    "official", "channel", "user", "profile", "page", "content",
+    "yang", "dan", "atau", "untuk", "dengan", "dari", "ke", "di", "pada",
+    "adalah", "akan", "sudah", "telah", "sedang", "masih", "belum",
+    "ini", "itu", "sini", "sana", "mana", "kapan", "siapa", "apa",
+    "juga", "saja", "hanya", "sangat", "lebih", "paling", "kurang",
+}
+
+
+def _extract_embed_tags(url, platform, slug="default"):
+    """
+    v7.2.13 (B1): Extract tag dari URL embed.
+    
+    Coba berbagai strategi:
+    1. Extract dari path URL (kayak /foto_liburan_bali.jpg)
+    2. Extract dari slug Instagram (kayak /p/Cxyz123 → gak dapet)
+    3. Extract dari YouTube video ID (kayak dQw4w9WgXcQ → gak dapet)
+    
+    Return: list tag (max 8, exclude platform dasar)
+    """
+    tags = []
+    seen = set()
+    
+    def _add(tag):
+        if not tag:
+            return
+        t = str(tag).strip().lower()
+        if len(t) < 3 or t.isdigit():
+            return
+        if t in _EMBED_STOP_WORDS:
+            return
+        if t in seen:
+            return
+        seen.add(t)
+        tags.append(t)
+    
+    try:
+        parsed = urlparse(url)
+        path = parsed.path.strip("/")
+        
+        # Skip kalo path cuma ID (YouTube, IG, TikTok)
+        # Contoh: /watch, /p/Cxyz, /@user/video/123
+        if platform in ("youtube", "instagram", "tiktok"):
+            # Coba extract dari query (YouTube watch?v=)
+            pass  # ID doang, gak ada tag
+        
+        # Tokenize path
+        # Split by /, -, _, ., +
+        tokens = re.split(r"[/\-_.+]", path)
+        for tok in tokens:
+            # Filter token yang isinya cuma angka atau hex
+            if re.match(r"^[a-f0-9]{6,}$", tok, re.IGNORECASE):
+                continue
+            if tok.isdigit():
+                continue
+            # Filter yang kayak video ID YouTube (11 char, campur)
+            if len(tok) == 11 and re.match(r"^[A-Za-z0-9_-]+$", tok):
+                continue
+            # Filter yang kayak IG shortcode (11 char base64)
+            if len(tok) == 11 and re.match(r"^[A-Za-z0-9_-]+$", tok):
+                continue
+            _add(tok)
+        
+        # Coba extract dari query (?title=xxx, ?name=xxx)
+        qs = parse_qs(parsed.query)
+        for key in ("title", "name", "q", "query", "text", "caption"):
+            for v in qs.get(key, []):
+                for tok in re.split(r"[\s\-_.+]+", v):
+                    _add(tok)
+    
+    except Exception:
+        pass
+    
+    # Batasi max 8 tag
+    return tags[:8]
+
+
+def _fetch_page_title(url, timeout=5):
+    """
+    v7.2.13 (B2): Fetch HTML page + extract <title> tag.
+    
+    Opt-in via config: enable_embed_autotag + embed_autotag_fetch_title
+    
+    Return: string title, atau "" kalo gagal.
+    """
+    try:
+        import requests
+        headers = {
+            "User-Agent": (
+                "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
+                "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 lumoss/7.2.13"
+            ),
+        }
+        r = requests.get(url, headers=headers, timeout=timeout, allow_redirects=True)
+        if r.status_code != 200:
+            return ""
+        
+        # Extract <title>...</title> — case insensitive
+        match = re.search(
+            r"<title[^>]*>(.*?)</title>",
+            r.text,
+            re.IGNORECASE | re.DOTALL,
+        )
+        if not match:
+            return ""
+        
+        title = match.group(1).strip()
+        # Bersihin HTML entities
+        title = title.replace("&amp;", "&").replace("&lt;", "<").replace("&gt;", ">")
+        title = title.replace("&quot;", '"').replace("&#39;", "'")
+        # Batasi panjang
+        if len(title) > 200:
+            title = title[:200]
+        return title
+    except Exception:
+        return ""
+
+
+def _should_enable_autotag():
+    """Cek config: enable_embed_autotag."""
+    try:
+        from config_manager import get_global_value
+        return bool(get_global_value("features.enable_embed_autotag", True))
+    except Exception:
+        return True  # default ON
+
+
+def _should_fetch_title():
+    """Cek config: embed_autotag_fetch_title."""
+    try:
+        from config_manager import get_global_value
+        return bool(get_global_value("features.embed_autotag_fetch_title", False))
+    except Exception:
+        return False  # default OFF
+
+
+# ═══════════════════════════════════════════════════════════
+# PARSE — ENTRY POINT
+# ═══════════════════════════════════════════════════════════
 
 def parse_embed_line(url, index=1, slug="default"):
     """Parse 1 baris URL jadi item dict."""
@@ -70,15 +332,21 @@ def parse_embed_line(url, index=1, slug="default"):
 
 
 def detect_platform(url):
-    """Deteksi platform dari URL."""
+    """
+    Deteksi platform dari URL.
+    
+    v7.2.13 (A1): Cek extension di path + query string.
+    v7.2.13 (A2): Tambah HLS/DASH extension.
+    """
     u = url.lower()
 
-    path = urlparse(url).path.lower()
-    if any(path.endswith(ext) for ext in IMAGE_EXTS):
+    # Cek direct image/video (path ATAU query)
+    if _url_has_ext(url, IMAGE_EXTS):
         return "direct_image"
-    if any(path.endswith(ext) for ext in VIDEO_EXTS):
+    if _url_has_ext(url, VIDEO_EXTS):
         return "direct_video"
 
+    # Cek platform spesifik (host based)
     if "youtube.com" in u or "youtu.be" in u or "youtube-nocookie.com" in u:
         return "youtube"
     if "instagram.com" in u or "instagr.am" in u:
@@ -96,7 +364,11 @@ def detect_platform(url):
 
 
 def _build_base_item(url, index, slug, platform):
-    """Build base item dict (sebelum parsing spesifik)."""
+    """
+    Build base item dict (sebelum parsing spesifik).
+    
+    v7.2.13: Tambah field `platform` + auto-tag.
+    """
     now = datetime.now()
     date_str = now.strftime("%Y-%m-%d %H:%M:%S")
     year_str = now.strftime("%Y")
@@ -113,6 +385,30 @@ def _build_base_item(url, index, slug, platform):
         filename = os.path.basename(path) or f"embed_{index}"
     except Exception:
         filename = f"embed_{index}"
+
+    # v7.2.13 (B1): Auto-tag dari URL
+    embed_tags = []
+    if _should_enable_autotag():
+        embed_tags = _extract_embed_tags(url, platform, slug)
+
+    # v7.2.13 (B2): Fetch HTML title (opt-in)
+    if _should_enable_autotag() and _should_fetch_title():
+        try:
+            title = _fetch_page_title(url)
+            if title:
+                # Extract kata dari title, gabung ke tags
+                title_tokens = re.findall(r"[A-Za-z]{3,}", title)
+                for tok in title_tokens[:5]:
+                    tok_low = tok.lower()
+                    if tok_low not in _EMBED_STOP_WORDS and tok_low not in embed_tags:
+                        embed_tags.append(tok_low)
+                # Batasi max 10
+                embed_tags = embed_tags[:10]
+        except Exception:
+            pass
+
+    # Platform display name
+    platform_display = PLATFORM_DISPLAY.get(platform, platform.title())
 
     return {
         "id": media_id,
@@ -133,8 +429,9 @@ def _build_base_item(url, index, slug, platform):
         "video_mime": None,
         "geo": None,
         "camera": {},
-        "tags": ["embed", platform],
-        "source": platform.title(),
+        "tags": ["embed", platform] + embed_tags,
+        "source": platform_display,
+        "platform": platform,  # v7.2.13 (G4): slug lowercase
         "original_url": url,
         "aspect_ratio": "16/9",
     }
@@ -142,7 +439,7 @@ def _build_base_item(url, index, slug, platform):
 
 def _parse_youtube(url, base):
     """Parse YouTube URL → embed URL + thumbnail.
-
+    
     v7.2.9 (PR-7): Fix error 153 dengan parameter origin + enablejsapi.
     v7.2.11: Deteksi aspect ratio (shorts = 9:16, watch = 16:9).
     """
@@ -168,6 +465,7 @@ def _parse_youtube(url, base):
     base["ext"] = "MP4"
     base["type"] = "embed"
     base["source"] = "YouTube"
+    base["platform"] = "youtube"
     base["original_url"] = url
     base["aspect_ratio"] = aspect
     base["tags"] = ["embed", "youtube", "video"]
@@ -208,7 +506,7 @@ def _extract_youtube_id(url):
 
 def _parse_instagram(url, base):
     """Parse Instagram URL → embed URL.
-
+    
     v7.2.9 (PR-8): /captioned/ biar caption + media muncul.
     v7.2.11: Deteksi aspect ratio (reel/tv = 9:16, post = 4:5).
     """
@@ -230,6 +528,7 @@ def _parse_instagram(url, base):
         base["ext"] = "MP4"
         base["type"] = "embed"
         base["source"] = "Instagram"
+        base["platform"] = "instagram"
         base["original_url"] = url
 
         if post_type in ("reel", "tv"):
@@ -259,6 +558,7 @@ def _parse_facebook(url, base):
         base["ext"] = "MP4"
         base["type"] = "embed"
         base["source"] = "Facebook"
+        base["platform"] = "facebook"
         base["original_url"] = url
         base["aspect_ratio"] = "16/9"
         base["tags"] = ["embed", "facebook"]
@@ -289,6 +589,7 @@ def _parse_tiktok(url, base):
         base["ext"] = "MP4"
         base["type"] = "embed"
         base["source"] = "TikTok"
+        base["platform"] = "tiktok"
         base["original_url"] = url
         base["aspect_ratio"] = "9/16"
         base["tags"] = ["embed", "tiktok"]
@@ -298,20 +599,29 @@ def _parse_tiktok(url, base):
 
 
 def _parse_twitter(url, base):
-    """Parse Twitter/X URL → embed via platform.twitter.com."""
+    """
+    Parse Twitter/X URL.
+    
+    v7.2.13 (A5): Endpoint platform.twitter.com udah deprecated (2023).
+    Twitter/X sekarang cuma support blockquote embed (butuh JS).
+    
+    Solusi sementara: tampilin sebagai link preview.
+    """
     try:
-        clean_url = url.replace("x.com", "twitter.com")
-        encoded = quote(clean_url, safe="")
-        embed_url = f"https://platform.twitter.com/embed/Tweet.html?url={encoded}"
-        base["url"] = embed_url
+        # Set type jadi "embed" tapi tandai "twitter" (buat icon)
+        # Lightbox bakal nampilin fallback UI (link ke original_url)
+        base["url"] = url  # Langsung URL original, bukan iframe
         base["title"] = "Twitter/X Post"
         base["filename"] = "twitter_post.html"
-        base["ext"] = "HTML"
+        base["ext"] = "URL"
         base["type"] = "embed"
         base["source"] = "Twitter/X"
+        base["platform"] = "twitter"
         base["original_url"] = url
         base["aspect_ratio"] = "16/9"
         base["tags"] = ["embed", "twitter"]
+        # Flag buat frontend — tampilin fallback UI, jangan iframe
+        base["no_iframe"] = True
         return base
     except Exception:
         return None
@@ -333,6 +643,7 @@ def _parse_vimeo(url, base):
         base["ext"] = "MP4"
         base["type"] = "embed"
         base["source"] = "Vimeo"
+        base["platform"] = "vimeo"
         base["original_url"] = url
         base["aspect_ratio"] = "16/9"
         base["tags"] = ["embed", "vimeo", "video"]
@@ -355,6 +666,7 @@ def _parse_direct_image(url, base):
         base["ext"] = ext
         base["type"] = "image"
         base["source"] = "Direct Link"
+        base["platform"] = "direct_image"
         base["tags"] = ["embed", "direct", "image"]
         return base
     except Exception:
@@ -376,6 +688,7 @@ def _parse_direct_video(url, base):
         base["type"] = "video"
         base["video_mime"] = _mime_for_ext(ext)
         base["source"] = "Direct Link"
+        base["platform"] = "direct_video"
         base["aspect_ratio"] = "16/9"
         base["tags"] = ["embed", "direct", "video"]
         return base
@@ -394,17 +707,36 @@ def _mime_for_ext(ext):
         "avi": "video/x-msvideo",
         "m4v": "video/x-m4v",
         "ogv": "video/ogg",
+        "m3u8": "application/x-mpegURL",
+        "mpd": "application/dash+xml",
+        "flv": "video/x-flv",
+        "wmv": "video/x-ms-wmv",
     }.get(ext, "video/mp4")
 
 
 def _parse_generic(url, base):
-    """Fallback: coba iframe embed langsung."""
+    """
+    Fallback: coba iframe embed langsung.
+    
+    v7.2.13 (A4): Cek whitelist domain.
+    - Kalo di whitelist → iframe (embed URL)
+    - Kalo gak → direct link (buka di tab baru)
+    """
+    is_whitelisted = _is_domain_in_whitelist(url)
+    
     base["url"] = url
     base["title"] = "Embed — Unknown"
     base["filename"] = "embed.html"
     base["ext"] = "URL"
     base["type"] = "embed"
     base["source"] = "Generic"
+    base["platform"] = "generic"
+    base["original_url"] = url
+    
+    if not is_whitelisted:
+        # Gak di whitelist — flag buat frontend
+        base["no_iframe"] = True
+    
     base["tags"] = ["embed", "generic"]
     return base
 
@@ -434,9 +766,22 @@ def parse_file(embed_file, slug="default"):
 
 
 def is_embed_url(url):
-    """Quick check: URL ini embed-able atau direct link."""
+    """
+    Quick check: URL ini embed-able atau direct link.
+    
+    v7.2.13 (A3): Lebih strict — cek whitelist platform.
+    """
     platform = detect_platform(url)
-    return platform not in ("direct_image", "direct_video")
+    # Direct image/video BUKAN embed
+    if platform in ("direct_image", "direct_video"):
+        return False
+    # Platform spesifik yang emang support embed
+    if platform in ("youtube", "instagram", "tiktok", "vimeo", "facebook", "twitter"):
+        return True
+    # Generic — cek whitelist domain
+    if platform == "generic":
+        return _is_domain_in_whitelist(url)
+    return False
 
 
 __all__ = [
@@ -447,4 +792,6 @@ __all__ = [
     "IMAGE_EXTS",
     "VIDEO_EXTS",
     "MONTH_NAMES_ID",
+    "EMBED_WHITELIST",
+    "PLATFORM_DISPLAY",
 ]

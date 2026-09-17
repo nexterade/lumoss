@@ -1,6 +1,13 @@
 """
-lumoss — HTML Builder (v7.2.12 MEDIA GARDEN)
+lumoss — HTML Builder (v7.2.13 MEDIA GARDEN)
 Generate file HTML untuk galeri dari template dengan cursor-positioning & aesthetic styling.
+
+Changelog v7.2.13:
+- NEW: Inject platform-icons.js ke HTML (buat Platform Icon support).
+- NEW: Fungsi _load_platform_icons() — load templates/platform-icons.js.
+- NEW: Placeholder PLATFORM_ICONS_JS di gallery.html.
+- UPDATE: Default project_title "amuv7" → "lumoss".
+- KEEP: Chain GITHUB_REPO dari v7.2.12.
 
 Changelog v7.2.12:
 - FIX: PR-4 — GITHUB_REPO gak di-inject ke HTML.
@@ -18,10 +25,11 @@ Changelog v7.2.0:
 
 Fitur:
 - Load template dari templates/gallery.html, manager.html
+- Load platform-icons.js (v7.2.13)
 - Inject data media (JSON) ke dalam script
 - Generate index.html + manager.html
 - Handle placeholder: DATA, ITEMS_PER_PAGE, PROJECT_TITLE, AUTOPLAY_CONFIG,
-  DELETED, STATS, GITHUB_REPO, DEFAULT_THEME
+  DELETED, STATS, GITHUB_REPO, DEFAULT_THEME, PLATFORM_ICONS_JS
 """
 
 import os
@@ -42,8 +50,7 @@ from ui_helpers import (
 TEMPLATES_DIR = "templates"
 GALLERY_TEMPLATE = os.path.join(TEMPLATES_DIR, "gallery.html")
 MANAGER_TEMPLATE = os.path.join(TEMPLATES_DIR, "manager.html")
-
-# v7.2.0: ABOUT_TEMPLATE udah gak dipake (About digabung ke gallery)
+PLATFORM_ICONS_JS = os.path.join(TEMPLATES_DIR, "platform-icons.js")
 
 
 # ═══════════════════════════════════════════════════════════
@@ -89,13 +96,33 @@ def _load_template(template_path):
         return None
 
 
+def _load_platform_icons():
+    """
+    Load platform-icons.js (v7.2.13).
+    
+    Fungsi baru — load JS file buat di-inject ke HTML.
+    Return string JS, atau string kosong kalo file gak ada.
+    """
+    if not os.path.exists(PLATFORM_ICONS_JS):
+        return ""
+    try:
+        with open(PLATFORM_ICONS_JS, "r", encoding="utf-8") as f:
+            return f.read()
+    except Exception as e:
+        print_warning(f"Gagal baca platform-icons.js: {e}")
+        return ""
+
+
 def _ensure_templates_dir():
     """Pastikan folder templates/ ada."""
     os.makedirs(TEMPLATES_DIR, exist_ok=True)
 
 
 def _check_templates_exist():
-    """Cek template yang dibutuhin ada. Return list missing."""
+    """Cek template yang dibutuhin ada. Return list missing.
+    
+    v7.2.13: platform-icons.js gak wajib — tapi bakal di-warn kalo gak ada.
+    """
     missing = []
     for name, path in [
         ("gallery.html", GALLERY_TEMPLATE),
@@ -134,7 +161,7 @@ def _replace_placeholders(html, replacements):
 
 def build_gallery_html(
     media_data,
-    project_title="amuv7",
+    project_title="lumoss",
     items_per_page=24,
     autoplay_config=None,
     theme="moss",
@@ -146,7 +173,8 @@ def build_gallery_html(
     """
     Build file index.html dari template galeri.
     
-    v7.2.12: tambah param `github_repo` — inject ke JS placeholder.
+    v7.2.13: Inject platform-icons.js ke HTML.
+    v7.2.12: Terima param `github_repo` — inject ke JS placeholder.
     
     Args:
         media_data: list of dict item media
@@ -188,6 +216,9 @@ def build_gallery_html(
     # Normalisasi github_repo: strip whitespace + leading/trailing slashes
     github_repo = (github_repo or "").strip().strip("/")
 
+    # v7.2.13: Load platform icons JS
+    platform_icons_js = _load_platform_icons()
+
     json_data = escape_json_for_inline_script(media_data)
     json_autoplay = escape_json_for_inline_script(autoplay_config)
     json_title = json.dumps(project_title, ensure_ascii=False)
@@ -201,8 +232,9 @@ def build_gallery_html(
         "PROJECT_TITLE": escape_html(project_title),
         "AUTOPLAY_CONFIG_PLACEHOLDER": json_autoplay,
         "DEFAULT_THEME_PLACEHOLDER": json_default_theme,
-        # v7.2.12: GITHUB_REPO buat About section
         "GITHUB_REPO_PLACEHOLDER": json_github_repo,
+        # v7.2.13: Platform icons JS
+        "PLATFORM_ICONS_JS": platform_icons_js,
     }
 
     rendered = _replace_placeholders(template, replacements)
@@ -224,7 +256,8 @@ def build_gallery_html(
         os.replace(tmp, output_path)
 
         size_kb = os.path.getsize(output_path) / 1024
-        return True, f"{output_path} ({size_kb:.1f} KB, {len(media_data)} item)"
+        icons_status = "✓" if platform_icons_js else "⚠"
+        return True, f"{output_path} ({size_kb:.1f} KB, {len(media_data)} item, icons {icons_status})"
     except Exception as e:
         return False, f"Gagal simpan HTML: {e}"
 
@@ -236,7 +269,7 @@ def build_gallery_html(
 def build_manager_html(
     media_data,
     deleted_data=None,
-    project_title="amuv7",
+    project_title="lumoss",
     theme="moss",
     output_path="manager.html",
     template_path=None,
@@ -300,7 +333,7 @@ def build_manager_html(
 def build_all(
     media_data,
     output_dir,
-    project_title="amuv7",
+    project_title="lumoss",
     items_per_page=24,
     autoplay_config=None,
     theme="moss",
@@ -311,7 +344,8 @@ def build_all(
     """
     Build 2 file (index + manager) sekaligus.
     
-    v7.2.12: github_repo sekarang di-pass ke build_gallery_html().
+    v7.2.12: github_repo di-pass ke build_gallery_html().
+    v7.2.13: platform-icons.js di-inject via build_gallery_html().
     
     Returns:
         dict {filename: (success, message)}
@@ -335,7 +369,7 @@ def build_all(
         autoplay_config=autoplay_config,
         theme=theme,
         default_theme=theme,
-        github_repo=github_repo,   # ← v7.2.12: FIX — pass param!
+        github_repo=github_repo,
         output_path=index_path,
     )
     results["index.html"] = (ok, msg)
@@ -359,7 +393,7 @@ def build_all(
 # ═══════════════════════════════════════════════════════════
 
 __all__ = [
-    "TEMPLATES_DIR", "GALLERY_TEMPLATE", "MANAGER_TEMPLATE",
+    "TEMPLATES_DIR", "GALLERY_TEMPLATE", "MANAGER_TEMPLATE", "PLATFORM_ICONS_JS",
     "escape_json_for_inline_script", "escape_html",
     "build_gallery_html", "build_manager_html", "build_all",
 ]

@@ -1,6 +1,6 @@
 {
-  "version": "7.2.2",
-  "build_date": "2026-09-16",
+  "version": "7.2.13",
+  "build_date": "2026-09-17",
   "theme": {
     "default": "moss",
     "available": [
@@ -43,7 +43,10 @@
     "enable_thumbnail": true,
     "enable_exif": true,
     "enable_auto_tag": true,
-    "enable_embed_import": true
+    "enable_embed_import": true,
+    "enable_embed_autotag": true,
+    "embed_autotag_fetch_title": false,
+    "enable_platform_icon": true
   },
   "ocr": {
     "max_words": 3,

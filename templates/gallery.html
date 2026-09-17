@@ -8,7 +8,7 @@
 <title>/*PROJECT_TITLE*/</title>
 <style>
 /* ═══════════════════════════════════════════════════════════
-   LUMOSS GALLERY — STYLE (v7.2.11 MEDIA GARDEN)
+   LUMOSS GALLERY — STYLE (v7.2.13 MEDIA GARDEN)
    ═══════════════════════════════════════════════════════════ */
 
 :root[data-theme="dark"]{
@@ -222,6 +222,12 @@ header.header-hidden{
   backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
   transition:transform .25s ease;
 }
+.play-icon-circle.platform-icon svg{
+  width:50%;height:50%;fill:currentColor;
+}
+.play-icon-circle.platform-icon{
+  padding-left:0;
+}
 .gallery-item:hover .play-icon-circle{transform:scale(1.1);}
 .gallery-item.hero-playing .play-icon-overlay{opacity:0;}
 
@@ -316,7 +322,6 @@ body.lightbox-open{overflow:hidden !important;position:fixed !important;width:10
 
 .lightbox-body{position:relative;width:100%;height:100%;flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;z-index:10;padding:60px 8px calc(80px + env(safe-area-inset-bottom, 0px)) 8px;touch-action:none;}
 
-/* v7.2.11: Zona tap untuk show UI */
 .lb-tap-zone{
   position:absolute;left:0;right:0;z-index:55;cursor:pointer;
   background:transparent;
@@ -335,9 +340,11 @@ body.lightbox-open{overflow:hidden !important;position:fixed !important;width:10
 .lb-embed-wrap iframe{position:absolute;inset:0;width:100%;height:100%;border:none;display:block;}
 .lb-embed-wrap[data-orientation="portrait"]{max-width:min(400px, 100%);}
 .lb-embed-fallback{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,.92);color:#fff;text-align:center;padding:24px;gap:16px;z-index:5;}
-.lb-embed-fallback .fb-icon{font-size:2.5rem;opacity:.6;}
+.lb-embed-fallback .fb-icon{width:64px;height:64px;opacity:.8;display:flex;align-items:center;justify-content:center;}
+.lb-embed-fallback .fb-icon svg{width:100%;height:100%;fill:currentColor;color:#fff;}
 .lb-embed-fallback .fb-msg{font-size:.95rem;line-height:1.6;max-width:400px;}
 .lb-embed-fallback a{color:var(--accent);text-decoration:none;font-weight:600;padding:10px 20px;border:1.5px solid var(--accent);border-radius:8px;display:inline-flex;align-items:center;gap:8px;transition:background-color .2s ease;}
+.lb-embed-fallback a svg{width:16px;height:16px;fill:currentColor;}
 .lb-embed-fallback a:hover{background:rgba(88,166,255,.15);}
 :root[data-theme="moss"] .lb-embed-fallback a:hover{background:rgba(43,238,52,.15);}
 
@@ -363,6 +370,11 @@ body.lightbox-open{overflow:hidden !important;position:fixed !important;width:10
 .prop-item{display:flex;align-items:center;gap:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;}
 .prop-item.full-width{grid-column:1 / -1;}
 .prop-val{font-weight:600;color:#e1e7f0;overflow:hidden;text-overflow:ellipsis;}
+.prop-link{color:var(--accent);text-decoration:none;font-weight:600;cursor:pointer;}
+.prop-link:hover{text-decoration:underline;}
+
+a.btn-act{text-decoration:none;}
+a.btn-act svg{width:14px;height:14px;fill:currentColor;flex-shrink:0;}
 
 .tags-container-lb{display:flex;flex-wrap:wrap;gap:4px;}
 .tag-pill{background:rgba(88,166,255,.2);border:1px solid rgba(88,166,255,.4);color:#9cd1ff;padding:2px 7px;border-radius:8px;font-size:.68rem;cursor:pointer;display:inline-flex;align-items:center;}
@@ -619,7 +631,7 @@ body.lightbox-open{overflow:hidden !important;position:fixed !important;width:10
     <div class="about-logo">🌿</div>
     <h2 id="aboutProjectTitle">/*PROJECT_TITLE*/</h2>
     <p class="sub">Dibuat dengan lumoss — Media Garden</p>
-    <span class="version-badge">✨ v7.2.11 · Luminous Moss Edition</span>
+    <span class="version-badge">✨ v7.2.13 · Luminous Moss Edition</span>
   </div>
 
   <div class="about-content">
@@ -708,11 +720,15 @@ body.lightbox-open{overflow:hidden !important;position:fixed !important;width:10
 
   <div class="lightbox-footer lb-ui">
     <div class="prop-box">
-      <div class="prop-item full-width">🏷️ <b>Nama:</b> <span class="prop-val" id="propName">-</span></div>
-      <div class="prop-item">📁 <b>Album:</b> <span class="prop-val" id="propCat">-</span></div>
-      <div class="prop-item">💾 <b>Ukuran:</b> <span class="prop-val" id="propSize">-</span> (<span id="propExt"></span>)</div>
-      <div class="prop-item">📅 <b>Tanggal:</b> <span class="prop-val" id="propMtime">-</span></div>
-      <div class="prop-item">📤 <b>Upload:</b> <span class="prop-val" id="propUploadedAt">-</span></div>
+      <div class="prop-item full-width" id="propNameRow">🏷️ <b>Nama:</b> <span class="prop-val" id="propName">-</span></div>
+      <div class="prop-item" id="propCatRow">📁 <b>Album:</b> <span class="prop-val" id="propCat">-</span></div>
+      <div class="prop-item" id="propSizeRow">💾 <b>Ukuran:</b> <span class="prop-val" id="propSize">-</span> (<span id="propExt"></span>)</div>
+      <div class="prop-item" id="propMtimeRow">📅 <b>Tanggal:</b> <span class="prop-val" id="propMtime">-</span></div>
+      <div class="prop-item" id="propUploadedAtRow">📤 <b>Upload:</b> <span class="prop-val" id="propUploadedAt">-</span></div>
+
+      <div class="prop-item" id="propPlatformRow" style="display:none;">🌐 <b>Platform:</b> <span class="prop-val" id="propPlatform">-</span></div>
+      <div class="prop-item full-width" id="propLinkRow" style="display:none;">🔗 <b>Link:</b> <a class="prop-val prop-link" id="propLink" href="#" target="_blank" rel="noopener">-</a></div>
+
       <div class="prop-item full-width" id="propSourceRow" style="display:none;">🌐 <b>Sumber:</b> <span class="prop-val" id="propSource">-</span></div>
       <div class="prop-item full-width" id="propCameraRow" style="display:none;">📷 <b>Kamera:</b> <span class="prop-val" id="propCamera">-</span></div>
       <div class="prop-item full-width" id="propExposureRow" style="display:none;">⚙️ <b>Eksposur:</b> <span class="prop-val" id="propExposure">-</span></div>
@@ -724,7 +740,11 @@ body.lightbox-open{overflow:hidden !important;position:fixed !important;width:10
     </div>
 
     <div class="action-bar">
-      <button class="btn-act" onclick="downloadCurrentOriginal()" title="Download file asli">⬇️ Download</button>
+      <button class="btn-act" id="btnDownload" onclick="downloadCurrentOriginal()" title="Download file asli">⬇️ Download</button>
+      <a class="btn-act" id="btnPlatform" style="display:none;" href="#" target="_blank" rel="noopener" title="Buka di platform">
+        <span id="btnPlatformIcon"></span>
+        <span id="btnPlatformLabel">Buka di Platform</span>
+      </a>
       <button class="btn-act" onclick="copyDirectLink()" title="Salin URL file">📋 Copy Link</button>
       <button class="btn-act" onclick="shareCurrentMedia()" title="Bagikan">🔗 Share</button>
       <button class="btn-act" id="geoBtn" style="display:none;" onclick="openGeoMap()" title="Buka di Google Maps">📍 Lokasi</button>
@@ -735,7 +755,7 @@ body.lightbox-open{overflow:hidden !important;position:fixed !important;width:10
 <div class="toast-container" id="toastContainer"></div>
 <script>
 /* ═══════════════════════════════════════════════════════════
-   GALLERY APP — CORE (v7.2.11 MEDIA GARDEN)
+   GALLERY APP — CORE (v7.2.13 MEDIA GARDEN)
    ═══════════════════════════════════════════════════════════ */
 const RAW_DATA = /*DATA_PLACEHOLDER*/;
 const ITEMS_PER_PAGE = /*ITEMS_PER_PAGE_PLACEHOLDER*/;
@@ -743,6 +763,8 @@ const PROJECT_TITLE = /*PROJECT_TITLE_JS*/;
 const AUTOPLAY_CONFIG = /*AUTOPLAY_CONFIG_PLACEHOLDER*/;
 const DEFAULT_THEME = /*DEFAULT_THEME_PLACEHOLDER*/;
 const GITHUB_REPO = /*GITHUB_REPO_PLACEHOLDER*/;
+
+/*PLATFORM_ICONS_JS*/
 
 // ─── Helpers ───────────────────────────────────────────────
 function esc(s){
@@ -1302,7 +1324,7 @@ function markLoaded(el){
   if (p) p.classList.add("loaded");
 }
 
-// ─── Render media ──────────────────────────────────────────
+// ─── Render media (v7.2.13 — Platform Icon) ────────────────
 function renderItemMedia(item){
   const st = escAttr(item.thumb || "");
   const su = escAttr(item.url || "");
@@ -1315,10 +1337,14 @@ function renderItemMedia(item){
       return `<div class="media-wrap media-video-placeholder"><div class="play-icon-overlay"><div class="play-icon-circle">▶</div></div></div>`;
     }
   } else if (item.type === "embed") {
+    const platformSlug = (item.platform || "generic").toLowerCase();
+    const iconSvg = getPlatformIcon(platformSlug);
+    const gradient = getPlatformGradient(platformSlug);
+    
     if (item.thumb) {
-      return `<div class="media-wrap"><img src="${st}" loading="lazy" decoding="async" alt="" onload="markLoaded(this)" onerror="markLoaded(this);"><div class="play-icon-overlay"><div class="play-icon-circle">🌐</div></div></div>`;
+      return `<div class="media-wrap"><img src="${st}" loading="lazy" decoding="async" alt="" onload="markLoaded(this)" onerror="markLoaded(this);"><div class="play-icon-overlay"><div class="play-icon-circle platform-icon">${iconSvg}</div></div></div>`;
     } else {
-      return `<div class="media-wrap media-video-placeholder" style="background:linear-gradient(135deg,#1a1f1a,#232923);"><div class="play-icon-overlay"><div class="play-icon-circle">🌐</div></div></div>`;
+      return `<div class="media-wrap media-video-placeholder" style="background:${gradient};"><div class="play-icon-overlay"><div class="play-icon-circle platform-icon">${iconSvg}</div></div></div>`;
     }
   } else {
     return `<img src="${st}" loading="lazy" decoding="async" alt="" onload="markLoaded(this)" onerror="this.onerror=null;this.src='${su}';markLoaded(this);">`;
@@ -1448,7 +1474,7 @@ function setupHeaderAutoHide(){
 }
 
 // ═══════════════════════════════════════════════════════════
-// LIGHTBOX (v7.2.11)
+// LIGHTBOX (v7.2.13)
 // ═══════════════════════════════════════════════════════════
 
 function openLightbox(index, updateHash = true){
@@ -1500,9 +1526,33 @@ function renderLightboxContent(item, container, spinner){
 
     const fallbackUrl = item.original_url || item.url || "#";
     const sourceName = item.source || "platform";
+    const platformSlug = (item.platform || "generic").toLowerCase();
+    const iconSvg = getPlatformIcon(platformSlug);
 
     const aspect = item.aspect_ratio || "16/9";
     const isPortrait = aspect.startsWith("9/") || aspect.startsWith("4/5");
+
+    if (item.no_iframe) {
+      container.innerHTML = `
+        <div class="lb-embed-wrap" 
+             style="--embed-aspect:${escAttr(aspect)};"
+             data-orientation="${isPortrait ? 'portrait' : 'landscape'}">
+          <div class="lb-embed-fallback" style="display:flex;">
+            <div class="fb-icon">${iconSvg}</div>
+            <div class="fb-msg">
+              ⚠️ Platform ini gak support embed langsung.<br>
+              Buka di ${escAttr(sourceName)} buat liat kontennya.
+            </div>
+            <a href="${escAttr(fallbackUrl)}" target="_blank" rel="noopener">
+              ${iconSvg} Buka di ${escAttr(sourceName)} →
+            </a>
+          </div>
+        </div>
+      `;
+      if (spinner) spinner.style.display = "none";
+      if (unmuteBtn) unmuteBtn.classList.remove("show");
+      return;
+    }
 
     container.innerHTML = `
       <div class="lb-embed-wrap" 
@@ -1517,13 +1567,13 @@ function renderLightboxContent(item, container, spinner){
           loading="lazy"
         ></iframe>
         <div id="lbEmbedFallback" class="lb-embed-fallback" style="display:none;">
-          <div class="fb-icon">🌐</div>
+          <div class="fb-icon">${iconSvg}</div>
           <div class="fb-msg">
             ⚠️ Konten ini gak bisa di-embed di sini.<br>
             Coba buka langsung di ${escAttr(sourceName)}.
           </div>
           <a href="${escAttr(fallbackUrl)}" target="_blank" rel="noopener">
-            🌐 Buka di ${escAttr(sourceName)} →
+            ${iconSvg} Buka di ${escAttr(sourceName)} →
           </a>
         </div>
       </div>
@@ -1636,26 +1686,63 @@ function updateLightboxInfo(item, index){
     const el = document.getElementById(id);
     if (el) el.textContent = val;
   };
+  const show = (id, show) => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = show ? "flex" : "none";
+  };
+  const isEmbed = (item.type === "embed");
+
   set("lbIndex", (index+1) + " / " + filteredData.length);
-  set("propName", item.filename || item.title || "-");
-  set("propCat", item.category || "-");
+
+  // Baris media biasa
+  show("propNameRow", !isEmbed);
+  show("propCatRow", !isEmbed);
+  show("propSizeRow", !isEmbed);
+  show("propUploadedAtRow", !isEmbed);
+
+  if (!isEmbed) {
+    set("propName", item.filename || item.title || "-");
+    set("propCat", item.category || "-");
+    set("propSize", formatBytes(item.size));
+    set("propExt", item.ext || "");
+    set("propUploadedAt", item.uploaded_at || "—");
+  }
+
   set("propMtime", item.date || "-");
-  set("propSize", formatBytes(item.size));
-  set("propExt", item.ext || "");
-  set("propUploadedAt", item.uploaded_at || "—");
 
-  const srcRow = document.getElementById("propSourceRow");
-  if (item.type === "embed" && item.source) {
-    set("propSource", item.source);
-    if (srcRow) srcRow.style.display = "flex";
-  } else if (srcRow) srcRow.style.display = "none";
+  // Baris embed
+  const platformRow = document.getElementById("propPlatformRow");
+  const linkRow = document.getElementById("propLinkRow");
+  const linkEl = document.getElementById("propLink");
 
+  if (isEmbed) {
+    const platformName = item.source || "Embed";
+    const ext = item.ext || "URL";
+    set("propPlatform", `${platformName} (${ext})`);
+
+    const realUrl = item.original_url || item.url || "#";
+    if (linkEl) {
+      linkEl.href = realUrl;
+      linkEl.textContent = realUrl.replace(/^https?:\/\//, "").slice(0, 60) + (realUrl.length > 63 ? "…" : "");
+    }
+
+    if (platformRow) platformRow.style.display = "flex";
+    if (linkRow) linkRow.style.display = "flex";
+  } else {
+    if (platformRow) platformRow.style.display = "none";
+    if (linkRow) linkRow.style.display = "none";
+  }
+
+  show("propSourceRow", false);
+
+  // Kamera
   const camRow = document.getElementById("propCameraRow");
   if (item.camera && (item.camera.make || item.camera.model)) {
     set("propCamera", ((item.camera.make || "") + " " + (item.camera.model || "")).trim());
     if (camRow) camRow.style.display = "flex";
   } else if (camRow) camRow.style.display = "none";
 
+  // Eksposur
   const expParts = [];
   if (item.camera) {
     if (item.camera.f_number) expParts.push(item.camera.f_number);
@@ -1669,6 +1756,7 @@ function updateLightboxInfo(item, index){
     if (expRow) expRow.style.display = "flex";
   } else if (expRow) expRow.style.display = "none";
 
+  // Geo
   const geoRow = document.getElementById("propGeoRow");
   const geoBtn = document.getElementById("geoBtn");
   if (item.geo && item.geo.lat && item.geo.lon) {
@@ -1680,6 +1768,7 @@ function updateLightboxInfo(item, index){
     if (geoBtn) geoBtn.style.display = "none";
   }
 
+  // Tags
   const tagsRow = document.getElementById("propTagsRow");
   const tagsC = document.getElementById("propTags");
   if (item.tags && item.tags.length > 0 && tagsC) {
@@ -1688,6 +1777,27 @@ function updateLightboxInfo(item, index){
     ).join("");
     if (tagsRow) tagsRow.style.display = "flex";
   } else if (tagsRow) tagsRow.style.display = "none";
+
+  // Action bar
+  const btnDownload = document.getElementById("btnDownload");
+  const btnPlatform = document.getElementById("btnPlatform");
+  const btnPlatformIcon = document.getElementById("btnPlatformIcon");
+  const btnPlatformLabel = document.getElementById("btnPlatformLabel");
+
+  if (isEmbed) {
+    if (btnDownload) btnDownload.style.display = "none";
+    if (btnPlatform) {
+      const platformSlug = (item.platform || "generic").toLowerCase();
+      const platformName = item.source || "Platform";
+      if (btnPlatformIcon) btnPlatformIcon.innerHTML = getPlatformIcon(platformSlug);
+      if (btnPlatformLabel) btnPlatformLabel.textContent = `Buka di ${platformName}`;
+      btnPlatform.href = item.original_url || item.url || "#";
+      btnPlatform.style.display = "flex";
+    }
+  } else {
+    if (btnDownload) btnDownload.style.display = "flex";
+    if (btnPlatform) btnPlatform.style.display = "none";
+  }
 }
 
 function onPropTagClick(tag){
@@ -1763,14 +1873,20 @@ function resetZoom(){
 
 function downloadCurrentOriginal(){
   const item = filteredData[activeLbIndex];
-  if (!item || !item.url) { showToast("URL file tidak tersedia", "error"); return; }
-  window.open(item.url, "_blank");
+  if (!item) return;
+  // v7.2.13: Buat embed, buka URL asli. Buat media biasa, download file.
+  const targetUrl = (item.type === "embed" && item.original_url) ? item.original_url : item.url;
+  if (!targetUrl) { showToast("URL tidak tersedia", "error"); return; }
+  window.open(targetUrl, "_blank");
 }
 
 async function copyDirectLink(){
   const item = filteredData[activeLbIndex];
-  if (!item || !item.url) return;
-  const url = item.url;
+  if (!item) return;
+  // v7.2.13: Kalo embed, copy URL asli (bukan embed URL)
+  const url = (item.type === "embed" && item.original_url) ? item.original_url : item.url;
+  if (!url) return;
+  
   if (navigator.clipboard && window.isSecureContext) {
     try { await navigator.clipboard.writeText(url); showToast("Link disalin ✓", "success"); return; } catch(e){}
   }
@@ -1805,7 +1921,7 @@ async function shareCurrentMedia(){
   if (!item) { showToast("Tidak ada media", "error"); return; }
   const isOnline = window.location.protocol.startsWith("http");
   const galleryUrl = buildShareUrl(item);
-  const fileUrl = item.url || "";
+  const fileUrl = (item.type === "embed" && item.original_url) ? item.original_url : (item.url || "");
   const title = item.title || item.filename || "Media";
   const text = title + " — " + (item.category || "");
 
