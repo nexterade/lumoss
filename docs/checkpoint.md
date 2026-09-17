@@ -3,8 +3,8 @@
                     Aturan, Peran, Kepribadian, Gaya
 ================================================================================
 
-Terakhir update  : 2026-09-17
-Versi checkpoint : v1.8
+Terakhir update  : 2026-09-18
+Versi checkpoint : v1.9
 Format           : Markdown (.md)
 Tipe             : CONSTANT (jarang berubah)
 
@@ -234,6 +234,7 @@ PRINSIP PENTING:
   X  JANGAN kirim file final sebelum "gas"
   X  JANGAN asumsi kata ambigu (lihat 4.12)
   X  JANGAN kasih command Termux dengan tag # (lihat 4.15)
+  X  JANGAN urutin PR strictly per prioritas — LIHAT 4.16!
   OK Selalu kasih opsi + rekomendasi ✦
   OK Kalau ada bug tak terduga, transparan
   OK Kalau file panjang, pecah per BATCH
@@ -249,6 +250,7 @@ PRINSIP PENTING:
   OK CEK REFACTOR SIZE — bukan berarti bug (lihat 4.13)
   OK RELEASE SETIAP ADA PERUBAHAN (lihat 4.14)
   OK JANGAN COMMAND DENGAN TAG # (lihat 4.15)
+  OK BATCH BY FILE — LIHAT 4.16!
 
 DETAIL CARA KERJA:
 
@@ -362,6 +364,105 @@ DETAIL CARA KERJA:
       2. Ada komentar inline gak?
       3. Kalo ada → HAPUS, baru kirim
 
+4.16 ATURAN — BATCH BY FILE (BARU!)
+─────────────────────────────────────────────────
+
+  ⛔ MASALAH YANG SERING KEJADIAN:
+    · User kerja PR per PR, tapi banyak PR nyentuh FILE YANG SAMA
+    · Contoh:
+      - PR-21 (animasi glow) → edit gallery.html
+      - PR-22 (stagger fade) → edit gallery.html LAGI
+      - PR-23 (hover effect) → edit gallery.html LAGI
+      - PR-24 (lightbox transition) → edit gallery.html LAGI
+      - ...dst, 12 PR edit gallery.html
+    · Hasil: BOLAK-BALIK buka file yang sama, TEST berulang, COMMIT berulang
+    · Buang waktu + effort + rawan error
+
+  ✅ ATURAN BARU — BATCH BY FILE:
+
+    1. JANGAN urutin PR strictly per prioritas (medium → final → minor)
+    2. KUMPULIN dulu semua PR yang nyentuh FILE YANG SAMA
+    3. BATCH jadi grup — 1 batch = 1 file (atau grup file related)
+    4. EKSEKUSI batch per batch — biar sekali edit, banyak PR selesai
+    5. COMMIT per batch — bukan per PR
+
+  📋 CARA KERJA:
+
+    Step 1 — ANALISA LETAK BUG:
+      · Scan semua PR pending
+      · Kelompokin per file yang disentuk
+      · Contoh hasil:
+        - gallery.html → 12 PR
+        - menu.py + config_manager.py → 4 PR
+        - embed_parser.py → 2 PR
+        - media_processor.py → 2 PR
+        - html_builder.py → 1 PR
+
+    Step 2 — BATCHING:
+      · Group per file (atau grup file related)
+      · Kasih nama: Batch 1 (gallery.html), Batch 2 (favicon), dst
+      · Prioritas batch — mana yang paling impact / paling cepet
+
+    Step 3 — ANALISA + FIX:
+      · Untuk tiap batch, analisa tiap PR (letak bug, root cause)
+      · Gabungin fix dalam 1 patch
+      · Test sekali, commit sekali
+
+    Step 4 — RELEASE:
+      · Setelah batch selesai, release kalo signifikan
+      · Bisa 1 release per batch, atau gabung beberapa batch
+
+  🎯 TUJUAN:
+    · Hemat waktu — gak bolak-balik file yang sama
+    · Hemat effort — sekali test, sekali commit
+    · Lebih konsisten — perubahan di 1 file saling nyambung
+    · Lebih clean — gak ada konflik antar PR
+    · Lebih efisien — batch 5 PR = 1 sesi (bukan 5 sesi)
+
+  📌 CONTOH KASUS (yang baru diusulin):
+    · User mau kerjain 12 PR yang nyentuh gallery.html
+    · Kalo PR-per-PR: 12 sesi, 12 commit, 12 test
+    · Kalo BATCH BY FILE: 1-2 sesi, 1 commit, 1 test
+    · Hasil: ~85% hemat waktu
+
+  ⚠️ CATATAN:
+    · Aturan ini berlaku buat SEMUA PR pending
+    · KECUALI: PR yang butuh test independent (engine upload, dll)
+    · Bisa digabung sama prioritas — batch yang medium dulu, baru minor
+    · Kalo batch terlalu gede (15+ PR), pecah jadi sub-batch (1A, 1B, 1C)
+    · User bisa pilih batch mana dulu — gak harus urut
+
+  🎯 SELF-CHECK SEBELUM MULAI BATCH:
+    AI WAJIB cek:
+      1. Udah kelompokin PR per file?
+      2. Ada berapa batch total?
+      3. Batch mana yang paling impact / cepet?
+      4. File yang disentuk — ada overlap gak?
+      5. Test plan — sekali test cover semua PR?
+
+  📌 CONTOH BATCH UNTUK LUMOSS (26 PR pending):
+
+    Batch 1A — gallery.html (visual polish) — 6 PR
+    Batch 1B — gallery.html (UX/perf) — 3 PR
+    Batch 1C — gallery.html (advanced) — 3 PR
+    Batch 2 — favicon (multi-file) — 2 PR
+    Batch 3 — embed_parser.py — 2 PR
+    Batch 4 — media_processor.py — 2 PR
+    Batch 5 — menu.py + config_manager.py — 4 PR
+    Batch 6 — html_builder.py — 1 PR
+
+    Total: 8 batch, 23 PR
+
+  🎯 URUTAN REKOMENDASI:
+    1. Batch 2 (Favicon) — cepet, impact tinggi
+    2. Batch 1A (Visual polish) — 6 PR sekaligus
+    3. Batch 1B (UX/perf) — 3 PR
+    4. Batch 1C (Advanced) — 3 PR
+    5. Batch 3 (Embed) — 2 PR
+    6. Batch 4 (Media) — 2 PR
+    7. Batch 5 (Setting) — 4 PR
+    8. Batch 6 (Infra) — 1 PR
+
 ================================================================================
 5. ATURAN TEKNIS PROJECT LUMOSS
 ================================================================================
@@ -379,6 +480,7 @@ DETAIL CARA KERJA:
     · Jangan pake tag # di perintah Termux (LIHAT 4.15!)
     · Konfirmasi dulu sebelum eksekusi
     · Jangan lupa fun-fact (signature gue)
+    · Batch by file — LIHAT 4.16!
 
   ⛔ LARANGAN KERAS — JANGAN DILANGGAR:
     · JANGAN PERNAH kasih command Termux yang diawali atau
@@ -429,7 +531,8 @@ BANNER LUMOSS:
 ================================================================================
 
 CHECKPOINT INI (CONSTANT):
-  · Isi: peran, kepribadian, gaya, aturan, referensi visual  · Jarang berubah
+  · Isi: peran, kepribadian, gaya, aturan, referensi visual
+  · Jarang berubah
 
 STATE (DYNAMIC):
   · Isi: progress, struktur, status fase, test report
@@ -448,10 +551,15 @@ CARA PAKAI:
 8. CHANGE LOG CHECKPOINT
 ================================================================================
 
+v1.9 (2026-09-18):
+  · Rule 4.16 BARU — Batch by File (efisiensi multi-PR)
+  · Update prinsip penting — tambah "JANGAN urutin PR strictly"
+  · Update "RULES KHUSUS" — tambah "Batch by file"
+  · Contoh batch list buat LUMOSS
+
 v1.8 (2026-09-17):
   · Update state v7.2.13 — 3 PR + 5 fitur selesai
   · Rule 4.15 strengthen — udah dilanggar 4x
-  · Update referensi "SUDAH DILANGGAR 4x"
 
 v1.7 (2026-09-17):
   · Rule 4.15 BARU — Jangan kasih command dengan tag # (STRICT)
@@ -463,5 +571,5 @@ v1.5 (sebelumnya):
   · Rule kerja diperjelas
 
 ================================================================================
-                    END OF CHECKPOINT v1.8
+                    END OF CHECKPOINT v1.9
 ================================================================================
