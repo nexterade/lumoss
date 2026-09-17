@@ -135,9 +135,9 @@ lumoss/
 ├── config_manager.py       ← Config
 ├── tools.py                ← Tools bantu
 └── menu_*.py               ← Submenu (account, embed, tools)
-
-**Detail struktur:** docs/state.md → section 4
 ```
+**Detail struktur:** docs/state.md → section 4
+
 ---
 
 ## 🎨 Themes
