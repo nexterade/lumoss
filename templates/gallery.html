@@ -742,6 +742,7 @@ const ITEMS_PER_PAGE = /*ITEMS_PER_PAGE_PLACEHOLDER*/;
 const PROJECT_TITLE = /*PROJECT_TITLE_JS*/;
 const AUTOPLAY_CONFIG = /*AUTOPLAY_CONFIG_PLACEHOLDER*/;
 const DEFAULT_THEME = /*DEFAULT_THEME_PLACEHOLDER*/;
+const GITHUB_REPO = /*GITHUB_REPO_PLACEHOLDER*/;
 
 // ─── Helpers ───────────────────────────────────────────────
 function esc(s){
@@ -917,7 +918,7 @@ function renderAboutStats(){
 }
 
 function renderAboutGithub(){
-  const repo = (window.GITHUB_REPO || "").trim();
+  const repo = (typeof GITHUB_REPO === "string" ? GITHUB_REPO : "").trim();
   if (!repo) return;
   const link = document.getElementById("aboutGithubLink");
   const desc = document.getElementById("aboutGithubRepoDesc");

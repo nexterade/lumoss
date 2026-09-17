@@ -1,5 +1,5 @@
 # ═══════════════════════════════════════════════════════════
-# amuv7 — Python Dependencies (v7.2.0)
+# lumoss — Python Dependencies (v7.2.12)
 # ═══════════════════════════════════════════════════════════
 #
 # Cara install:
@@ -16,7 +16,7 @@ requests>=2.28.0
 requests-toolbelt>=1.0.0
 
 # ═══════════════════════════════════════════════════════════
-# OPSIONAL (amuv7 punya fallback kalau gak ada)
+# OPSIONAL (lumoss punya fallback kalau gak ada)
 # ═══════════════════════════════════════════════════════════
 # Uncomment kalau mau alignment emoji lebih presisi di Termux:
 # wcwidth>=0.2.0

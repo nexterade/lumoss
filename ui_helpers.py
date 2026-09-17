@@ -1,45 +1,38 @@
 """
-lumoss — UI Helpers (v7.2.6 MEDIA GARDEN)
-Kumpulan utility tampilan terminal:
-- ANSI colors (palette hijau neon + silver dark)
-- Banner ASCII art "LUMOSS" (auto-width, ASCII-only)
-- Input prompt dengan default
-- Box renderer (full-width, 2 kolom, merged, vertical)
-- Layout helpers (auto-resize dari lebar terminal)
-- Emoji converter (auto-convert emoji → Unicode symbol)
+lumoss — UI Helpers (v7.2.11 MEDIA GARDEN)
+Kumpulan utility tampilan terminal.
+
+Changelog v7.2.11:
+- NEW: render_tree() — tree view (│ ├ └ ─) untuk section + lines.
+- NEW: render_tree_group() — tree view dengan grup menu.
+- KEEP: vwidth() strip ANSI, _WIDE_MISC, padding width - 8 - vis.
+- KEEP: semua fungsi lama (backward-compat).
+
+Changelog v7.2.10:
+- REVERT: Hapus centering + adaptive banner.
+- KEEP: vwidth() strip ANSI, _WIDE_MISC.
+
+Changelog v7.2.8:
+- FIX: vwidth() — strip ANSI escape code dulu.
+
+Changelog v7.2.7:
+- FIX: vwidth() — pisahin emoji warna (2-cell) vs symbol text (1-cell).
 
 Changelog v7.2.6:
-- NEW: EMOJI_TO_UNICODE — mapping emoji → Unicode symbol (1-cell)
-- NEW: convert_emoji() — auto-convert emoji, KECUALI 🌿 (simbol Lumoss)
-- NEW: strip_emoji() — strip sisa emoji yang gak ada di mapping
-- KEEP: 🌿 sebagai simbol utama Lumoss (gak di-convert)
-- UPDATE: PROJECT_VERSION → 7.2.6
+- NEW: EMOJI_TO_UNICODE, convert_emoji(), strip_emoji().
 
 Changelog v7.2.5:
-- NEW: render_vertical_box() — 1 box, section vertikal (stack atas-bawah)
-- NEW: render_vertical_group() — 1 box, grup menu vertikal
+- NEW: render_vertical_box(), render_vertical_group().
 
 Changelog v7.2.4:
-- NEW: render_merged_box() — 1 box, multiple section (divider tengah)
-- NEW: render_merged_group() — 1 box, multiple grup menu
+- NEW: render_merged_box(), render_merged_group().
 
 Changelog v7.2.3:
-- FIX: Banner LUMOSS — border ngikutin lebar ASCII art (bukan hardcoded 41)
-- FIX: Emoji 🌿 di tagline diganti '*' biar lebar visual stabil
-- NEW: layout_widths() — hitung lebar box otomatis dari term_width()
-- NEW: render_full_box() — 1 box full-width
-- NEW: render_two_col_box() — 2 kolom dalam 1 border utuh (no tabrakan)
-- NEW: render_group_box() — grup menu border utuh
-- NEW: render_group_box_two_col() — grup menu 2 kolom 1 border
-- KEEP: semua helper lama (backward-compat)
+- NEW: layout_widths(), render_full_box(), render_two_col_box(),
+       render_group_box(), render_group_box_two_col().
 
 Changelog v7.2.2:
-- REBRANDING: amuv7 → lumoss
-- PROJECT_NAME: "lumoss"
-- PROJECT_FULL: "Lumoss — Media Garden"
-- Banner: LUMOSS (bukan NEXTER)
-- Tagline: "Media Garden, in bloom"
-- Fix: vwidth() & vpad() buat alignment emoji presisi
+- REBRANDING: amuv7 → lumoss.
 """
 
 import os
@@ -76,18 +69,16 @@ C_BRIGHT_YELLOW = "\033[1;93m"
 
 # ═══════════════════════════════════════════════════════════
 # LUMINOUS MOSS PALETTE
-# Referensi: #2BEE34 (hijau neon) + #141414 (silver dark)
 # ═══════════════════════════════════════════════════════════
 
-C_MOSS_1 = "\033[38;5;46m"     # bright neon green (~#2BEE34)
-C_MOSS_2 = "\033[38;5;82m"     # vivid green (mid)
-C_MOSS_3 = "\033[38;5;118m"    # lighter green
-C_MOSS_4 = "\033[38;5;155m"    # pale green
-C_MOSS_DARK = "\033[38;5;22m"  # dark green (background hint)
-C_SILVER = "\033[38;5;245m"    # silver gray
-C_SILVER_LIGHT = "\033[38;5;250m"  # light silver
+C_MOSS_1 = "\033[38;5;46m"
+C_MOSS_2 = "\033[38;5;82m"
+C_MOSS_3 = "\033[38;5;118m"
+C_MOSS_4 = "\033[38;5;155m"
+C_MOSS_DARK = "\033[38;5;22m"
+C_SILVER = "\033[38;5;245m"
+C_SILVER_LIGHT = "\033[38;5;250m"
 
-# Alias backward-compat
 C_GRAD_1 = C_MOSS_1
 C_GRAD_2 = C_MOSS_2
 C_GRAD_3 = C_MOSS_3
@@ -98,17 +89,16 @@ C_GRAD_7 = C_MOSS_1
 
 
 # ═══════════════════════════════════════════════════════════
-# PROJECT CONSTANTS (v7.2.6 — REBRANDING)
+# PROJECT CONSTANTS
 # ═══════════════════════════════════════════════════════════
 
 PROJECT_NAME = "lumoss"
 PROJECT_FULL = "Lumoss — Media Garden"
-PROJECT_VERSION = "7.2.6"
+PROJECT_VERSION = "7.2.11"
 PROJECT_AUTHOR = "@nexterade"
 PROJECT_DESC = "Media Garden, in bloom"
 PROJECT_TAGLINE = "Media Garden, in bloom"
 
-# Simbol utama Lumoss — JANGAN di-convert
 LUMOSS_SYMBOL = "🌿"
 
 DIVIDER_CHAR = "─"
@@ -117,35 +107,62 @@ ARROW = "→"
 
 
 # ═══════════════════════════════════════════════════════════
-# VISUAL PADDING — presisi buat emoji & unicode
+# VISUAL PADDING
 # ═══════════════════════════════════════════════════════════
 
 try:
     from wcwidth import wcswidth as _wcswidth
+    _HAS_WCWIDTH = True
 except ImportError:
+    _HAS_WCWIDTH = False
     def _wcswidth(s):
         return len(s)
 
 _ZERO_WIDTH_MARKS = ("\uFE0E", "\uFE0F", "\u200D")
 
+_ANSI_RE = re.compile(r"\033\[[0-9;]*m")
+
+
+_WIDE_MISC = frozenset({
+    0x2600, 0x2601, 0x2602, 0x2603, 0x2604, 0x2614, 0x2615, 0x2618,
+    0x261D, 0x2620, 0x2622, 0x2623, 0x2626, 0x262A, 0x262E, 0x262F,
+    0x2638, 0x2639, 0x263A, 0x2640, 0x2642, 0x265F, 0x2660, 0x2663,
+    0x2665, 0x2666, 0x2668, 0x267B, 0x267E, 0x267F, 0x2692, 0x2693,
+    0x2694, 0x2695, 0x2696, 0x2697, 0x2699, 0x269B, 0x269C, 0x26A0,
+    0x26A1, 0x26AA, 0x26AB, 0x26BD, 0x26BE, 0x26C4, 0x26C5, 0x26CE,
+    0x26D4, 0x26EA, 0x26F2, 0x26F3, 0x26F5, 0x26FA, 0x26FD, 0x2705,
+    0x2708, 0x270A, 0x270B, 0x270C, 0x270D, 0x270F, 0x2712, 0x2714,
+    0x2716, 0x271D, 0x2721, 0x2728, 0x2733, 0x2734, 0x2744, 0x2747,
+    0x274C, 0x274E, 0x2753, 0x2754, 0x2755, 0x2757, 0x2764, 0x2795,
+    0x2796, 0x2797, 0x27A1, 0x27B0, 0x27BF,
+})
+
 
 def _is_wide_emoji_range(cp: int) -> bool:
-    """True kalau codepoint dirender 2 kolom penuh warna."""
-    return (
-        0x1F000 <= cp <= 0x1FFFF or
-        0x2600 <= cp <= 0x27BF or
-        0x2B00 <= cp <= 0x2BFF
-    )
+    if 0x1F000 <= cp <= 0x1FAFF:
+        return True
+    if cp in _WIDE_MISC:
+        return True
+    return False
 
 
 def vwidth(text: str) -> int:
-    """Hitung lebar VISUAL teks di terminal Android/Termux."""
+    if not text:
+        return 0
+    text = _ANSI_RE.sub("", text)
     total = 0
     for ch in text:
         if ch in _ZERO_WIDTH_MARKS:
             continue
-        if _is_wide_emoji_range(ord(ch)):
+        cp = ord(ch)
+        if 0x1F000 <= cp <= 0x1FAFF:
             total += 2
+            continue
+        if cp in _WIDE_MISC:
+            total += 2
+            continue
+        if 0x2600 <= cp <= 0x27BF:
+            total += 1
             continue
         w = _wcswidth(ch)
         if w is None or w < 0:
@@ -155,7 +172,6 @@ def vwidth(text: str) -> int:
 
 
 def vpad(text: str, width: int, align: str = "left") -> str:
-    """Padding berdasarkan lebar VISUAL."""
     cur = vwidth(text)
     gap = max(0, width - cur)
     if align == "right":
@@ -167,141 +183,85 @@ def vpad(text: str, width: int, align: str = "left") -> str:
 
 
 # ═══════════════════════════════════════════════════════════
-# EMOJI REGEX & STRIPPER (v7.2.6)
+# EMOJI STRIP & CONVERT
 # ═══════════════════════════════════════════════════════════
 
-# Regex: match emoji warna (≥ U+1F000) + variation selector + ZWJ
 _EMOJI_WIDE_RE = re.compile(
     "["
-    "\U0001F000-\U0001FAFF"  # emoji warna (blocks, faces, symbols)
-    "\U0000FE00-\U0000FE0F"  # variation selectors
-    "\U0000200D"             # ZWJ (zero-width joiner)
-    "\U000020E3"             # combining enclosing keycap
+    "\U0001F000-\U0001FAFF"
+    "\U0000FE00-\U0000FE0F"
+    "\U0000200D"
+    "\U000020E3"
     "]+",
     flags=re.UNICODE,
 )
 
-# Regex: match emoji + symbol dekoratif (buat strip total)
 _EMOJI_ALL_RE = re.compile(
     "["
     "\U0001F000-\U0001FAFF"
-    "\U00002600-\U000027BF"  # misc symbols + dingbats
-    "\U00002B00-\U00002BFF"  # arrows, stars
+    "\U00002600-\U000027BF"
+    "\U00002B00-\U00002BFF"
     "\U0000FE00-\U0000FE0F"
     "\U0000200D"
     "\U000020E3"
-    "\U00002190-\U000021FF"  # arrows
-    "\U000025A0-\U000025FF"  # geometric shapes
+    "\U00002190-\U000021FF"
+    "\U000025A0-\U000025FF"
     "]+",
     flags=re.UNICODE,
 )
 
 
 def strip_emoji(text: str, keep_symbols: bool = False) -> str:
-    """Hapus emoji dari string — biar border box rapi.
-
-    Args:
-        text          : string yang mau di-clean
-        keep_symbols  : kalo True, simpan Unicode symbol (◉ ▸ ◆ dll),
-                        cuma buang emoji warna (💖 🚀 dll)
-
-    Contoh:
-        strip_emoji("Cantika 💖")  → "Cantika"
-        strip_emoji("🚀 Upload")    → "Upload"
-    """
     if not text:
         return text
-
     if keep_symbols:
-        # Cuma buang emoji di range warna (≥ U+1F000) + variation selector
         result = _EMOJI_WIDE_RE.sub("", text)
     else:
         result = _EMOJI_ALL_RE.sub("", text)
-
-    # Rapihin spasi double
-    result = " ".join(result.split())
-    return result
+    return " ".join(result.split())
 
 
-# ═══════════════════════════════════════════════════════════
-# EMOJI → UNICODE CONVERTER (v7.2.6)
-# ═══════════════════════════════════════════════════════════
-
-# Mapping emoji → Unicode symbol (1-cell stabil)
-# CATATAN: 🌿 (LUMOSS_SYMBOL) sengaja TIDAK ada di mapping
-#          biar tetep jadi simbol Lumoss
 EMOJI_TO_UNICODE = {
-    # ── Hati / Love ──
     "❤": "♥", "❤️": "♥", "🧡": "♥", "💛": "♥", "💚": "♥", "💙": "♥",
     "💜": "♥", "🖤": "♥", "🤍": "♥", "🤎": "♥", "💖": "♥", "💗": "♥",
     "💓": "♥", "💕": "♥", "💞": "♥", "💘": "♥", "💝": "♥", "💟": "♡",
     "❣": "♥", "❣️": "♥", "💔": "♡",
-
-    # ── Bintang / Star ──
     "⭐": "★", "🌟": "★", "✨": "✦", "💫": "✦", "🌠": "✦",
     "✩": "☆", "✪": "★",
-
-    # ── Fire / Power ──
     "🔥": "✦", "💥": "✗", "⚡": "⚡", "💢": "✗",
-
-    # ── Check / Cross ──
     "✅": "✓", "☑": "✓", "☑️": "✓", "✔": "✓", "✔️": "✓",
     "❌": "✗", "❎": "✗", "✖": "✗", "✖️": "✗", "⛔": "✗",
-
-    # ── Warning / Info ──
     "⚠": "⚠", "⚠️": "⚠", "🚨": "!!", "❗": "!", "❕": "!",
     "❓": "?", "❔": "?", "💡": "✦", "ℹ": "ℹ", "ℹ️": "ℹ",
-
-    # ── Arrow ──
     "⬆": "▲", "⬆️": "▲", "⬇": "▼", "⬇️": "▼",
     "⬅": "◀", "⬅️": "◀", "➡": "▶", "➡️": "▶",
     "↗": "↗", "↘": "↘", "↙": "↙", "↖": "↖",
     "🔄": "↻", "🔃": "↻", "🔁": "↻", "🔂": "↻",
-
-    # ── Media / File ──
     "📄": "▪", "📃": "▪", "📑": "▪", "📋": "▪", "📌": "◆",
     "📍": "◆", "📎": "⚿", "🖇": "⚿", "🖇️": "⚿",
     "📁": "▸", "📂": "▣", "🗂": "▣", "🗂️": "▣", "🗃": "▣", "🗃️": "▣",
     "💾": "=", "💿": "◉", "📀": "◉", "🖥": "▣", "🖥️": "▣",
     "📱": "▣", "📷": "◉", "📸": "◉", "🎥": "▶", "🎬": "▶",
     "🎵": "♪", "🎶": "♪", "🎤": "♪", "🎧": "♪",
-
-    # ── User / People ──
     "👤": "◉", "👥": "❖", "👨": "◉", "👩": "◉", "🧑": "◉",
     "👶": "◉", "👴": "◉", "👵": "◉", "🙋": "◉", "🙋‍♂️": "◉",
     "🙋‍♀️": "◉", "💁": "◉", "🤝": "❖",
-
-    # ── Tools / Setting ──
     "⚙": "⚙", "⚙️": "⚙", "🔧": "⚒", "🔨": "⚒", "🛠": "⚒", "🛠️": "⚒",
     "🔩": "⚒", "⚒": "⚒", "⚒️": "⚒", "🔑": "⚿", "🗝": "⚿", "🗝️": "⚿",
     "🔒": "⚿", "🔓": "⚿", "🔐": "⚿", "🔏": "⚿",
-
-    # ── Aksi / Target ──
     "🎯": "◆", "🎪": "◆", "🎨": "◈", "🖌": "✎", "🖌️": "✎",
     "✏": "✎", "✏️": "✎", "📝": "✎", "🖊": "✎", "🖊️": "✎",
     "🚀": "▶", "🛫": "▶", "✈": "▶", "✈️": "▶", "🛸": "◐",
-
-    # ── Symbol / Status ──
     "💯": "★", "🆗": "✓", "🆕": "✦", "🆒": "★", "🆓": "✦",
     "🔴": "●", "🟠": "●", "🟡": "●", "🟢": "●", "🔵": "●",
     "🟣": "●", "⚫": "●", "⚪": "○", "🟤": "●",
-
-    # ── Nature / Plant (KECUALI 🌿) ──
     "🍀": "❦", "🌱": "❦", "🌲": "❦", "🌳": "❦",
     "🌴": "❦", "🌵": "❦", "🌾": "❦", "🌷": "❦", "🌹": "❦",
     "🌸": "❦", "🌺": "❦", "🌻": "❦", "🌼": "❦", "💐": "❦",
-
-    # ── Network / Web ──
     "🌐": "◐", "🌍": "◐", "🌎": "◐", "🌏": "◐", "🗺": "◐", "🗺️": "◐",
-
-    # ── GitHub / Code ──
     "🐙": "⚑", "💻": "▣", "⌨": "▣", "⌨️": "▣", "🖱": "▣", "🖱️": "▣",
-
-    # ── Party / Fun ──
     "🎉": "✦", "🎊": "✦", "🎈": "✦", "🎁": "✦", "🏆": "★",
     "🥇": "★", "🥈": "★", "🥉": "★", "🏅": "★", "🎖": "★", "🎖️": "★",
-
-    # ── Other ──
     "🔔": "◆", "🔕": "◆", "💬": "▪", "💭": "▪", "🗯": "▪", "🗯️": "▪",
     "📢": "◆", "📣": "◆", "📡": "~", "🛰": "◐", "🛰️": "◐",
     "🎓": "◆", "📚": "❓", "📖": "?", "📕": "?", "📗": "?", "📘": "?",
@@ -312,45 +272,15 @@ EMOJI_TO_UNICODE = {
 
 
 def convert_emoji(text: str) -> str:
-    """Auto-convert emoji ke Unicode symbol (1-cell stabil).
-
-    User input emoji → output unicode symbol.
-    KECUALI 🌿 (LUMOSS_SYMBOL) — tetap dipertahankan.
-    Emoji yang gak ada di mapping → di-strip.
-
-    Contoh:
-        convert_emoji("Cantika 💖")    → "Cantika ♥"
-        convert_emoji("🚀 Upload")      → "▶ Upload"
-        convert_emoji("🌿 Lumoss")      → "🌿 Lumoss"  (KEEP!)
-        convert_emoji("Hello 🦄")       → "Hello"  (🦄 gak ada di mapping)
-
-    Args:
-        text: string yang mau di-convert
-
-    Returns:
-        string dengan emoji → unicode symbol
-    """
     if not text:
         return text
-
-    # Simpan 🌿 dulu (replace dengan placeholder)
     placeholder = "\u0000LUMOSS_SYMBOL\u0000"
     result = text.replace(LUMOSS_SYMBOL, placeholder)
-
-    # Convert emoji di mapping
     for emoji, symbol in EMOJI_TO_UNICODE.items():
         result = result.replace(emoji, symbol)
-
-    # Sisa emoji yang gak ada di mapping — di-strip
     result = strip_emoji(result, keep_symbols=True)
-
-    # Balikin 🌿
     result = result.replace(placeholder, LUMOSS_SYMBOL)
-
-    # Rapihin spasi double
-    result = " ".join(result.split())
-
-    return result
+    return " ".join(result.split())
 
 
 # ═══════════════════════════════════════════════════════════
@@ -376,16 +306,12 @@ def term_height(fallback=20):
 
 
 # ═══════════════════════════════════════════════════════════
-# LAYOUT HELPERS (v7.2.6 — full-width + 2 kolom + merged + vertical)
+# LAYOUT HELPERS (legacy — v7.2.3)
 # ═══════════════════════════════════════════════════════════
 
 def layout_widths(fallback=62):
-    """Hitung lebar layout optimal dari lebar terminal.
-
-    Return: (total, box_l, box_r, gap)
-    """
     tw = term_width(fallback)
-    total = max(58, tw - 6)
+    total = max(58, min(tw - 4, 78))
     gap = 1
     box_l = (total - gap) // 2
     box_r = total - gap - box_l
@@ -393,23 +319,19 @@ def layout_widths(fallback=62):
 
 
 def render_full_box(title, emoji, lines, width=None, color=None):
-    """Render 1 box full-width (1 kolom)."""
     if width is None:
         total, _, _, _ = layout_widths()
         width = total
     c = color or C_MOSS_1
-
     label = f" {emoji} {title} " if emoji else f" {title} "
     label_vis = vwidth(label)
     dashes = max(0, width - label_vis - 3)
     print(f"  {c}┌─{label}{'─' * dashes}┐{C_RESET}")
-
     inner_w = width - 2
     for line in lines:
         line_vis = vwidth(line)
         pad = max(0, inner_w - 2 - line_vis)
         print(f"  {c}│{C_RESET} {line}{' ' * pad} {c}│{C_RESET}")
-
     print(f"  {c}└{'─' * (width - 2)}┘{C_RESET}")
 
 
@@ -418,7 +340,6 @@ def render_two_col_box(
     title_r, emoji_r, lines_r,
     width=None, color=None,
 ):
-    """Render 1 border utuh dengan 2 kolom di dalamnya."""
     if width is None:
         total, box_l, box_r, gap = layout_widths()
         width = total
@@ -426,47 +347,36 @@ def render_two_col_box(
         gap = 1
         box_l = (width - gap) // 2
         box_r = width - gap - box_l
-
     c = color or C_MOSS_1
-
     label_l = f" {emoji_l} {title_l} " if emoji_l else f" {title_l} "
     label_r = f" {emoji_r} {title_r} " if emoji_r else f" {title_r} "
-
     dashes_l = max(0, box_l - vwidth(label_l) - 3)
     dashes_r = max(0, box_r - vwidth(label_r) - 3)
-
     print(
         f"  {c}┌─{label_l}{'─' * dashes_l}┬"
         f"{label_r}{'─' * dashes_r}┐{C_RESET}"
     )
-
     max_rows = max(len(lines_l), len(lines_r))
     for i in range(max_rows):
         line_l = lines_l[i] if i < len(lines_l) else ""
         line_r = lines_r[i] if i < len(lines_r) else ""
-
         pad_l = max(0, box_l - 2 - vwidth(line_l))
         pad_r = max(0, box_r - 2 - vwidth(line_r))
-
         print(
             f"  {c}│{C_RESET} {line_l}{' ' * pad_l} "
             f"{c}│{C_RESET} {line_r}{' ' * pad_r} {c}│{C_RESET}"
         )
-
     print(f"  {c}└{'─' * box_l}┴{'─' * box_r}┘{C_RESET}")
 
 
 def render_group_box(title, emoji, items, width=None, color=None):
-    """Render grup menu dengan border utuh (1 kolom)."""
     if width is None:
         total, _, _, _ = layout_widths()
         width = total
     c = color or C_MOSS_1
-
     label = f" {emoji} {title} " if emoji else f" {title} "
     dashes = max(0, width - vwidth(label) - 3)
     print(f"  {c}┌─{label}{'─' * dashes}┐{C_RESET}")
-
     inner_w = width - 2
     for item in items:
         key, m_emoji, label_txt = item[:3]
@@ -478,12 +388,10 @@ def render_group_box(title, emoji, items, width=None, color=None):
         )
         pad = max(0, inner_w - 2 - vwidth(plain))
         print(f"  {c}│{C_RESET} {colored}{' ' * pad} {c}│{C_RESET}")
-
     print(f"  {c}└{'─' * (width - 2)}┘{C_RESET}")
 
 
 def render_group_box_two_col(title, emoji, left, right, width=None, color=None):
-    """Render grup menu 2 kolom dalam 1 border utuh."""
     if width is None:
         total, box_l, box_r, gap = layout_widths()
         width = total
@@ -491,12 +399,10 @@ def render_group_box_two_col(title, emoji, left, right, width=None, color=None):
         gap = 1
         box_l = (width - gap) // 2
         box_r = width - gap - box_l
-
     c = color or C_MOSS_1
     label = f" {emoji} {title} " if emoji else f" {title} "
     dashes = max(0, width - vwidth(label) - 3)
     print(f"  {c}┌─{label}{'─' * dashes}┐{C_RESET}")
-
     max_rows = max(len(left), len(right))
     for i in range(max_rows):
         l_item = left[i] if i < len(left) else None
@@ -518,31 +424,25 @@ def render_group_box_two_col(title, emoji, left, right, width=None, color=None):
         line_l = fmt(l_item, box_l)
         line_r = fmt(r_item, box_r)
         print(f"  {c}│{C_RESET} {line_l} {c}│{C_RESET} {line_r} {c}│{C_RESET}")
-
     print(f"  {c}└{'─' * box_l}┴{'─' * box_r}┘{C_RESET}")
 
 
 def render_merged_box(title, emoji, sections, width=None, color=None):
-    """Render 1 box full-width dengan beberapa section (horizontal)."""
     if width is None:
         total, _, _, _ = layout_widths()
         width = total
     c = color or C_MOSS_1
-
     label = f" {emoji} {title} " if emoji else f" {title} "
     dashes = max(0, width - vwidth(label) - 3)
     print(f"  {c}┌─{label}{'─' * dashes}┐{C_RESET}")
-
     inner_w = width - 2
     n_sec = len(sections)
     if n_sec == 0:
         print(f"  {c}└{'─' * (width - 2)}┘{C_RESET}")
         return
-
     divider_w = 3
     total_divider = divider_w * (n_sec - 1)
     col_w = (inner_w - total_divider) // n_sec
-
     header_line = ""
     for i, sec in enumerate(sections):
         s_title = sec.get("title", "")
@@ -553,14 +453,12 @@ def render_merged_box(title, emoji, sections, width=None, color=None):
         if i < n_sec - 1:
             header_line += f" {c}│{C_RESET} "
     print(f"  {c}│{C_RESET} {header_line} {c}│{C_RESET}")
-
     sep_line = ""
     for i in range(n_sec):
         sep_line += f"{C_SILVER}{'─' * col_w}{C_RESET}"
         if i < n_sec - 1:
             sep_line += f" {c}┼{C_RESET} "
     print(f"  {c}│{C_RESET} {sep_line} {c}│{C_RESET}")
-
     max_rows = max(len(sec.get("lines", [])) for sec in sections)
     for r in range(max_rows):
         row_parts = []
@@ -575,31 +473,25 @@ def render_merged_box(title, emoji, sections, width=None, color=None):
             if i < n_sec - 1:
                 row_line += f" {c}│{C_RESET} "
         print(f"  {c}│{C_RESET} {row_line} {c}│{C_RESET}")
-
     print(f"  {c}└{'─' * (width - 2)}┘{C_RESET}")
 
 
 def render_merged_group(title, emoji, groups, width=None, color=None):
-    """Render 1 box full-width dengan beberapa grup menu (horizontal)."""
     if width is None:
         total, _, _, _ = layout_widths()
         width = total
     c = color or C_MOSS_1
-
     label = f" {emoji} {title} " if emoji else f" {title} "
     dashes = max(0, width - vwidth(label) - 3)
     print(f"  {c}┌─{label}{'─' * dashes}┐{C_RESET}")
-
     inner_w = width - 2
     n_grp = len(groups)
     if n_grp == 0:
         print(f"  {c}└{'─' * (width - 2)}┘{C_RESET}")
         return
-
     divider_w = 3
     total_divider = divider_w * (n_grp - 1)
     col_w = (inner_w - total_divider) // n_grp
-
     header_line = ""
     for i, grp in enumerate(groups):
         g_title = grp.get("title", "")
@@ -610,16 +502,13 @@ def render_merged_group(title, emoji, groups, width=None, color=None):
         if i < n_grp - 1:
             header_line += f" {c}│{C_RESET} "
     print(f"  {c}│{C_RESET} {header_line} {c}│{C_RESET}")
-
     sep_line = ""
     for i in range(n_grp):
         sep_line += f"{C_SILVER}{'─' * col_w}{C_RESET}"
         if i < n_grp - 1:
             sep_line += f" {c}┼{C_RESET} "
     print(f"  {c}│{C_RESET} {sep_line} {c}│{C_RESET}")
-
     max_rows = max(len(grp.get("items", [])) for grp in groups)
-
     for r in range(max_rows):
         row_parts = []
         for grp in groups:
@@ -636,76 +525,59 @@ def render_merged_group(title, emoji, groups, width=None, color=None):
                 row_parts.append(f"{colored}{' ' * pad}")
             else:
                 row_parts.append(" " * col_w)
-
         row_line = ""
         for i, part in enumerate(row_parts):
             row_line += part
             if i < n_grp - 1:
                 row_line += f" {c}│{C_RESET} "
         print(f"  {c}│{C_RESET} {row_line} {c}│{C_RESET}")
-
     print(f"  {c}└{'─' * (width - 2)}┘{C_RESET}")
 
 
 def render_vertical_box(title, emoji, sections, width=None, color=None):
-    """Render 1 box full-width dengan section vertikal (stack atas-bawah)."""
     if width is None:
         total, _, _, _ = layout_widths()
         width = total
     c = color or C_MOSS_1
-
     label = f" {emoji} {title} " if emoji else f" {title} "
     dashes = max(0, width - vwidth(label) - 3)
     print(f"  {c}┌─{label}{'─' * dashes}┐{C_RESET}")
-
     print(f"  {c}│{C_RESET}{' ' * (width - 2)}{c}│{C_RESET}")
-
     for sec_idx, sec in enumerate(sections):
         s_title = sec.get("title", "")
         s_emoji = sec.get("emoji", "")
         s_lines = sec.get("lines", [])
-
         head = f"{s_emoji} {s_title}" if s_emoji else s_title
-        head_vis = vwidth(f"  {head}")
-        head_pad = max(0, width - 2 - head_vis)
-        print(f"  {c}│{C_RESET}  {C_MOSS_2}{C_BOLD}{head}{C_RESET}{' ' * head_pad}{c}│{C_RESET}")
-
+        head_vis = vwidth(head)
+        head_pad = max(0, width - 8 - head_vis)
+        print(f"  {c}│{C_RESET}  {C_MOSS_2}{C_BOLD}{head}{C_RESET}{' ' * head_pad}  {c}│{C_RESET}")
         for line in s_lines:
             line_vis = vwidth(line)
-            pad = max(0, width - 4 - line_vis)
+            pad = max(0, width - 8 - line_vis)
             print(f"  {c}│{C_RESET}  {line}{' ' * pad}  {c}│{C_RESET}")
-
         if sec_idx < len(sections) - 1:
             print(f"  {c}│{C_RESET}{' ' * (width - 2)}{c}│{C_RESET}")
-
     print(f"  {c}│{C_RESET}{' ' * (width - 2)}{c}│{C_RESET}")
-
     print(f"  {c}└{'─' * (width - 2)}┘{C_RESET}")
 
 
 def render_vertical_group(title, emoji, groups, width=None, color=None):
-    """Render 1 box full-width dengan grup menu vertikal (stack atas-bawah)."""
     if width is None:
         total, _, _, _ = layout_widths()
         width = total
     c = color or C_MOSS_1
-
     label = f" {emoji} {title} " if emoji else f" {title} "
     dashes = max(0, width - vwidth(label) - 3)
     print(f"  {c}┌─{label}{'─' * dashes}┐{C_RESET}")
-
     print(f"  {c}│{C_RESET}{' ' * (width - 2)}{c}│{C_RESET}")
-
     for grp_idx, grp in enumerate(groups):
         g_title = grp.get("title", "")
         g_emoji = grp.get("emoji", "")
         g_items = grp.get("items", [])
-
         head = f"{g_emoji} {g_title}" if g_emoji else g_title
-        head_vis = vwidth(f"  {head}")
-        head_pad = max(0, width - 2 - head_vis)
-        print(f"  {c}│{C_RESET}  {C_MOSS_2}{C_BOLD}{head}{C_RESET}{' ' * head_pad}{c}│{C_RESET}")
-
+        head_vis = vwidth(head)
+        head_pad = max(0, width - 8 - head_vis)
+        print(f"  {c}│{C_RESET}  {C_MOSS_2}{C_BOLD}{head}{C_RESET}{' ' * head_pad}  {c}│{C_RESET}")
         for item in g_items:
             key, m_emoji, label_txt = item[:3]
             key_str = f"[{key}]"
@@ -714,22 +586,203 @@ def render_vertical_group(title, emoji, groups, width=None, color=None):
                 f"  {C_MOSS_1}{C_BOLD}{key_str:>4}{C_RESET}  "
                 f"{m_emoji}  {C_WHITE}{label_txt}{C_RESET}"
             )
-            pad = max(0, width - 4 - vwidth(plain))
+            pad = max(0, width - 8 - vwidth(plain))
             print(f"  {c}│{C_RESET}  {colored}{' ' * pad}  {c}│{C_RESET}")
-
         if grp_idx < len(groups) - 1:
             print(f"  {c}│{C_RESET}{' ' * (width - 2)}{c}│{C_RESET}")
-
     print(f"  {c}│{C_RESET}{' ' * (width - 2)}{c}│{C_RESET}")
-
     print(f"  {c}└{'─' * (width - 2)}┘{C_RESET}")
 
 
 # ═══════════════════════════════════════════════════════════
-# BANNER (LUMOSS — v7.2.6) — ASCII-only, auto-width
+# TREE VIEW (v7.2.11 — NEW!)
 # ═══════════════════════════════════════════════════════════
 
-# ASCII art LUMOSS (tanpa emoji, biar lebar visual konsisten)
+# Karakter tree (Unicode box-drawing — 1-cell di semua terminal)
+T_BRANCH = "├──"
+T_LAST = "└──"
+T_PIPE = "│"
+T_DASH = "─"
+
+
+def _tree_prefix(level, is_last, parent_last):
+    """Generate prefix tree untuk 1 level.
+
+    Args:
+        level        : kedalaman (0 = root, 1 = child, dst)
+        is_last      : apakah ini item terakhir di level-nya
+        parent_last  : list bool — parent_last[i] = parent di level i adalah last?
+
+    Return: string prefix (udah termasuk karakter tree + spasi)
+    """
+    if level == 0:
+        return ""
+
+    prefix = ""
+    # Loop dari level 1 sampe level-1 (parent indent)
+    for i in range(1, level):
+        if i - 1 < len(parent_last) and parent_last[i - 1]:
+            prefix += "    "  # parent last → gak ada pipe
+        else:
+            prefix += f"{T_PIPE}   "  # parent bukan last → ada pipe
+
+    # Karakter buat item ini
+    if is_last:
+        prefix += f"{T_LAST} "
+    else:
+        prefix += f"{T_BRANCH} "
+
+    return prefix
+
+
+def render_tree(root_label, sections, color=None):
+    """Render tree view dengan section.
+
+    Format:
+        lumoss/
+        │
+        ├── ◉  SECTION 1
+        │   ├── item 1
+        │   └── item 2
+        │
+        └── ◆  SECTION 2
+            ├── item 1
+            └── item 2
+
+    Args:
+        root_label : label root (misal "lumoss/")
+        sections   : list of dict {
+                        "title"  : "AKUN & RINGKASAN",
+                        "emoji"  : "◉",
+                        "lines"  : ["line 1", "line 2", ...],
+                     }
+        color      : warna tree (default C_MOSS_1)
+    """
+    c = color or C_MOSS_1
+
+    # Root label
+    print(f"  {c}{C_BOLD}{root_label}{C_RESET}")
+    print(f"  {c}{T_PIPE}{C_RESET}")
+
+    n_sec = len(sections)
+    for sec_idx, sec in enumerate(sections):
+        s_title = sec.get("title", "")
+        s_emoji = sec.get("emoji", "")
+        s_lines = sec.get("lines", [])
+
+        is_last_sec = (sec_idx == n_sec - 1)
+
+        # Section header
+        if is_last_sec:
+            head_branch = T_LAST
+            next_prefix = "    "  # anak dari last → indent 4 spasi
+        else:
+            head_branch = T_BRANCH
+            next_prefix = f"{T_PIPE}   "  # anak dari bukan-last → pipe + 3 spasi
+
+        # Render section header
+        head_text = f"{s_emoji}  {s_title}" if s_emoji else s_title
+        print(
+            f"  {c}{head_branch}{C_RESET}  "
+            f"{C_MOSS_2}{C_BOLD}{head_text}{C_RESET}"
+        )
+
+        # Render items
+        n_items = len(s_lines)
+        for item_idx, line in enumerate(s_lines):
+            is_last_item = (item_idx == n_items - 1)
+            item_branch = T_LAST if is_last_item else T_BRANCH
+            print(
+                f"  {c}{next_prefix}{item_branch}{C_RESET}  "
+                f"{line}"
+            )
+
+        # Spacer antar section (kalo bukan last)
+        if not is_last_sec:
+            print(f"  {c}{T_PIPE}{C_RESET}")
+
+
+def render_tree_group(root_label, groups, color=None):
+    """Render tree view dengan grup menu (2 level).
+
+    Format:
+        lumoss/
+        │
+        └── ◆  MENU UTAMA
+            │
+            ├── ◆  AKSI UTAMA
+            │   ├── [1]  ▶  Jalankan Upload
+            │   └── [2]  ↻  Regenerate
+            │
+            └── ⚙  PENGATURAN
+                ├── [5]  ❖  Account Manager
+                └── [10] ?  Bantuan
+
+    Args:
+        root_label : label root (misal "lumoss/")
+        groups     : list of dict {
+                        "title" : "AKSI UTAMA",
+                        "emoji" : "◆",
+                        "items" : [("1", "▶", "label"), ...],
+                     }
+        color      : warna tree (default C_MOSS_1)
+    """
+    c = color or C_MOSS_1
+
+    # Root label
+    print(f"  {c}{C_BOLD}{root_label}{C_RESET}")
+    print(f"  {c}{T_PIPE}{C_RESET}")
+
+    n_grp = len(groups)
+    for grp_idx, grp in enumerate(groups):
+        g_title = grp.get("title", "")
+        g_emoji = grp.get("emoji", "")
+        g_items = grp.get("items", [])
+
+        is_last_grp = (grp_idx == n_grp - 1)
+
+        # Grup header
+        if is_last_grp:
+            head_branch = T_LAST
+            child_prefix = "    "
+        else:
+            head_branch = T_BRANCH
+            child_prefix = f"{T_PIPE}   "
+
+        head_text = f"{g_emoji}  {g_title}" if g_emoji else g_title
+        print(
+            f"  {c}{head_branch}{C_RESET}  "
+            f"{C_MOSS_2}{C_BOLD}{head_text}{C_RESET}"
+        )
+
+        # Sub-pipe (buat item di bawah grup)
+        print(f"  {c}{child_prefix}{T_PIPE}{C_RESET}")
+
+        # Items
+        n_items = len(g_items)
+        for item_idx, item in enumerate(g_items):
+            key, m_emoji, label_txt = item[:3]
+            key_str = f"[{key}]"
+            is_last_item = (item_idx == n_items - 1)
+            item_branch = T_LAST if is_last_item else T_BRANCH
+
+            # Format: [1]  ▶  Jalankan Upload
+            print(
+                f"  {c}{child_prefix}{item_branch}{C_RESET}  "
+                f"{C_MOSS_1}{C_BOLD}{key_str:>4}{C_RESET}  "
+                f"{m_emoji}  "
+                f"{C_WHITE}{label_txt}{C_RESET}"
+            )
+
+        # Spacer antar grup (kalo bukan last)
+        if not is_last_grp:
+            print(f"  {c}{T_PIPE}{C_RESET}")
+
+
+# ═══════════════════════════════════════════════════════════
+# BANNER (FIXED — v7.2.10)
+# ═══════════════════════════════════════════════════════════
+
 _LUMOSS_ART = [
     r"█╗     ██╗   ██╗███╗   ███╗ ██████╗ ███████╗███████╗",
     r"██║     ██║   ██║████╗ ████║██╔═══██╗██╔════╝██╔════╝",
@@ -743,20 +796,15 @@ _LUMOSS_ART_WIDTH = max(len(line) for line in _LUMOSS_ART)
 
 
 def print_banner(compact=False):
-    """Cetak banner LUMOSS (v7.2.6 — Media Garden)."""
     if compact:
         print(f"\n{C_MOSS_1}─── {C_BOLD}lumoss{C_RESET}{C_MOSS_1} v{PROJECT_VERSION} ───{C_RESET}\n")
         return
-
     art_w = _LUMOSS_ART_WIDTH
     inner_w = art_w + 4
     border_top = "━" * (inner_w + 2)
-
     print()
     print(f"{C_MOSS_1}{C_BOLD}  ┏{border_top}┓{C_RESET}")
-
     print(f"{C_MOSS_1}{C_BOLD}  ┃{C_RESET}{' ' * (inner_w + 2)}{C_MOSS_1}{C_BOLD}┃{C_RESET}")
-
     for i, line in enumerate(_LUMOSS_ART):
         if i < 2:
             col = C_MOSS_1
@@ -766,30 +814,23 @@ def print_banner(compact=False):
             col = C_MOSS_3
         else:
             col = C_MOSS_4
-
         padded = line + " " * (art_w - len(line))
         print(f"{C_MOSS_2}{C_BOLD}  ┃{C_RESET}   {col}{padded}{C_RESET}   {C_MOSS_2}{C_BOLD}┃{C_RESET}")
-
     print(f"{C_MOSS_3}{C_BOLD}  ┃{C_RESET}{' ' * (inner_w + 2)}{C_MOSS_3}{C_BOLD}┃{C_RESET}")
-
-    # Tagline — pake 🌿 sebagai simbol Lumoss
-    tagline_vis = vwidth(f"  {LUMOSS_SYMBOL}  Media Garden, in bloom")
-    tagline_pad = " " * max(0, inner_w + 2 - tagline_vis - 2)
-    print(f"{C_MOSS_3}{C_BOLD}  ┃{C_RESET}   {LUMOSS_SYMBOL}  {C_WHITE}Media Garden, in bloom{C_RESET}{tagline_pad}{C_MOSS_3}{C_BOLD}┃{C_RESET}")
-
-    # Author
-    author_line = f"by {PROJECT_AUTHOR}"
-    author_pad = " " * (inner_w + 2 - len(author_line) - 6)
-    print(f"{C_MOSS_2}{C_BOLD}  ┃{C_RESET}       {C_SILVER}by {C_MOSS_1}{PROJECT_AUTHOR}{C_RESET}{author_pad}{C_MOSS_2}{C_BOLD}┃{C_RESET}")
-
+    tagline = f"{LUMOSS_SYMBOL}  Media Garden, in bloom"
+    tagline_vis = vwidth(tagline)
+    tagline_pad = " " * max(0, inner_w + 2 - tagline_vis - 3)
+    print(f"{C_MOSS_3}{C_BOLD}  ┃{C_RESET}   {C_WHITE}{tagline}{C_RESET}{tagline_pad}{C_MOSS_3}{C_BOLD}┃{C_RESET}")
+    author = f"by {PROJECT_AUTHOR}"
+    author_pad = " " * max(0, inner_w + 2 - len(author) - 6)
+    print(f"{C_MOSS_2}{C_BOLD}  ┃{C_RESET}       {C_SILVER}{author}{C_RESET}{author_pad}{C_MOSS_2}{C_BOLD}┃{C_RESET}")
     print(f"{C_MOSS_2}{C_BOLD}  ┃{C_RESET}{' ' * (inner_w + 2)}{C_MOSS_2}{C_BOLD}┃{C_RESET}")
-
     print(f"{C_MOSS_1}{C_BOLD}  ┗{border_top}┛{C_RESET}")
     print()
 
 
 # ═══════════════════════════════════════════════════════════
-# NOTIFIKASI SEDERHANA
+# NOTIFIKASI
 # ═══════════════════════════════════════════════════════════
 
 def print_success(msg):
@@ -824,13 +865,11 @@ def input_prompt(text, default=None, allow_empty=False):
         prompt = f"{C_MOSS_1}{text}{C_RESET} {C_SILVER}[{default}]{C_RESET}: "
     else:
         prompt = f"{C_MOSS_1}{text}{C_RESET}: "
-
     try:
         val = input(prompt).strip()
     except (EOFError, KeyboardInterrupt):
         print()
         return default if default is not None else ""
-
     if not val:
         if default is not None:
             return str(default)
@@ -846,7 +885,6 @@ def input_yes_no(text, default="n"):
     except (EOFError, KeyboardInterrupt):
         print()
         return default == "y"
-
     if not val:
         return default == "y"
     return val in ("y", "ya", "yes", "1", "true")
@@ -927,14 +965,12 @@ def print_table(headers, rows, col_widths=None):
                 if i < len(r):
                     max_w = max(max_w, len(str(r[i])))
             col_widths.append(min(max_w, 40))
-
     header_line = "  ".join(
         f"{C_BOLD}{C_MOSS_1}{h:<{w}}{C_RESET}"
         for h, w in zip(headers, col_widths)
     )
     print(f"  {header_line}")
     print(f"  {C_SILVER}{'─' * (sum(col_widths) + 2 * (len(headers) - 1))}{C_RESET}")
-
     for row in rows:
         line = "  ".join(
             f"{str(c)[:w]:<{w}}" if i < len(row) else " " * w
@@ -965,7 +1001,6 @@ def print_breadcrumb(items):
 # ═══════════════════════════════════════════════════════════
 
 def divider(color=None, char=DIVIDER_CHAR, width=DIVIDER_WIDTH):
-    """Cetak garis divider aesthetic."""
     if color:
         print(f"{color}{char * width}{C_RESET}")
         return
@@ -974,38 +1009,29 @@ def divider(color=None, char=DIVIDER_CHAR, width=DIVIDER_WIDTH):
 
 
 def section_title(title, emoji="", subtitle="", color=None):
-    """Cetak judul section gaya aesthetic."""
     c = color if color else C_MOSS_1
     divider()
-
     if emoji:
         title_full = f"{emoji}  {title}  ✦"
     else:
         title_full = f"{title}  ✦"
-
     padding = max(0, (DIVIDER_WIDTH - vwidth(title_full)) // 2)
     indent = " " * padding
     print(f"{indent}{c}{C_BOLD}{title_full}{C_RESET}")
-
     if subtitle:
         sub_padding = max(0, (DIVIDER_WIDTH - vwidth(subtitle)) // 2)
         print(f"{' ' * sub_padding}{C_SILVER}{subtitle}{C_RESET}")
-
     divider()
 
 
 def kv_line(label, value, value_color=None, label_color=None, arrow=None):
-    """Cetak baris key-value."""
     lc = label_color if label_color else C_MOSS_1
     vc = value_color if value_color else C_WHITE
     ar = arrow if arrow else ARROW
-
     label_padded = f"{label:<12}"
-
     value_str = str(value)
     if len(value_str) > 32:
         value_str = value_str[:31] + "…"
-
     print(
         f"  {lc}{label_padded}{C_RESET}"
         f"{C_SILVER} {ar}  {C_RESET}"
@@ -1014,33 +1040,20 @@ def kv_line(label, value, value_color=None, label_color=None, arrow=None):
 
 
 def menu_item(key, label, emoji="", key_color=None, label_col=12):
-    """Cetak 1 item menu — alignment presisi pakai ANSI cursor."""
     kc = key_color if key_color else C_MOSS_1
     key_str = f"{key:>3}"
-
     print(f"  {kc}{C_BOLD}{key_str}{C_RESET}  {emoji}", end="")
     print(f"\033[{label_col}G{C_WHITE}{label}{C_RESET}")
 
 
-def render_menu_item(
-    num: str,
-    emoji: str,
-    label: str,
-    num_w: int = 4,
-    emoji_w: int = 4,
-    label_w: int = 32,
-    color_num: str = None,
-    color_label: str = None,
-    reset: str = None,
-) -> str:
-    """Render satu baris menu dengan alignment presisi."""
+def render_menu_item(num, emoji, label, num_w=4, emoji_w=4, label_w=32,
+                     color_num=None, color_label=None, reset=None):
     if color_num is None:
         color_num = C_MOSS_1
     if color_label is None:
         color_label = C_WHITE
     if reset is None:
         reset = C_RESET
-
     n = vpad(num, num_w, "right")
     e = vpad(emoji, emoji_w, "center")
     l = vpad(label, label_w, "left")
@@ -1049,16 +1062,13 @@ def render_menu_item(
 
 def print_account_card(name="", slug="", userhash="", files_str="",
                        extra_lines=None, title="AKUN AKTIF", emoji="◉"):
-    """Card akun gaya minimalist modern."""
     print()
     section_title(title, emoji=emoji)
     print()
-
     kv_line("Nama", name)
     kv_line("Slug", slug, value_color=C_MOSS_2)
     kv_line("Userhash", userhash, value_color=C_SILVER)
     kv_line("Files", files_str, value_color=C_MOSS_1)
-
     if extra_lines:
         for item in extra_lines:
             if len(item) == 2:
@@ -1067,17 +1077,14 @@ def print_account_card(name="", slug="", userhash="", files_str="",
             elif len(item) == 3:
                 _, lbl, val = item
                 kv_line(lbl, val)
-
     print()
     divider()
 
 
 def print_menu_card(title, items, emoji="◆", subtitle=""):
-    """Menu card gaya minimalist modern."""
     print()
     section_title(title, emoji=emoji, subtitle=subtitle)
     print()
-
     for item in items:
         if len(item) == 2:
             key, label = item
@@ -1085,7 +1092,6 @@ def print_menu_card(title, items, emoji="◆", subtitle=""):
         elif len(item) == 3:
             key, label, m_emoji = item
             menu_item(key, label, emoji=m_emoji)
-
     print()
     divider()
 
@@ -1119,34 +1125,27 @@ def print_highlight(label, value, emoji="✦"):
 # ═══════════════════════════════════════════════════════════
 
 __all__ = [
-    # Colors (standar)
     "C_RESET", "C_BOLD", "C_DIM",
     "C_BLACK", "C_RED", "C_GREEN", "C_YELLOW", "C_BLUE",
     "C_MAGENTA", "C_CYAN", "C_WHITE", "C_GRAY", "C_PURPLE", "C_ORANGE",
     "C_DIM_WHITE", "C_DIM_CYAN", "C_BRIGHT_MAGENTA", "C_BRIGHT_CYAN", "C_BRIGHT_YELLOW",
-    # Luminous Moss palette
     "C_MOSS_1", "C_MOSS_2", "C_MOSS_3", "C_MOSS_4", "C_MOSS_DARK",
     "C_SILVER", "C_SILVER_LIGHT",
-    # Gradient alias
     "C_GRAD_1", "C_GRAD_2", "C_GRAD_3", "C_GRAD_4", "C_GRAD_5", "C_GRAD_6", "C_GRAD_7",
-    # Constants
     "PROJECT_NAME", "PROJECT_FULL", "PROJECT_VERSION",
     "PROJECT_AUTHOR", "PROJECT_DESC", "PROJECT_TAGLINE",
     "LUMOSS_SYMBOL",
     "DIVIDER_CHAR", "DIVIDER_WIDTH", "ARROW",
-    # Visual width
     "vwidth", "vpad", "render_menu_item",
-    # Emoji converter (v7.2.6)
     "EMOJI_TO_UNICODE", "convert_emoji", "strip_emoji",
-    # Layout (v7.2.3)
     "layout_widths",
     "render_full_box", "render_two_col_box",
     "render_group_box", "render_group_box_two_col",
-    # Merged (v7.2.4)
     "render_merged_box", "render_merged_group",
-    # Vertical (v7.2.5)
     "render_vertical_box", "render_vertical_group",
-    # Functions
+    # Tree (v7.2.11)
+    "render_tree", "render_tree_group",
+    "T_BRANCH", "T_LAST", "T_PIPE", "T_DASH",
     "clear_screen", "term_width", "term_height",
     "print_banner", "print_section",
     "print_success", "print_error", "print_warning", "print_info",
@@ -1154,7 +1153,6 @@ __all__ = [
     "press_enter", "confirm_action",
     "format_bytes", "short_label", "truncate", "mask_secret", "print_table",
     "print_breadcrumb",
-    # Aesthetic
     "divider", "section_title", "kv_line", "menu_item",
     "print_account_card", "print_menu_card",
     "print_success_aesthetic", "print_error_aesthetic",

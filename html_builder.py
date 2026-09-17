@@ -1,6 +1,12 @@
 """
-lumoss — HTML Builder (v7.2.2 MEDIA GARDEN)
+lumoss — HTML Builder (v7.2.12 MEDIA GARDEN)
 Generate file HTML untuk galeri dari template dengan cursor-positioning & aesthetic styling.
+
+Changelog v7.2.12:
+- FIX: PR-4 — GITHUB_REPO gak di-inject ke HTML.
+  Chain diperbaiki: build_all() → build_gallery_html() → template.
+- NEW: build_gallery_html() terima param `github_repo`.
+- NEW: placeholder GITHUB_REPO_PLACEHOLDER di replacements.
 
 Changelog v7.2.0:
 - HAPUS: build_about_html() — About digabung ke gallery (Opsi C)
@@ -79,7 +85,7 @@ def _load_template(template_path):
         with open(template_path, "r", encoding="utf-8") as f:
             return f.read()
     except Exception as e:
-        print_error(f"Gagal baca template\033[24G: {e}")
+        print_error(f"Gagal baca template: {e}")
         return None
 
 
@@ -89,10 +95,7 @@ def _ensure_templates_dir():
 
 
 def _check_templates_exist():
-    """Cek template yang dibutuhin ada. Return list missing.
-    
-    v7.2.0: about.html udah gak dicek (udah dihapus).
-    """
+    """Cek template yang dibutuhin ada. Return list missing."""
     missing = []
     for name, path in [
         ("gallery.html", GALLERY_TEMPLATE),
@@ -136,11 +139,14 @@ def build_gallery_html(
     autoplay_config=None,
     theme="moss",
     default_theme=None,
+    github_repo="",
     output_path="index.html",
     template_path=None,
 ):
     """
     Build file index.html dari template galeri.
+    
+    v7.2.12: tambah param `github_repo` — inject ke JS placeholder.
     
     Args:
         media_data: list of dict item media
@@ -149,6 +155,7 @@ def build_gallery_html(
         autoplay_config: dict config autoplay
         theme: tema yang dipake (buat data-theme di <html>)
         default_theme: tema default buat JS fallback (kalau beda sama theme)
+        github_repo: string "username/repo" — inject ke JS buat About section
         output_path: path output
         template_path: override path template (optional)
     """
@@ -160,7 +167,7 @@ def build_gallery_html(
 
     template = _load_template(template_path)
     if template is None:
-        return False, f"Template tidak ditemukan\033[28G: {template_path}"
+        return False, f"Template tidak ditemukan: {template_path}"
 
     if autoplay_config is None:
         autoplay_config = {
@@ -175,14 +182,17 @@ def build_gallery_html(
             "video_preload": "metadata",
         }
 
-    # v7.2.0: default_theme buat JS fallback (kalau beda dari theme yg dipake)
     if default_theme is None:
         default_theme = theme or "moss"
+
+    # Normalisasi github_repo: strip whitespace + leading/trailing slashes
+    github_repo = (github_repo or "").strip().strip("/")
 
     json_data = escape_json_for_inline_script(media_data)
     json_autoplay = escape_json_for_inline_script(autoplay_config)
     json_title = json.dumps(project_title, ensure_ascii=False)
     json_default_theme = json.dumps(default_theme, ensure_ascii=False)
+    json_github_repo = json.dumps(github_repo, ensure_ascii=False)
 
     replacements = {
         "DATA_PLACEHOLDER": json_data,
@@ -191,6 +201,8 @@ def build_gallery_html(
         "PROJECT_TITLE": escape_html(project_title),
         "AUTOPLAY_CONFIG_PLACEHOLDER": json_autoplay,
         "DEFAULT_THEME_PLACEHOLDER": json_default_theme,
+        # v7.2.12: GITHUB_REPO buat About section
+        "GITHUB_REPO_PLACEHOLDER": json_github_repo,
     }
 
     rendered = _replace_placeholders(template, replacements)
@@ -214,7 +226,7 @@ def build_gallery_html(
         size_kb = os.path.getsize(output_path) / 1024
         return True, f"{output_path} ({size_kb:.1f} KB, {len(media_data)} item)"
     except Exception as e:
-        return False, f"Gagal simpan HTML\033[20G: {e}"
+        return False, f"Gagal simpan HTML: {e}"
 
 
 # ═══════════════════════════════════════════════════════════
@@ -242,7 +254,7 @@ def build_manager_html(
 
     template = _load_template(template_path)
     if template is None:
-        return False, f"Template tidak ditemukan\033[28G: {template_path}"
+        return False, f"Template tidak ditemukan: {template_path}"
 
     if deleted_data is None:
         deleted_data = {}
@@ -278,7 +290,7 @@ def build_manager_html(
         size_kb = os.path.getsize(output_path) / 1024
         return True, f"{output_path} ({size_kb:.1f} KB)"
     except Exception as e:
-        return False, f"Gagal simpan manager HTML\033[28G: {e}"
+        return False, f"Gagal simpan manager HTML: {e}"
 
 
 # ═══════════════════════════════════════════════════════════
@@ -299,7 +311,7 @@ def build_all(
     """
     Build 2 file (index + manager) sekaligus.
     
-    v7.2.0: about.html udah gak di-build (digabung ke gallery).
+    v7.2.12: github_repo sekarang di-pass ke build_gallery_html().
     
     Returns:
         dict {filename: (success, message)}
@@ -323,6 +335,7 @@ def build_all(
         autoplay_config=autoplay_config,
         theme=theme,
         default_theme=theme,
+        github_repo=github_repo,   # ← v7.2.12: FIX — pass param!
         output_path=index_path,
     )
     results["index.html"] = (ok, msg)

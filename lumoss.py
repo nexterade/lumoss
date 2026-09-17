@@ -666,6 +666,10 @@ def _callback_run_regenerate():
     items_per_page = eff["global"].get("gallery", {}).get("items_per_page", 24)
     theme = cm.get_theme_default()
 
+    gh_user = (cfg.get("github_username") or "").strip()
+    gh_repo_name = (cfg.get("github_repo") or "").strip()
+    github_repo_str = f"{gh_user}/{gh_repo_name}" if gh_user and gh_repo_name else ""
+
     results = build_all(
         gallery_data,
         output_dir,
@@ -675,6 +679,7 @@ def _callback_run_regenerate():
         theme=theme,
         deleted_data=deleted,
         account_info={"name": cfg.get("judul_project", slug), "slug": slug},
+        github_repo=github_repo_str,
     )
 
     for fname, (ok, msg) in results.items():

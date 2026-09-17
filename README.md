@@ -1,7 +1,7 @@
 # 🌿 LUMOSS — Media Garden, in bloom
 
 <p align="center">
-  <img src="https://img.shields.io/badge/LUMOSS-v7.2.8-2BEE34?style=for-the-badge&logo=leaflet&logoColor=white" alt="LUMOSS Version">
+  <img src="https://img.shields.io/badge/LUMOSS-v7.2.12-2BEE34?style=for-the-badge&logo=leaflet&logoColor=white" alt="LUMOSS Version">
   <img src="https://img.shields.io/badge/Python-3.14%2B-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python">
   <img src="https://img.shields.io/badge/Termux-Android-000000?style=for-the-badge&logo=termux&logoColor=white" alt="Termux">
   <img src="https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge" alt="MIT License">
@@ -324,7 +324,7 @@ Gallery
 
 ## ⚙️ ARSITEKTUR PROJECT
 
-Struktur project v7.2.8:
+Struktur project v7.2.12:
 
 ```text
 lumoss/
@@ -355,20 +355,20 @@ lumoss/
 │
 ├── backup/                      ← Backup
 │
-├── account_manager.py           ← v7.2.6
-├── config_manager.py            ← v7.2.6
-├── embed_parser.py              ← v7.2.6
-├── global_config.json           ← v7.2.6
-├── html_builder.py              ← v7.2.6
-├── lumoss.py                    ← v7.2.6 (entry point)
-├── media_processor.py           ← v7.2.6
-├── menu.py                      ← v7.2.6
-├── menu_account.py              ← v7.2.6
-├── menu_embed.py                ← v7.2.6
-├── menu_tools.py                ← v7.2.6
-├── tools.py                     ← v7.2.6
-├── ui_helpers.py                ← v7.2.6
-├── uploader.py                  ← v7.2.6
+├── account_manager.py           ← v7.2.2
+├── config_manager.py            ← v7.2.2
+├── embed_parser.py              ← v7.2.11
+├── global_config.json           ← v7.2.2
+├── html_builder.py              ← v7.2.12
+├── lumoss.py                    ← v7.2.12 (entry point)
+├── media_processor.py           ← v7.2.0
+├── menu.py                      ← v7.2.11
+├── menu_account.py              ← v7.2.2
+├── menu_embed.py                ← v7.2.2
+├── menu_tools.py                ← v7.2.2
+├── tools.py                     ← v7.2.11
+├── ui_helpers.py                ← v7.2.11
+├── uploader.py                  ← v7.2.9
 ├── README.md
 └── requirements.txt
 ```
@@ -796,6 +796,16 @@ Detail di `docs/backlog.md`. Highlight:
 ---
 
 ## 📈 VERSION HISTORY
+
+### `v7.2.12` — GITHUB_REPO + Tree View + Tools Fix
+- FIX: PR-4 — GITHUB_REPO gak di-inject ke HTML (chain fix)
+- NEW: Tree view layout (v7.2.11) — menu utama pake `render_tree_group()`
+- NEW: Nested tree buat AKUN & RINGKASAN
+- FIX: PR-3 — Emoji gear ⚙ nyempil (symbol konsisten)
+- FIX: PR-5 — templates/about.html dihapus
+- FIX: PR-6 — tools.py header (hapus emoji, ganti Unicode symbol)
+- UPDATE: requirements.txt header → lumoss
+- UPDATE: Versi state ke v7.2.12
 
 ### `v7.2.8` — Documentation Update
 - Merge `PR-FASE5.md` → `backlog.md` (39 item)

@@ -1,6 +1,12 @@
 """
-lumoss — Tools (v7.2.2 MEDIA GARDEN)
+lumoss — Tools (v7.2.11 MEDIA GARDEN)
 Kotak alat bantu: GitHub upload, backup, fix cache, dll.
+
+Changelog v7.2.11:
+- FIX: PR-6 — Hapus emoji dari header print (bikin cursor positioning error).
+- FIX: Ganti emoji → Unicode symbol (konsisten sama ui_helpers).
+- UPDATE: Versi docstring → v7.2.11.
+- KEEP: Semua fungsi lain (udah bener sejak v7.2.2).
 
 Changelog v7.2.2:
 - BREAKING: Semua fungsi terima `slug` (default: akun aktif)
@@ -48,7 +54,7 @@ BACKUP_DIR = "backup"
 
 def upload_to_github(cfg, files_to_upload=None, slug=None):
     """Upload file HTML ke GitHub via git clone + push."""
-    print(f"\n{C_MOSS_1}━━━ 📤\033[8GUPLOAD KE GITHUB ━━━{C_RESET}\n")
+    print(f"\n{C_MOSS_1}━━━ ▶  UPLOAD KE GITHUB ━━━{C_RESET}\n")
 
     try:
         subprocess.run(["git", "--version"], capture_output=True, check=True)
@@ -81,9 +87,9 @@ def upload_to_github(cfg, files_to_upload=None, slug=None):
         repo_url = f"https://github.com/{gh_user}/{gh_repo}.git"
         display_url = repo_url
 
-    print_info(f"Repo\033[14G: {display_url}")
-    print_info(f"Branch\033[14G: {gh_branch}")
-    print_info(f"Token\033[14G: {mask_secret(gh_token) if gh_token else '(tidak ada)'}")
+    print_info(f"Repo      : {display_url}")
+    print_info(f"Branch    : {gh_branch}")
+    print_info(f"Token     : {mask_secret(gh_token) if gh_token else '(tidak ada)'}")
     print()
 
     if files_to_upload is None:
@@ -101,7 +107,7 @@ def upload_to_github(cfg, files_to_upload=None, slug=None):
     print(f"{C_MOSS_1}File yang akan di-upload:{C_RESET}")
     for f, full_path in existing_files:
         size_kb = os.path.getsize(full_path) / 1024
-        print(f"  {C_GREEN}✓{C_RESET}\033[7G{C_WHITE}{f}{C_RESET} {C_SILVER}({size_kb:.1f} KB){C_RESET}")
+        print(f"  {C_GREEN}✓{C_RESET}  {C_WHITE}{f}{C_RESET} {C_SILVER}({size_kb:.1f} KB){C_RESET}")
     print()
 
     commit_msg = input_prompt(
@@ -110,10 +116,10 @@ def upload_to_github(cfg, files_to_upload=None, slug=None):
     )
 
     deploy_dir = tempfile.mkdtemp(prefix="lumoss_deploy_")
-    print_info(f"Working dir\033[16G: {deploy_dir}")
+    print_info(f"Working dir: {deploy_dir}")
 
     try:
-        print(f"\n{C_MOSS_2}[1/5]\033[10G{C_WHITE}Clone repository...{C_RESET}")
+        print(f"\n{C_MOSS_2}[1/5]{C_RESET}  {C_WHITE}Clone repository...{C_RESET}")
         result = subprocess.run(
             ["git", "clone", "--depth", "1", "-b", gh_branch, repo_url, deploy_dir],
             capture_output=True, text=True, timeout=180,
@@ -126,13 +132,13 @@ def upload_to_github(cfg, files_to_upload=None, slug=None):
             if result.returncode != 0:
                 return False, f"Gagal clone: {result.stderr[:300]}"
 
-        print(f"{C_MOSS_2}[2/5]\033[10G{C_WHITE}Copy file...{C_RESET}")
+        print(f"{C_MOSS_2}[2/5]{C_RESET}  {C_WHITE}Copy file...{C_RESET}")
         for f, full_path in existing_files:
             dst = os.path.join(deploy_dir, os.path.basename(f))
             shutil.copy(full_path, dst)
             print_success(f"Copy {f}")
 
-        print(f"{C_MOSS_2}[3/5]\033[10G{C_WHITE}Setup git...{C_RESET}")
+        print(f"{C_MOSS_2}[3/5]{C_RESET}  {C_WHITE}Setup git...{C_RESET}")
         subprocess.run(
             ["git", "-C", deploy_dir, "config", "user.email", "bot@lumoss.local"],
             capture_output=True,
@@ -142,7 +148,7 @@ def upload_to_github(cfg, files_to_upload=None, slug=None):
             capture_output=True,
         )
 
-        print(f"{C_MOSS_2}[4/5]\033[10G{C_WHITE}Commit...{C_RESET}")
+        print(f"{C_MOSS_2}[4/5]{C_RESET}  {C_WHITE}Commit...{C_RESET}")
         subprocess.run(["git", "-C", deploy_dir, "add", "-A"], capture_output=True)
         commit_result = subprocess.run(
             ["git", "-C", deploy_dir, "commit", "-m", commit_msg],
@@ -151,7 +157,7 @@ def upload_to_github(cfg, files_to_upload=None, slug=None):
         if "nothing to commit" in (commit_result.stdout + commit_result.stderr):
             return True, "Tidak ada perubahan (file sudah sama)."
 
-        print(f"{C_MOSS_2}[5/5]\033[10G{C_WHITE}Push ke {gh_branch}...{C_RESET}")
+        print(f"{C_MOSS_2}[5/5]{C_RESET}  {C_WHITE}Push ke {gh_branch}...{C_RESET}")
         push_result = subprocess.run(
             ["git", "-C", deploy_dir, "push", "origin", gh_branch],
             capture_output=True, text=True, timeout=180,
@@ -160,10 +166,10 @@ def upload_to_github(cfg, files_to_upload=None, slug=None):
         if push_result.returncode == 0:
             print()
             print_success("Berhasil upload ke GitHub!")
-            print_info(f"Repo\033[12G: {display_url}")
-            print_info(f"Branch\033[12G: {gh_branch}")
+            print_info(f"Repo   : {display_url}")
+            print_info(f"Branch : {gh_branch}")
             pages_url = f"https://{gh_user}.github.io/{gh_repo}/"
-            print_info(f"Pages\033[12G: {pages_url}")
+            print_info(f"Pages  : {pages_url}")
             return True, f"Success: {pages_url}"
         else:
             err = push_result.stderr[:300]
@@ -183,7 +189,7 @@ def upload_to_github(cfg, files_to_upload=None, slug=None):
 
 def backup_project(output_dir=None, slug=None):
     """Zip file penting project ke folder backup/."""
-    print(f"\n{C_MOSS_1}━━━ 💾\033[8GBACKUP PROJECT ━━━{C_RESET}\n")
+    print(f"\n{C_MOSS_1}━━━ =  BACKUP PROJECT ━━━{C_RESET}\n")
 
     if output_dir is None:
         output_dir = BACKUP_DIR
@@ -194,7 +200,6 @@ def backup_project(output_dir=None, slug=None):
     filename = f"lumoss_backup_{timestamp}.zip"
     out_path = os.path.join(output_dir, filename)
 
-    # File source code yang di-backup
     files_to_backup = [
         "global_config.json",
         "account_manager.py",
@@ -224,7 +229,6 @@ def backup_project(output_dir=None, slug=None):
                     count += 1
                     total_bytes += os.path.getsize(f)
 
-            # Backup config semua akun
             for acc_slug in am.list_accounts().keys():
                 paths = am.get_account_paths(acc_slug)
                 if not paths:
@@ -254,7 +258,7 @@ def backup_project(output_dir=None, slug=None):
 
 def clear_upload_cache(slug=None):
     """Hapus file cache upload."""
-    print(f"\n{C_MOSS_1}━━━ 🗑️\033[8GHAPUS CACHE UPLOAD ━━━{C_RESET}\n")
+    print(f"\n{C_MOSS_1}━━━ ✗  HAPUS CACHE UPLOAD ━━━{C_RESET}\n")
 
     if slug is None:
         slug = am.get_active_slug()
@@ -285,7 +289,7 @@ def clear_upload_cache(slug=None):
 
 def reset_blacklist(slug=None):
     """Hapus file blacklist (deleted.json)."""
-    print(f"\n{C_MOSS_1}━━━ 🔄\033[8GRESET BLACKLIST ━━━{C_RESET}\n")
+    print(f"\n{C_MOSS_1}━━━ ↻  RESET BLACKLIST ━━━{C_RESET}\n")
 
     if slug is None:
         slug = am.get_active_slug()
@@ -332,7 +336,7 @@ def reset_blacklist(slug=None):
 
 def fix_broken_cache(slug=None):
     """Bersihkan cache entri rusak."""
-    print(f"\n{C_MOSS_1}━━━ 🔧\033[8GFIX BROKEN CACHE ━━━{C_RESET}\n")
+    print(f"\n{C_MOSS_1}━━━ ⚒  FIX BROKEN CACHE ━━━{C_RESET}\n")
 
     if slug is None:
         slug = am.get_active_slug()
@@ -383,7 +387,7 @@ def fix_broken_cache(slug=None):
 
     print_warning(f"Ditemukan {removed} entri rusak:")
     for path, reason in removed_entries[:20]:
-        print(f"  {C_RED}✗{C_RESET}\033[7G{C_WHITE}{path}{C_RESET} {C_SILVER}({reason}){C_RESET}")
+        print(f"  {C_RED}✗{C_RESET}  {C_WHITE}{path}{C_RESET} {C_SILVER}({reason}){C_RESET}")
 
     if len(removed_entries) > 20:
         print(f"  ... dan {len(removed_entries) - 20} lagi")
@@ -413,7 +417,7 @@ def fix_broken_cache(slug=None):
 
 def cleanup_thumbnails(max_age_days=30):
     """Hapus thumbnail lama (>N hari)."""
-    print(f"\n{C_MOSS_1}━━━ 🧹\033[8GCLEANUP THUMBNAIL ━━━{C_RESET}\n")
+    print(f"\n{C_MOSS_1}━━━ ❦  CLEANUP THUMBNAIL ━━━{C_RESET}\n")
 
     try:
         from media_processor import cleanup_old_thumbnails

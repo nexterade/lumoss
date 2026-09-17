@@ -48,3 +48,11 @@ Thumbs.db
 
 # --- Script sekali pakai ---
 fix_emoji.py
+
+# --- File binary & arsip ---
+*.zip
+*.tar.gz
+*.rar
+
+# --- File deprecated ---
+templates/about.html

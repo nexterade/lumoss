@@ -1,33 +1,35 @@
 """
-lumoss — Menu Utama (v7.2.11 MEDIA GARDEN — TREE VIEW)
-Menu interaktif utama dengan tampilan tree view ala "tree command".
-
-Changelog v7.2.11:
-- NEW: Tree view (render_tree_group) — ganti render_vertical_group.
-- NEW: Nested tree buat AKUN & RINGKASAN (AKUN AKTIF + RINGKASAN).
-- FIX: PR-1 — Layout Main Menu berantakan (SOLVED with tree view).
-- FIX: PR-3 — Emoji gear ⚙ nyempil (SOLVED with consistent symbol).
-- FIX: PR-5 — templates/about.html cleanup (udah gak dipake).
-- KEEP: Semua fungsi lain (upload, regenerate, check, dll).
+lumoss — Menu Utama (v7.2.6 MEDIA GARDEN)
+Menu interaktif utama dengan tampilan minimalist modern + multi-folder media.
 
 Changelog v7.2.6:
 - NEW: Auto-convert emoji → Unicode symbol pas input (nama, judul, dll)
 - KEEP: 🌿 sebagai simbol utama Lumoss (gak di-convert)
+- UI: Banner main menu pake 🌿 (bukan ❦)
+- UI: _menu_exit pake 🌿
+- UPDATE: LUMOSS_VERSION → v7.2.6
 
 Changelog v7.2.5:
 - UI: Layout vertikal (Opsi C) — section stack atas-bawah
+- UI: "AKUN & RINGKASAN" — sub-judul AKUN AKTIF / RINGKASAN
+- UI: "MENU UTAMA" — sub-judul AKSI UTAMA / PENGATURAN
+- UPDATE: LUMOSS_VERSION → v7.2.5
 
 Changelog v7.2.4:
 - UI: Main menu merged boxes (1 border utuh, multiple section)
+- UPDATE: LUMOSS_VERSION → v7.2.4
 
 Changelog v7.2.3:
-- UI: Main menu full-width + border utuh
-- FIX: Layout gak lagi hardcoded width 62
+- UI: Main menu full-width + border utuh (pake helper dari ui_helpers)
+- UI: Emoji di main menu diganti Unicode symbol
+- FIX: Layout gak lagi hardcoded width 62 — pake layout_widths()
 
 Changelog v7.2.2:
-- BREAKING: Output sekarang di output/<slug>/
-- BREAKING: Multi-folder media (media_dirs array)
-- NEW: Onboarding WAJIB pilih folder media
+- BREAKING: Output sekarang di output/<slug>/ (bukan accounts/<slug>/)
+- BREAKING: Multi-folder media (media_dirs array) — scan multiple folder
+- NEW: Onboarding WAJIB pilih folder media (dari DCIM, Pictures, dll)
+- NEW: Menu Kelola Folder Media (tambah/hapus/toggle recursive)
+- FIX: Skip folder & file hidden/sampah (.thumbnails, .cache, Android, dll)
 """
 
 import os
@@ -57,9 +59,7 @@ from ui_helpers import (
     render_merged_box, render_merged_group,
     # ── v7.2.5 ──
     render_vertical_box, render_vertical_group,
-    # ── v7.2.11 NEW ──
-    render_tree, render_tree_group,
-    # ── v7.2.6 ──
+    # ── v7.2.6 NEW ──
     convert_emoji, strip_emoji, EMOJI_TO_UNICODE, LUMOSS_SYMBOL,
     PROJECT_NAME, PROJECT_FULL, PROJECT_VERSION, PROJECT_AUTHOR,
 )
@@ -72,7 +72,7 @@ import config_manager as cm
 # VERSION / CONSTANTS
 # ═══════════════════════════════════════════════════════════
 
-LUMOSS_VERSION = "v7.2.11"
+LUMOSS_VERSION = "v7.2.6"
 LUMOSS_GATE_TITLE = "LUMOSS :: UPLOAD GATE"
 LUMOSS_MENU_TITLE = "LUMOSS :: MAIN MENU"
 
@@ -146,11 +146,11 @@ def run_menu(callbacks=None):
 
 
 # ═══════════════════════════════════════════════════════════
-# MAIN MENU — LAYOUT (v7.2.11 — TREE VIEW)
+# MAIN MENU — LAYOUT (v7.2.6 — vertical + 🌿)
 # ═══════════════════════════════════════════════════════════
 
 def _render_main_menu_v2(callbacks):
-    """Render main menu layout (v7.2.11 — tree view)."""
+    """Render main menu layout (v7.2.6 — vertical + 🌿)."""
     slug = am.get_active_slug()
     info = am.get_account_info(slug) or {}
     stats = am.get_account_stats(slug)
@@ -163,33 +163,33 @@ def _render_main_menu_v2(callbacks):
     _render_menu_banner(slug)
     print()
 
-    # ── Box 1: AKUN & RINGKASAN (nested tree) ──
     _render_top_boxes(slug, info, stats, cfg, theme)
     print()
 
-    # ── Box 2: MENU UTAMA (tree group) ──
-    render_tree_group(
-        root_label="lumoss/",
+    # ── MENU UTAMA (vertikal) ──
+    render_vertical_group(
+        title="MENU UTAMA",
+        emoji="◆",
         groups=[
             {
                 "title": "AKSI UTAMA",
                 "emoji": "◆",
                 "items": [
-                    ("1",  "▶", "Jalankan Upload & Generate"),
-                    ("2",  "↻", "Regenerate Output (HTML)"),
-                    ("3",  "▣", "Cek Folder Media"),
-                    ("4",  "◐", "Import Embed dari URL"),
+                    ("1", "▶", "Jalankan Upload & Generate"),
+                    ("2", "↻", "Regenerate Output (HTML)"),
+                    ("3", "▣", "Cek Folder Media"),
+                    ("4", "◐", "Import Embed dari URL"),
                 ],
             },
             {
                 "title": "PENGATURAN",
                 "emoji": "⚙",
                 "items": [
-                    ("5",  "❖", "Account Manager"),
-                    ("6",  "⚒", "Tools & Utilities"),
-                    ("7",  "✎", "Edit Konfigurasi"),
-                    ("8",  "◈", "Pilih Tema"),
-                    ("9",  "ℹ", "Tentang Lumoss"),
+                    ("5", "❖", "Account Manager"),
+                    ("6", "⚒", "Tools & Utilities"),
+                    ("7", "✎", "Edit Konfigurasi"),
+                    ("8", "◈", "Pilih Tema"),
+                    ("9", "ℹ", "Tentang Lumoss"),
                     ("10", "?", "Bantuan"),
                 ],
             },
@@ -197,16 +197,19 @@ def _render_main_menu_v2(callbacks):
     )
     print()
 
-    # Footer — tree style
-    print(f"  {C_MOSS_1}└──{C_RESET}  {C_MOSS_1}{C_BOLD}[99]{C_RESET}  {C_RED}✗{C_RESET}  {C_WHITE}Keluar{C_RESET}")
+    # Footer — align kiri
+    total, _, _, _ = layout_widths()
+    print(f"  {C_MOSS_1}│{C_RESET}  {C_SILVER}[99]{C_RESET}  {C_RED}✗{C_RESET}  {C_WHITE}Keluar{C_RESET}")
+    print(f"  {C_MOSS_1}└{'─' * (total - 2)}┘{C_RESET}")
     print()
 
 
 def _render_menu_banner(slug):
-    """Banner main menu (v7.2.11 — pake 🌿)."""
+    """Banner main menu (v7.2.6 — pake 🌿)."""
     left = f"{C_MOSS_1}{C_BOLD}{LUMOSS_SYMBOL}  LUMOSS :: MAIN MENU{C_RESET}"
     right = f"{C_MOSS_3}v{LUMOSS_VERSION[1:]}{C_RESET}  {C_MOSS_1}///{C_RESET}"
 
+    # vwidth handle 🌿 sebagai 2-cell emoji
     left_vis = vwidth(f"{LUMOSS_SYMBOL}  LUMOSS :: MAIN MENU")
     right_vis = vwidth(f"v{LUMOSS_VERSION[1:]}  ///")
 
@@ -218,36 +221,25 @@ def _render_menu_banner(slug):
 
 
 def _render_top_boxes(slug, info, stats, cfg, theme):
-    """Akun Aktif + Ringkasan — nested tree view (v7.2.11).
-
-    Struktur:
-        lumoss/
-        │
-        └── ◉ AKUN & RINGKASAN
-            │
-            ├── ● AKUN AKTIF
-            │   ├── ◉ Nama      : ...
-            │   ├── ⚿ Userhash  : ...
-            │   ├── ▸ Folder    : ...
-            │   └── ◈ Tema      : ...
-            │
-            └── ▤ RINGKASAN
-                ├── ▪ Files     : ...
-                ├── ✓ Uploaded  : ...
-                ├── ◷ Pending   : ...
-                └── ⚑ GitHub    : ...
-    """
+    """Akun Aktif + Ringkasan — 1 box vertikal (v7.2.6)."""
     name = info.get("name", slug)
     uh = info.get("userhash_masked", "") or "(anonymous)"
 
-    # Safety net: convert emoji → unicode (kecuali 🌿)
+    # Safety net: kalo user manual edit config.json & masukin emoji
+    # Konversi emoji → unicode symbol (kecuali 🌿)
     name = convert_emoji(name)
     uh = convert_emoji(uh)
 
     media_dirs = cm.get_enabled_media_dirs(slug)
     folder_count = len(media_dirs)
 
-    # ── Data akun ──
+    akun_lines = [
+        f"{C_SILVER}◉ Nama      {C_RESET}{C_SILVER}:{C_RESET} {C_WHITE}{name[:24]}{C_RESET}",
+        f"{C_SILVER}⚿ Userhash  {C_RESET}{C_SILVER}:{C_RESET} {C_SILVER}{uh[:24]}{C_RESET}",
+        f"{C_SILVER}▸ Folder    {C_RESET}{C_SILVER}:{C_RESET} {C_MOSS_3}{folder_count} folder{C_RESET}",
+        f"{C_SILVER}◈ Tema      {C_RESET}{C_SILVER}:{C_RESET} {C_MOSS_1}{theme}{C_RESET}",
+    ]
+
     gh_user = (cfg.get("github_username") or "").strip()
     gh_repo = (cfg.get("github_repo") or "").strip()
     gh_status = f"{gh_user}/{gh_repo}" if gh_user and gh_repo else "belum setup"
@@ -266,44 +258,31 @@ def _render_top_boxes(slug, info, stats, cfg, theme):
     except Exception:
         total_files = uploaded_count
 
-    # ── Render nested tree ──
-    # Root
-    print(f"  {C_MOSS_1}{C_BOLD}lumoss/{C_RESET}")
-    print(f"  {C_MOSS_1}│{C_RESET}")
-
-    # Section 1: AKUN & RINGKASAN (nested)
-    print(f"  {C_MOSS_1}└──{C_RESET}  {C_MOSS_2}{C_BOLD}◉  AKUN & RINGKASAN{C_RESET}")
-    print(f"  {C_MOSS_1}    │{C_RESET}")
-
-    # Sub-section 1: AKUN AKTIF
-    print(f"  {C_MOSS_1}    ├──{C_RESET}  {C_MOSS_2}{C_BOLD}●  AKUN AKTIF{C_RESET}")
-
-    akun_items = [
-        f"{C_SILVER}◉ Nama      {C_RESET}{C_SILVER}:{C_RESET} {C_WHITE}{name[:24]}{C_RESET}",
-        f"{C_SILVER}⚿ Userhash  {C_RESET}{C_SILVER}:{C_RESET} {C_SILVER}{uh[:24]}{C_RESET}",
-        f"{C_SILVER}▸ Folder    {C_RESET}{C_SILVER}:{C_RESET} {C_MOSS_3}{folder_count} folder{C_RESET}",
-        f"{C_SILVER}◈ Tema      {C_RESET}{C_SILVER}:{C_RESET} {C_MOSS_1}{theme}{C_RESET}",
-    ]
-    for i, line in enumerate(akun_items):
-        is_last = (i == len(akun_items) - 1)
-        branch = "└──" if is_last else "├──"
-        print(f"  {C_MOSS_1}    │   {branch}{C_RESET}  {line}")
-
-    print(f"  {C_MOSS_1}    │{C_RESET}")
-
-    # Sub-section 2: RINGKASAN
-    print(f"  {C_MOSS_1}    └──{C_RESET}  {C_MOSS_2}{C_BOLD}▤  RINGKASAN{C_RESET}")
-
-    ringkasan_items = [
+    ringkasan_lines = [
         f"{C_SILVER}▪ Files     {C_RESET}{C_SILVER}:{C_RESET} {C_WHITE}{total_files}{C_RESET} {C_SILVER}({format_bytes(total_size)}){C_RESET}",
         f"{C_GREEN}✓ Uploaded  {C_RESET}{C_SILVER}:{C_RESET} {C_WHITE}{uploaded_count} file{C_RESET}",
         f"{C_YELLOW}◷ Pending   {C_RESET}{C_SILVER}:{C_RESET} {C_WHITE}{pending} file{C_RESET}",
         f"{C_SILVER}⚑ GitHub    {C_RESET}{C_SILVER}:{C_RESET} {C_SILVER}{gh_status}{C_RESET}",
     ]
-    for i, line in enumerate(ringkasan_items):
-        is_last = (i == len(ringkasan_items) - 1)
-        branch = "└──" if is_last else "├──"
-        print(f"  {C_MOSS_1}        {branch}{C_RESET}  {line}")
+
+    render_vertical_box(
+        title="AKUN & RINGKASAN",
+        emoji="◉",
+        sections=[
+            {"title": "AKUN AKTIF", "emoji": "◉", "lines": akun_lines},
+            {"title": "RINGKASAN",  "emoji": "▤", "lines": ringkasan_lines},
+        ],
+    )
+
+
+def _render_menu_group(title, emoji, items):
+    """Render 1 grup menu (legacy — backward compat)."""
+    render_group_box(title, emoji, items)
+
+
+def _render_menu_group_two_col(title, emoji, left, right):
+    """Render grup menu 2 kolom (legacy — backward compat)."""
+    render_group_box_two_col(title, emoji, left, right)
 
 
 # ═══════════════════════════════════════════════════════════
@@ -353,6 +332,7 @@ def _menu_create_first_account(callbacks):
     print(f"  {C_SILVER}   Bisa punya banyak akun nanti kok.{C_RESET}")
     print()
 
+    # v7.2.6: auto-convert emoji → unicode (kecuali 🌿)
     name = input_prompt("Nama akun", default="Akun Utama")
     if not name or not name.strip():
         name = "Akun Utama"
@@ -365,9 +345,10 @@ def _menu_create_first_account(callbacks):
 
     print()
     judul = input_prompt("Judul project", default=name)
+    # v7.2.6: auto-convert emoji → unicode (kecuali 🌿)
     judul = convert_emoji(judul.strip())
 
-    # ── WAJIB pilih folder media ──
+    # ── v7.2.2: WAJIB pilih folder media ──
     print()
     print(f"  {C_MOSS_1}{C_BOLD}▸ Pilih folder media (WAJIB){C_RESET}")
     print(f"  {C_SILVER}Foto/video lu bakal di-scan dari folder ini.{C_RESET}")
@@ -724,7 +705,7 @@ def _menu_regenerate(callbacks=None):
 
 
 def _render_regenerate_banner(slug, scan):
-    """Banner regen (v7.2.11 — pake 🌿)."""
+    """Banner regen (v7.2.6 — pake 🌿)."""
     left = f"{C_MOSS_1}{C_BOLD}↻ {LUMOSS_SYMBOL} LUMOSS :: REGENERATE{C_RESET}"
     right = f"build HTML • v{LUMOSS_VERSION[1:]}"
 
@@ -892,6 +873,7 @@ def _menu_edit_config():
             cfg["userhash"] = input_prompt("Userhash", default=cfg.get("userhash", ""), allow_empty=True)
         elif pilihan == "2":
             raw = input_prompt("Judul project", default=cfg.get("judul_project", "lumoss"))
+            # v7.2.6: auto-convert emoji → unicode
             cfg["judul_project"] = convert_emoji(raw.strip())
         elif pilihan == "3":
             cfg["counter_namespace"] = input_prompt("Namespace", default=cfg.get("counter_namespace", ""))
@@ -1139,7 +1121,7 @@ def _menu_about():
     print(f"  {C_SILVER}Media Garden, in bloom{C_RESET}")
     print()
 
-    kv_line("Version",  PROJECT_VERSION, value_color=C_GREEN)
+    kv_line("Version",  "7.2.6", value_color=C_GREEN)
     kv_line("Author",   PROJECT_AUTHOR)
     kv_line("License",  "MIT")
     print()
@@ -1266,12 +1248,12 @@ def _help_structure():
     section_title("STRUKTUR FOLDER", emoji="▣")
     print()
 
-    print(f"""  {C_MOSS_1}Struktur project Lumoss (v7.2.11):{C_RESET}
+    print(f"""  {C_MOSS_1}Struktur project Lumoss (v7.2.6):{C_RESET}
 
   {C_SILVER}/storage/emulated/0/Project/lumoss/{C_RESET}
   │
   ├── ▪ lumoss.py             {C_SILVER}# Entry point{C_RESET}
-  ├── ▪ menu.py               {C_SILVER}# Menu utama (tree view){C_RESET}
+  ├── ▪ menu.py               {C_SILVER}# Menu utama{C_RESET}
   ├── ▪ menu_account.py       {C_SILVER}# Submenu akun{C_RESET}
   ├── ▪ menu_tools.py         {C_SILVER}# Submenu tools{C_RESET}
   ├── ▪ menu_embed.py         {C_SILVER}# Submenu embed{C_RESET}
@@ -1443,7 +1425,7 @@ def _help_troubleshooting():
 # ═══════════════════════════════════════════════════════════
 
 def _menu_exit():
-    """Keluar dari Lumoss."""
+    """Keluar dari Lumoss (v7.2.6 — pake 🌿)."""
     print()
     print(f"  {LUMOSS_SYMBOL} {C_MOSS_1}Sampai jumpa boss!{C_RESET}")
     print(f"  {C_SILVER}Makasih udah pake {PROJECT_NAME} {LUMOSS_SYMBOL}{C_RESET}")
@@ -1634,7 +1616,7 @@ def _short_path(path, max_len=40):
 
 
 # ═══════════════════════════════════════════════════════════
-# HELPER — ROUNDED BOX (legacy)
+# HELPER — ROUNDED BOX (legacy — dipake di submenu)
 # ═══════════════════════════════════════════════════════════
 
 def _box_top(title, emoji="", width=30, color=None):
