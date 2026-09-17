@@ -115,7 +115,7 @@ python lumoss.py
 ---
 
 ## 📁 Struktur Project
-
+```
 lumoss/
 ├── accounts/               ← Config per akun (active.json + <slug>/config.json)
 ├── output/                 ← Hasil generate HTML per akun
@@ -137,7 +137,7 @@ lumoss/
 └── menu_*.py               ← Submenu (account, embed, tools)
 
 **Detail struktur:** docs/state.md → section 4
-
+```
 ---
 
 ## 🎨 Themes
